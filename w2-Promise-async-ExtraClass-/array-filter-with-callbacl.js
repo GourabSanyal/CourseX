@@ -7,7 +7,7 @@ function lessThanFour(val){
     } else{
         return false
     }
-}
+} 
 
 function filterArray(arr, callback){
     return arr.filter((element) => callback(element))
