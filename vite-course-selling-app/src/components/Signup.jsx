@@ -4,18 +4,20 @@ import TextField from "@mui/material/TextField";
 
 function Signup() {
   return (
-    <>
-      <center>
-        <div
-          style={{
-            paddingTop: 150,
-            marginBottom: 10,
-          }}
-        >
-          <Typography variant={"h6"}>Welcome to Coursera. Sign up below</Typography>
-        </div>
-        <center></center>
-
+    <div>
+      <div
+        style={{
+          paddingTop: 150,
+          marginBottom: 10,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <Typography variant={"h6"}> 
+          Welcome to Coursera. Sign up below
+        </Typography>
+      </div>
+      <div style={{ display: "flex", justifyContent: "center" }}>
         <Card
           style={{
             width: 400,
@@ -40,8 +42,8 @@ function Signup() {
             Sign up
           </Button>
         </Card>
-      </center>
-    </>
+      </div>
+    </div>
   );
 }
 
