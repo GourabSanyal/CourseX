@@ -35,8 +35,6 @@ function removeAtIndex(arr, index) {
   return newArray;
 }
 
-
-
 app.get('/todos', (req, res) => {
   res.json(todos);
 });
@@ -132,7 +130,7 @@ app.post("/todos", (req, res) => {
 app.delete("/todos/:id", (req, res) => {
   fs.readFile("todos.json", "utf8", (err, data) => {
     if (err) throw err;
-    const todos = JSON.parse(data);
+    let todos = JSON.parse(data);
     const todoIndex = findIndex(todos, parseInt(req.params.id));
     if (todoIndex === -1) {
       res.status(404).send();
@@ -145,6 +143,7 @@ app.delete("/todos/:id", (req, res) => {
     }
   });
 });
+
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
