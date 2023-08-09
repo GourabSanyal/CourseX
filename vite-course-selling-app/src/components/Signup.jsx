@@ -25,20 +25,37 @@ function Signup() {
           }}
         >
           <TextField
-            id="outlined-basic"
+            id="email"
             label="Email"
             variant="outlined"
             fullWidth
           />
           <br /> <br />
           <TextField
-            id="outlined-basic"
+            id="password"
             label="Password"
             variant="outlined"
             fullWidth
           />
           <br /> <br />
-          <Button size={"large"} variant="contained">
+          <Button 
+            size={"large"} 
+            variant="contained"
+            onClick={() => {  
+              let username = document.getElementById("email").value;
+              let password = document.getElementById("password").value;
+              fetch("http://localhost:3000/admin/signup", {
+                method: "POST",
+                body: JSON.stringify({
+                  username,
+                  password 
+                }),
+                headers: {
+                  "Content-type" : "application/json"
+                }
+              })
+            }}  
+          >
             Sign up
           </Button>
         </Card>
