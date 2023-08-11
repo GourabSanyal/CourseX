@@ -3,6 +3,7 @@ import Appbar from "./components/AppBAr";
 import "./App.css";
 import Signup from "./components/Signup";
 import Signin from "./components/Signin";
+import AddCourse from "./components/AddCourse";
 
 function App() {
   return (
@@ -13,9 +14,10 @@ function App() {
         height: "100vh",
       }}
     >
-      <Appbar />
       <Router>
+        <Appbar />
         <Routes>
+          <Route path="/addcourse" element={<AddCourse />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
         </Routes>
