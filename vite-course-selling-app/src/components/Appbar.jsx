@@ -39,15 +39,13 @@ function Appbar() {
           <Typography variant={"h6"}>Coursera</Typography>
         </div>
         <div style={{ display: "flex" }}>
-          <div>
-            {userEmail}
-          </div>
+          <div>{userEmail}</div>
           <div style={{ marginRight: 10 }}>
             <Button
               variant={"contained"}
               onClick={() => {
                 localStorage.setItem("token", null);
-                window.location = "/"
+                window.location = "/";
               }}
             >
               Log out
@@ -55,44 +53,44 @@ function Appbar() {
           </div>
         </div>
       </div>
+    ); 
+  } else {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          paddingTop: 4,
+        }}
+      >
+        <div>
+          <Typography variant={"h6"}>Coursera</Typography>
+        </div>
+        <div style={{ display: "flex" }}>
+          <div style={{ marginRight: 10 }}>
+            <Button
+              variant={"contained"}
+              onClick={() => {
+                navigate("/signin");
+              }}
+            >
+              Sign In
+            </Button>
+          </div>
+          <div>
+            <Button
+              variant={"contained"}
+              onClick={() => {
+                navigate("/signup");
+              }}
+            >
+              Sign Up
+            </Button>
+          </div>
+        </div>
+      </div>
     );
   }
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        paddingTop: 4,
-      }}
-    >
-      <div>
-        <Typography variant={"h6"}>Coursera</Typography>
-      </div>
-      <div style={{ display: "flex" }}>
-        <div style={{ marginRight: 10 }}>
-          <Button
-            variant={"contained"}
-            onClick={() => {
-              navigate("/signin");
-            }}
-          >
-            Sign In
-          </Button>
-        </div>
-        <div>
-          <Button
-            variant={"contained"}
-            onClick={() => {
-              navigate("/signup");
-            }}
-          >
-            Sign Up
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
 }
 
 export default Appbar;

@@ -34,8 +34,8 @@ function AddCourse() {
             // console.log(localStorage.getItem("token"))
             {
             function callback2(data) {
-              localStorage.setItem("token", data.token);
-              console.log(data);
+                alert("Course Added")
+                // console.log(data);
             }
             function callback1(res) {
               return res.json().then(callback2);
