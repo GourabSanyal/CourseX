@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Card, TextField } from "@mui/material";
 import Button from "@mui/material/Button";
 import { useState } from "react";
@@ -5,6 +6,7 @@ import { useState } from "react";
 function AddCourse() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [image, setImage]= useState('')
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
       <Card
@@ -27,6 +29,13 @@ function AddCourse() {
           fullWidth
         />
         <br /> <br />
+        <TextField
+          onChange={(e) => setImage(e.target.value)}
+          label="Image Link"
+          variant="outlined"
+          fullWidth
+        />
+        <br /> <br />
         <Button
           size={"large"}
           variant="contained"
@@ -45,7 +54,7 @@ function AddCourse() {
               body: JSON.stringify({
                 title: title,
                 description: description,
-                imageLink: "",
+                imageLink: image,
                 published: true,
               }),
               headers: {
