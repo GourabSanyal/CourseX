@@ -25,7 +25,7 @@ function Courses() {
   );
 }
 
-function Course(props) {
+export function Course(props) {
   return (
     <Card
       style={{

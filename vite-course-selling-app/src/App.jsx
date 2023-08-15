@@ -5,6 +5,7 @@ import Signup from "./components/Signup";
 import Signin from "./components/Signin";
 import AddCourse from "./components/AddCourse";
 import Courses from "./components/Courses";
+import Course from "./components/Course";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Appbar />
         <Routes>
           <Route path="/courses" element={<Courses />} />
+          <Route path="/course/:courseId" element={<Course />} />
           <Route path="/addcourse" element={<AddCourse />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
