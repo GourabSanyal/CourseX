@@ -43,12 +43,91 @@ function Course() {
   }
 }
 
+// function UpdateCard(props) {
+//   const [title, setTitle] = useState("");
+//   const [description, setDescription] = useState("");
+//   const [image, setImage]= useState("");
+//   const course = props.course;
+//   // console.log('update props', course);
+//   return (
+//     <div style={{ display: "flex", justifyContent: "center" }}>
+//       <Card
+//         variant="outlined"
+//         style={{
+//           width: 400,
+//           padding: 20,
+//         }}
+//       >
+//         <Typography>Update course details</Typography>
+//         <TextField
+//           onChange={(e) => setTitle(e.target.value)}
+//           label="Title"
+//           variant="outlined"
+//           fullWidth = {true}
+//         />
+//         <br /> <br />
+//         <TextField
+//           onChange={(e) => setDescription(e.target.value)}
+//           label="Description"
+//           variant="outlined"
+//           fullWidth
+//         />
+//         <br /> <br />
+//         <TextField
+//           onChange={(e) => setImage(e.target.value)}
+//           label="Image Link"
+//           variant="outlined"
+//           fullWidth
+//         />
+//         <br /> <br />
+//         <Button
+//           size={"large"}
+//           variant="contained"
+//           onClick={() =>{
+//             // console.log(course._id)
+//               function callback2(data) {
+//                 const updatedCourses = props.course.map(( courseItem) => {
+//                   courseItem._id = course._id 
+//                   ? {
+//                     ...courseItem,
+//                     title: title,
+//                     description: description,
+//                     imageLink: image
+//                   } : courseItem
+//                 })
+//                 props.setCourses(updatedCourses)
+//               }
+//               function callback1(res) {
+//                 return res.json().then(callback2);
+//               }
+//               fetch("http://localhost:3000/admin/courses/" + course._id, {
+//                 method: "PUT",
+//                 body: JSON.stringify({
+//                   title: title,
+//                   description: description,
+//                   imageLink: image,
+//                   published: true,
+//                 }),
+//                 headers: {
+//                   "Content-type": "application/json",
+//                   "Authorization": `Bearer ${localStorage.getItem("token")}`,
+//                 },
+//               }).then(callback1);
+//             }
+//           }
+//         >
+//           Update Course
+//         </Button>
+//       </Card>
+//     </div>
+//   );
+// }
+
 function UpdateCard(props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage]= useState("");
   const course = props.course;
-  // console.log('update props', course);
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
       <Card
@@ -85,24 +164,17 @@ function UpdateCard(props) {
           variant="contained"
           onClick={() =>{
             // console.log(course._id)
-              function callback2(data) {
-                let updatedCourses = []
-                for ( let i = 0; i < props.courses.length ; i++){
-                  if(props.courses[i]._id == course._id){
-                    updatedCourses.push(
-                      {
-                        id: course._id,
+            function callback2 (data) {
+                const updatedCourses = props.courses.map((courseItem) =>
+                  courseItem._id === course._id
+                    ? {
+                        ...courseItem,
                         title: title,
-                        description : description,
-                        imageLink: image
+                        description: description,
+                        imageLink: image,
                       }
-                      )
-                      ;
-                      // console.log('after update -', updatedCourses);
-                  } else {
-                    updatedCourses.push(props.courses[i])
-                  }
-                }
+                    : courseItem
+                );
                 props.setCourses(updatedCourses);
               }
               function callback1(res) {
@@ -118,7 +190,7 @@ function UpdateCard(props) {
                 }),
                 headers: {
                   "Content-type": "application/json",
-                  Authorization: "Bearer " + localStorage.getItem("token"),
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
               }).then(callback1);
             }
@@ -130,7 +202,6 @@ function UpdateCard(props) {
     </div>
   );
 }
-
 
 function CourseCard(props) {
   // eslint-disable-next-line react/prop-types
