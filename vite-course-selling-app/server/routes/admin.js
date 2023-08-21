@@ -2,7 +2,7 @@
 /* eslint-disable no-undef */
 const mongoose = require("mongoose");
 const express = require("express");
-const { User, Course, Admin } = require("../db/index");
+const { Course, Admin } = require("../db/index");
 const jwt = require("jsonwebtoken");
 const { SECRET } = require("../middleware/auth");
 const {authenticateJwt} = require("../middleware/auth");
