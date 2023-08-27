@@ -1,43 +1,36 @@
 /* eslint-disable react/prop-types */
 import { Button, Card, TextField, Typography } from "@mui/material";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+// import
 
 function Course() {
   let { courseId } = useParams();
-  const [courses, setCourses] = useState([]);
+  const [course, setCourse] = useState([]);
 
   useEffect(() => {
-        function callback2(data) {
-            setCourses(data.courses);
-            // console.log('courses - ');
-        }
-        function callback1(res) {
-            res.json().then(callback2)
-        }
-        fetch("http://localhost:3000/admin/courses/", {
-            method: "GET",
-            headers: {
-                "Authorization": "Bearer " + localStorage.getItem("token")
-            }
-        }).then(callback1)
+    axios.get("http://localhost:3000/admin/course/" + courseId, {
+      headers : {
+        "Authorization": "Bearer " + localStorage.getItem("token")
+      }
+    }).then(res => {
+      setCourse(res.data.course)
+    })
     }, []);
 
-    let course = null;
-    for (let i = 0; i< courses.length; i++) {
-        if (courses[i]._id == courseId) {
-            course = courses[i]
-        }
-    }
-    // console.log('courses state - ',course);
-
   if (!course) {
-    return <div>Loading... </div>;
+    return <div style={{height: "100vh", justifyContent: "center", flexDirection: "column"}}>
+            Loading....
+        </div>
   } else {
     return (
-      <div>
+      <div style={{ display : 'flex', justifyContent: 'center'}}>
         <CourseCard course={course} />
-        <UpdateCard courses={courses} course={course} setCourses={setCourses}/>
+        <UpdateCard 
+          // courses={courses} 
+          course={course} 
+          setCourse={setCourse}/>
       </div>
     );
   }
