@@ -11,6 +11,10 @@ const router = express.Router();
 
 router.get("/me", authenticateJwt, async (req, res) => {
   const admin = await Admin.findOne({ username: req.user.username });
+  if(!admin){
+    res.status(403).json({ message: "Admin dosent exist"})
+    return 
+  }
   res.json({
     username: admin.username,
   });
@@ -68,6 +72,12 @@ router.put('/courses/:courseId', authenticateJwt, async(req, res) => {
 router.get('/courses', authenticateJwt, async(req, res) => {
     const courses = await Course.find({});
     res.json({ courses })
+})
+
+router.get('/course/:courseId', async(req, res) => {
+  const courseId = req.params.courseId;
+  const course = await Course.findById(courseId);
+  res.json({ course })
 })
 
 module.exports = router;
