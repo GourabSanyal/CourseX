@@ -1,15 +1,19 @@
 /* eslint-disable no-unused-vars */
 import { Card, TextField } from "@mui/material";
 import Button from "@mui/material/Button";
+import axios from "axios";
 import { useState } from "react";
 
 function AddCourse() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage]= useState('')
+  const [image, setImage] = useState("");
+  const [price, setPrice] = useState(0);
+
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
       <Card
+        variant={"outlined"}
         style={{
           width: 400,
           padding: 20,
@@ -30,6 +34,13 @@ function AddCourse() {
         />
         <br /> <br />
         <TextField
+          onChange={(e) => setPrice(e.target.value)}
+          label="Price"
+          variant="outlined"
+          fullWidth
+        />
+        <br /> <br />
+        <TextField
           onChange={(e) => setImage(e.target.value)}
           label="Image Link"
           variant="outlined"
@@ -39,31 +50,24 @@ function AddCourse() {
         <Button
           size={"large"}
           variant="contained"
-          onClick={() =>  
-            // console.log(localStorage.getItem("token"))
-            {
-            function callback2(data) {
-                alert("Course Added")
-                // console.log(data);
-            }
-            function callback1(res) {
-              return res.json().then(callback2);
-            }
-            fetch("http://localhost:3000/admin/courses", {
-              method: "POST",
-              body: JSON.stringify({
+          onClick={async () => {
+            await axios.post(
+              "http://localhost:3000/admin/courses",
+              {
                 title: title,
                 description: description,
                 imageLink: image,
+                price: price,
                 published: true,
-              }),
-              headers: {
-                "Content-type": "application/json",
-                "Authorization": "Bearer " + localStorage.getItem("token"),
               },
-            }).then(callback1);
-          }
-        }
+              {
+                headers: {
+                  Authorization: "Bearer " + localStorage.getItem("token"),
+                },
+              }
+            );
+            alert("Course added!");
+          }}
         >
           Add Course
         </Button>
