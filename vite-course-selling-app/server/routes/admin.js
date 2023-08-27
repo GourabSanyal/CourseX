@@ -74,7 +74,7 @@ router.get('/courses', authenticateJwt, async(req, res) => {
     res.json({ courses })
 })
 
-router.get('/course/:courseId', async(req, res) => {
+router.get('/course/:courseId', authenticateJwt, async(req, res) => {
   const courseId = req.params.courseId;
   const course = await Course.findById(courseId);
   res.json({ course })
