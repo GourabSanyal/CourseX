@@ -1,6 +1,7 @@
 import { Card, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import axios from "axios";
 import { useState } from "react";
 
 function Signup() {
@@ -44,25 +45,17 @@ function Signup() {
           <Button
             size={"large"}
             variant="contained"
-            onClick={() => {
-              function callback2(data) {
-                localStorage.setItem("token", data.token);
-                console.log("from signup - ", data);
-                window.location = "/";
-              }
-              function callback1(res) {
-                return res.json().then(callback2);
-              }
-              fetch("http://localhost:3000/admin/signup", {
-                method: "POST",
-                body: JSON.stringify({
+            onClick={async () => {
+              const res = await axios.post(
+                "http://localhost:3000/admin/signup",
+                {
                   username: email,
                   password: password,
-                }),
-                headers: {
-                  "Content-type": "application/json",
-                },
-              }).then(callback1);
+                }
+              );
+              let data = res.data;
+              localStorage.setItem("token", data.token);
+              window.location = "/";
             }}
           >
             Sign up
