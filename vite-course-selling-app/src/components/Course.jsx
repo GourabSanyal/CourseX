@@ -9,6 +9,7 @@ function Course() {
   let { courseId } = useParams();
   const [course, setCourse] = useState([]);
 
+  console.log("before -", course);
   useEffect(() => {
     axios
       .get("http://localhost:3000/admin/course/" + courseId, {
@@ -20,6 +21,8 @@ function Course() {
         setCourse(res.data.course);
       });
   }, []);
+
+  // console.log('after -', course);
 
   if (!course) {
     return (
@@ -85,13 +88,22 @@ function GrayTopper({ title }) {
 }
 
 function UpdateCard({ course, setCourse }) {
-  const [title, setTitle] = useState(course.title);
+  const cardTitle = course.title;
+  const [title, setTitle] = useState(cardTitle);
   const [description, setDescription] = useState(course.description);
   const [image, setImage] = useState(course.imageLink);
   const [price, setPrice] = useState(course.price);
 
+  useEffect(() => {
+    // Update the state when the course prop changes
+    setTitle(course.title);
+    setDescription(course.description);
+    setImage(course.imageLink);
+    setPrice(course.price);
+  }, [course]);
+
   return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
+    <div style={{ display: "flex", justifyContent: "center", paddingTop: 10 }}>
       <Card
         variant="outlined"
         style={{
@@ -109,7 +121,7 @@ function UpdateCard({ course, setCourse }) {
         <br /> <br />
         <TextField
           onChange={(e) => setDescription(e.target.value)}
-          value = {description}
+          value={description}
           variant="outlined"
           fullWidth
         />
@@ -117,8 +129,9 @@ function UpdateCard({ course, setCourse }) {
         <TextField
           value={price}
           onChange={(e) => setPrice(e.target.value)}
-          variant="outlined"
           fullWidth
+          label="Number"
+          variant="outlined"
         />
         <br /> <br />
         <TextField
@@ -132,36 +145,60 @@ function UpdateCard({ course, setCourse }) {
           size={"large"}
           variant="contained"
           onClick={() => {
-            // console.log(course._id)
-            function callback2(data) {
-              const updatedCourses = props.courses.map((courseItem) =>
-                courseItem._id === course._id
-                  ? {
-                      ...courseItem,
-                      title: title,
-                      description: description,
-                      imageLink: image,
-                    }
-                  : courseItem
-              );
-              props.setCourses(updatedCourses);
-            }
-            function callback1(res) {
-              return res.json().then(callback2);
-            }
-            fetch("http://localhost:3000/admin/courses/" + course._id, {
-              method: "PUT",
-              body: JSON.stringify({
+            axios.put(
+              "http://localhost:3000/admin/courses/" + course._id,
+              {
                 title: title,
                 description: description,
                 imageLink: image,
                 published: true,
-              }),
-              headers: {
-                "Content-type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                price,
               },
-            }).then(callback1);
+              {
+                headers: {
+                  "Content-type": "application/json",
+                  Authorization: "Bearer " + localStorage.getItem("token"),
+                },
+              }
+            );
+            let updatedCourses = {
+              _id: course._id,
+              title: title,
+              description: description,
+              imageLink: image,
+              price,
+            };
+            setCourse(updatedCourses);
+            // console.log(course._id)
+            // function callback2(data) {
+            //   const updatedCourses = props.courses.map((courseItem) =>
+            //     courseItem._id === course._id
+            //       ? {
+            //           ...courseItem,
+            //           title: title,
+            //           description: description,
+            //           imageLink: image,
+            //         }
+            //       : courseItem
+            //   );
+            //   props.setCourses(updatedCourses);
+            // }
+            // function callback1(res) {
+            //   return res.json().then(callback2);
+            // }
+            // fetch("http://localhost:3000/admin/courses/" + course._id, {
+            //   method: "PUT",
+            //   body: JSON.stringify({
+            //     title: title,
+            //     description: description,
+            //     imageLink: image,
+            //     published: true,
+            //   }),
+            //   headers: {
+            //     "Content-type": "application/json",
+            //     Authorization: `Bearer ${localStorage.getItem("token")}`,
+            //   },
+            // }).then(callback1);
           }}
         >
           Update Course
@@ -172,22 +209,37 @@ function UpdateCard({ course, setCourse }) {
 }
 
 function CourseCard(props) {
-  // eslint-disable-next-line react/prop-types
   const course = props.course;
-  // console.log('card props -', course);
   return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
+    <div
+      style={{
+        display: "flex",
+        marginTop: 50,
+        justifyContent: "center",
+        width: "100%",
+      }}
+    >
       <Card
         style={{
-          border: "2px solid black",
           margin: 10,
-          width: 300,
+          width: 350,
           minHeight: 200,
+          borderRadius: 20,
+          marginRight: 50,
+          paddingBottom: 15,
+          zIndex: 2,
         }}
       >
-        <Typography variant="h5">{course.title}</Typography>
-        <Typography variant="subtitle">{course.description}</Typography>
-        <img src={course.imageLink} style={{ width: "100%", height: "100%" }} />
+        <img src={course.imageLink} style={{ width: 350 }}></img>
+        <div style={{ marginLeft: 10 }}>
+          <Typography variant="h5">{course.title}</Typography>
+          <Typography variant="subtitle2" style={{ color: "gray" }}>
+            Price
+          </Typography>
+          <Typography variant="subtitle1">
+            <b>Rs {course.price} </b>
+          </Typography>
+        </div>
       </Card>
     </div>
   );
