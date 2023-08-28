@@ -57,7 +57,7 @@ function AddCourse() {
                 title: title,
                 description: description,
                 imageLink: image,
-                price: price,
+                price,
                 published: true,
               },
               {

@@ -14,25 +14,14 @@ function Courses() {
         Authorization: "Bearer " + localStorage.getItem("token"),
       },
     });
-    setCourses(data.data.courses);
-    // console.log(data.data.courses)
-    // console.log(courses)
+    setCourses(data.data.courses); 
   };
 
   useEffect(() => {
     getdata();
-
-    // fetch("http://localhost:3000/admin/courses", {
-    //   method: "GET",
-    //   headers: {
-    //     Authorization: "Bearer " + localStorage.getItem("token"),
-    //   },
-    // })
-    //   .then((res) => res.json())
-    //   .then((data) => setCourses(data.courses));
   }, []);
 
-  if (!courses) {
+  if (!courses.length) {
     return <>Loading...</>;
   }
 
