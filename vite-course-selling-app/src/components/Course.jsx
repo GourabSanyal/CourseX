@@ -111,32 +111,39 @@ function UpdateCard({ course, setCourse }) {
           padding: 20,
         }}
       >
-        <Typography>Update course details</Typography>
+        <Typography style={{ marginBottom : 20}}>Update course details</Typography>
         <TextField
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          label="Title"
           variant="outlined"
           fullWidth={true}
+          InputLabelProps={{ shrink : true}}
         />
         <br /> <br />
         <TextField
-          onChange={(e) => setDescription(e.target.value)}
           value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          label="Description"
           variant="outlined"
+          InputLabelProps={{ shrink : true}}
           fullWidth
         />
         <br /> <br />
         <TextField
           value={price}
           onChange={(e) => setPrice(e.target.value)}
-          fullWidth
           label="Number"
+          fullWidth
           variant="outlined"
+          InputLabelProps={{ shrink : true}}
         />
         <br /> <br />
         <TextField
           value={image}
+          label="Image Link"
           onChange={(e) => setImage(e.target.value)}
+          InputLabelProps={{ shrink : true}}
           variant="outlined"
           fullWidth
         />
@@ -169,36 +176,6 @@ function UpdateCard({ course, setCourse }) {
               price,
             };
             setCourse(updatedCourses);
-            // console.log(course._id)
-            // function callback2(data) {
-            //   const updatedCourses = props.courses.map((courseItem) =>
-            //     courseItem._id === course._id
-            //       ? {
-            //           ...courseItem,
-            //           title: title,
-            //           description: description,
-            //           imageLink: image,
-            //         }
-            //       : courseItem
-            //   );
-            //   props.setCourses(updatedCourses);
-            // }
-            // function callback1(res) {
-            //   return res.json().then(callback2);
-            // }
-            // fetch("http://localhost:3000/admin/courses/" + course._id, {
-            //   method: "PUT",
-            //   body: JSON.stringify({
-            //     title: title,
-            //     description: description,
-            //     imageLink: image,
-            //     published: true,
-            //   }),
-            //   headers: {
-            //     "Content-type": "application/json",
-            //     Authorization: `Bearer ${localStorage.getItem("token")}`,
-            //   },
-            // }).then(callback1);
           }}
         >
           Update Course
