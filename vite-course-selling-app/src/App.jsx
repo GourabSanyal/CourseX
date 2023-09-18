@@ -6,6 +6,13 @@ import Signin from "./components/Signin";
 import AddCourse from "./components/AddCourse";
 import Courses from "./components/Courses";
 import Course from "./components/Course";
+import {
+  RecoilRoot,
+  atom,
+  selector,
+  useRecoilState,
+  useRecoilValue,
+} from "recoil";
 
 function App() {
   return (
@@ -16,16 +23,18 @@ function App() {
         height: "100vh",
       }}
     >
-      <Router>
-        <Appbar />
-        <Routes>
-          <Route path="/courses" element={<Courses />} />
-          <Route path="/course/:courseId" element={<Course />} />
-          <Route path="/addcourse" element={<AddCourse />} />
-          <Route path="/signin" element={<Signin />} />
-          <Route path="/signup" element={<Signup />} />
-        </Routes>
-      </Router>
+      <RecoilRoot>
+        <Router>
+          <Appbar />
+          <Routes>
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/course/:courseId" element={<Course />} />
+            <Route path="/addcourse" element={<AddCourse />} />
+            <Route path="/signin" element={<Signin />} />
+            <Route path="/signup" element={<Signup />} />
+          </Routes>
+        </Router>
+      </RecoilRoot>
     </div>
   );
 }
