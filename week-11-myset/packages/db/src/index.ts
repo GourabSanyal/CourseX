@@ -20,6 +20,6 @@ const courseSchema = new mongoose.Schema({
   published: Boolean,
 });
 
-export const User = mongoose.model("User", userSchema);
+export const User = mongoose.models.user || mongoose.model("User", userSchema);
 export const Admin = mongoose.models.admin || mongoose.model("Admin", adminSchema);
 export const Course = mongoose.model("Course", courseSchema);
