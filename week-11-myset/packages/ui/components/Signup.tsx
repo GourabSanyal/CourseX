@@ -3,12 +3,14 @@
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
+"use client";
+
 import { Typography, Card, TextField, Button } from "@mui/material";
 import { useState } from "react";
 
 export function Signup(props: {
   onClick: (username: string, password: string) => void;
-}) { 
+}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
