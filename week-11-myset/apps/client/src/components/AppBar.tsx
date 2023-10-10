@@ -1,59 +1,67 @@
 import { Button, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRecoilValue,  useSetRecoilState } from "recoil";
+import { isUserLoading, userEmailState, userState } from "store";
+import {useRouter} from 'next/router';
 
 function Appbar() {
-  const navigate = useNavigate();
-  const [userEmail, setUserEmail] = useState();
+  const userLoading = useRecoilValue(isUserLoading);
+  const userEmail = useRecoilValue(userEmailState);
+  const setUser = useSetRecoilState(userState);
 
-  useEffect(() => {
-    function callback2(data) {
-      if (data.username) {
-        setUserEmail(data.username);
-      }
-      // console.log(data);
-    }
-    function callback1(res) {
-      res.json().then(callback2);
-      // console.log(res)
-    }
-    fetch("http://localhost:3000/admin/me", {
-      method: "GET",
-      headers: {
-        "Content-type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    }).then(callback1);
-  }, []);
+  const router = useRouter();
+
+  if (userLoading){
+    return <></>
+  }
 
   if (userEmail) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          paddingTop: 4,
-        }}
-      >
-        <div>
+    return <div style={{
+      display: "flex",
+      justifyContent: "space-between",
+      padding: 4,
+      zIndex: 1
+  }}>
+      <div style={{marginLeft: 10, cursor: "pointer"}} onClick={() => {
+          // navigate("/")
+          router.push('/')
+      }}>
           <Typography variant={"h6"}>Coursera</Typography>
-        </div>
-        <div style={{ display: "flex" }}>
-          <div>{userEmail}</div>
-          <div style={{ marginRight: 10 }}>
-            <Button
-              variant={"contained"}
-              onClick={() => {
-                localStorage.setItem("token", null);
-                window.location = "/";
-              }}
-            >
-              Log out
-            </Button>
-          </div>
-        </div>
       </div>
-    ); 
+
+      <div style={{display: "flex"}}>
+          <div style={{marginRight: 10, display: "flex"}}>
+          <div style={{marginRight: 10}}>
+                  <Button
+                      onClick={() => {
+                          
+                      }}
+                  >Add course</Button>
+              </div>
+
+              <div style={{marginRight: 10}}>
+                  <Button
+                      onClick={() => {
+                          // navigate("/courses")
+                          router.push('/')
+                      }}
+                  >Courses</Button>
+              </div>
+
+              <Button
+                  variant={"contained"}
+                  onClick={() => {
+                      localStorage.setItem("token", null);
+                      setUser({
+                          isLoading: false,
+                          userEmail: null
+                      })
+                  }}
+              >Logout</Button>
+          </div>
+      </div>
+  </div>
+
   } else {
     return (
       <div
@@ -71,7 +79,7 @@ function Appbar() {
             <Button
               variant={"contained"}
               onClick={() => {
-                navigate("/signin");
+                // navigate("/signin");
               }}
             >
               Sign In
@@ -81,7 +89,7 @@ function Appbar() {
             <Button
               variant={"contained"}
               onClick={() => {
-                navigate("/signup");
+                router.push("/signup");
               }}
             >
               Sign Up
