@@ -2,20 +2,19 @@ import { Button, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRecoilValue,  useSetRecoilState } from "recoil";
 import { isUserLoading, userEmailState, userState } from "store";
-import {useRouter} from 'next/router';
+import {useRouter} from 'next/navigation';
 
 function Appbar() {
   const userLoading = useRecoilValue(isUserLoading);
   const userEmail = useRecoilValue(userEmailState);
   const setUser = useSetRecoilState(userState);
-
   const router = useRouter();
-
-  if (userLoading){
+  
+  if (userLoading){ 
     return <></>
   }
 
-  if (userEmail) {
+  if (userEmail) {  
     return <div style={{
       display: "flex",
       justifyContent: "space-between",
