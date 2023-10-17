@@ -8,7 +8,7 @@ import Appbar from "@/components/AppBar";
 
 export default function App({ Component, pageProps }: AppProps) {
   return <RecoilRoot>
-    <App2 Component= {Component} pageProps={...pageProps} />;
+    <App2 Component= {Component} pageProps={...pageProps} />
   </RecoilRoot>
 }
 
@@ -16,7 +16,7 @@ function App2({ Component, pageProps}) {
   const userLoading = useRecoilValue(isUserLoading)
   if (userLoading){
     return <div>
-      Loading...
+      Loading... 
       <InitUser />
     </div>
   }
@@ -32,7 +32,7 @@ function InitUser(){
     try {
       const response = await axios.get(`/api/auth/me`, {
         headers : {
-          "Authorization" : "Barear " + localStorage.getItem("token")
+          "Authorization" : "Bearer " + localStorage.getItem("token")
         }
     
       });
@@ -60,4 +60,4 @@ function InitUser(){
     init()
   }, [])
   return <></>
-};
+}
