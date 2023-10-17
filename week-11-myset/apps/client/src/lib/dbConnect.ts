@@ -7,6 +7,6 @@ export async function ensureDbConnected(){
         return;
     }
     alreadyDone = true 
-    await mongoose.connect("/");
+    await mongoose.connect("");
     console.log("db connected");
 }
