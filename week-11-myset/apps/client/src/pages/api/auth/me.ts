@@ -15,12 +15,12 @@ export default async function handler(
   const authHeader = req.headers.authorization;
   if (authHeader) {
     const token = authHeader.split(" ")[1];
-    verifyTokenAndGetUser(token, (userId: string) => {
-      if (!userId) {
+    verifyTokenAndGetUser(token, (user: string) => {
+      if (!user) {
         res.status(403).json({});
-        return;
+        return
       }
-      res.json({ user: userId });
+      res.json({ user: user });
     });
   }
 }
