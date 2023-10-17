@@ -7,7 +7,6 @@ export async function ensureDbConnected(){
         return;
     }
     alreadyDone = true 
-    await mongoose.connect("mongodb+srv://admin:admin@admin-user-db.cgoa0xw.mongodb.net/");
+    await mongoose.connect("/");
     console.log("db connected");
-    
 }
