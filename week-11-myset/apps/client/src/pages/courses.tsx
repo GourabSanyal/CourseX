@@ -1,15 +1,23 @@
-import { Signup } from "ui";
-import axios from "axios";
-import { userState } from "store";
-import {useRouter} from 'next/router';
-import { useSetRecoilState } from "recoil";
-import {useEffect } from 'react'
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import ForcedReload from "@/components/ForceReload";
 
 export default function CoursesPage() {
   const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const refreshFlag = localStorage.getItem("pageRefreshed");
+    if (token && !refreshFlag) {
+      localStorage.setItem("pageRefreshed", "true");
+      router.refresh();
+    }
+  }, []);
+
   return (
     <div>
-      Courses route
+      {/* <ForcedReload /> */}
+      <div>Courses route</div>
     </div>
   );
 }
