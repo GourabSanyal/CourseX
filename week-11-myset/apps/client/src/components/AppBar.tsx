@@ -42,7 +42,7 @@ function Appbar() {
                   <Button
                       onClick={() => {
                           // navigate("/courses")
-                          router.push('/')
+                          router.push('/courses')
                       }}
                   >Courses</Button>
               </div>
@@ -50,11 +50,13 @@ function Appbar() {
               <Button
                   variant={"contained"}
                   onClick={() => {
-                      localStorage.setItem("token", null);
+                      localStorage.removeItem("token");
+                      localStorage.removeItem("pageRefreshed")
                       setUser({
                           isLoading: false,
                           userEmail: null
                       })
+                      router.push('/')
                   }}
               >Logout</Button>
           </div>
