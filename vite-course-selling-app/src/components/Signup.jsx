@@ -55,7 +55,7 @@ function Signup() {
               );
               let data = res.data;
               localStorage.setItem("token", data.token);
-              window.location = "/";
+              window.location = "/courses";
             }}
           >
             Sign up
