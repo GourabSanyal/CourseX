@@ -22,4 +22,4 @@ const courseSchema = new mongoose.Schema({
 
 export const User = mongoose.models.user || mongoose.model("User", userSchema);
 export const Admin = mongoose.models.admin || mongoose.model("Admin", adminSchema);
-export const Course = mongoose.model("Course", courseSchema);
+export const Course = mongoose.models.course || mongoose.model("Course", courseSchema);
