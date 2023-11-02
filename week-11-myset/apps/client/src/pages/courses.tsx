@@ -13,42 +13,56 @@ type Course = {
   published: boolean;
 };
 
+type CourseProps = {
+  course : {
+
+    _id: string; // You can adjust this type as needed
+    title: string;
+    description: string;
+    price: number;
+    imageLink: string;
+    published: boolean;
+  }
+};
+
 export default function CoursesPage() {
   const router = useRouter();
   const [courses, setCourses] = useState([])
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const refreshFlag = localStorage.getItem("pageRefreshed");
-    if (token && !refreshFlag) {
-      localStorage.setItem("pageRefreshed", "true");
-      router.refresh();
-    }
-  }, []);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   const refreshFlag = localStorage.getItem("pageRefreshed");
+  //   if (token && !refreshFlag) {
+  //     localStorage.setItem("pageRefreshed", "true");
+  //     router.refresh();
+  //   }
+  // }, []);
 
   const getData = async() => {
     const data = await axios.get("/api/auth/courses", {
       headers : { Authorization : "Bearer " + localStorage.getItem("token")}
     })
+    // console.log("this is data -> ", data.data)
     setCourses(data.data)
+    // console.log("this is courses state -> ", courses);
   }
 
   useEffect(() => {
     getData()
   }, [])
 
-  if (!courses.length){
-    <div>
-      Loading Courses ...
-    </div>
-  }
+  // if (!courses.length){
+  //   <div>
+  //     Loading Courses ...
+  //   </div>
+  // }
 
   return (
     <div
     style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
   >
     heyy 
-    {courses.map((course: Course[]) => {
+    {courses.map((course: Course) => {
       return <Course 
         key={course._id} 
         course={course} />;
@@ -57,7 +71,7 @@ export default function CoursesPage() {
   );
   }
 
-function Course({ course }) {
+function Course({ course  } : CourseProps) {
   // const navigate = useNavigate();
   const router = useRouter();
   return (
