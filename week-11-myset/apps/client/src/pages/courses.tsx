@@ -2,7 +2,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, Typography, Button } from "@mui/material";
-// import { Button } from "ui";
 
 type Course = {
   _id: string; // You can adjust this type as needed
@@ -15,7 +14,6 @@ type Course = {
 
 type CourseProps = {
   course : {
-
     _id: string; // You can adjust this type as needed
     title: string;
     description: string;
@@ -94,9 +92,9 @@ function Course({ course  } : CourseProps) {
         <Button
           variant="contained"
           size="large"
-          // onClick={() => {
-          //   navigate("/course/" + course._id);
-          // }}
+          onClick={() => {
+            router.push("/course/" + course._id);
+          }}
         >
           Edit
         </Button>
