@@ -49,7 +49,7 @@ export function Signup(props: {
               variant="contained"
               size="large"
               onClick={() => {
-                props.onClick(course._id)
+                props.onClick(props.cours._id)
               }}
             >
               Edit
