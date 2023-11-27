@@ -13,19 +13,19 @@ type Course = {
 };
 
 type CourseProps = {
-  course : {
+  course: {
     _id: string; // You can adjust this type as needed
     title: string;
     description: string;
     price: number;
     imageLink: string;
     published: boolean;
-  }
+  };
 };
 
 export default function CoursesPage() {
   const router = useRouter();
-  const [courses, setCourses] = useState([])
+  const [courses, setCourses] = useState([]);
 
   // useEffect(() => {
   //   const token = localStorage.getItem("token");
@@ -36,42 +36,37 @@ export default function CoursesPage() {
   //   }
   // }, []);
 
-  const getData = async() => {
+  const getData = async () => {
     const data = await axios.get("/api/auth/courses", {
-      headers : { Authorization : "Bearer " + localStorage.getItem("token")}
-    })
+      headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+    });
     // console.log("this is data -> ", data.data)
-    setCourses(data.data)
+    setCourses(data.data);
     // console.log("this is courses state -> ", courses);
-  }
+  };
 
   useEffect(() => {
-    getData()
-  }, [])
+    getData();
+  }, []);
 
-  // if (!courses.length){
-  //   <div>
-  //     Loading Courses ...
-  //   </div>
-  // }
+  if (!courses.length) {
+    <div>Loading Courses ...</div>;
+  }
 
   return (
     <div
-    style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
-  >
-    heyy 
-    {courses.map((course: Course) => {
-      return <Course 
-        key={course._id} 
-        course={course} />;
-    })}
-  </div>
+      style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
+    >
+      {courses.map((course: Course) => {
+        return <Course key={course._id} course={course} />;
+      })}
+    </div>
   );
-  }
+}
 
-function Course({ course  } : CourseProps) {
-  // const navigate = useNavigate();
+function Course({ course }: CourseProps) {
   const router = useRouter();
+  let courseId = course._id;
   return (
     <Card
       style={{
@@ -93,7 +88,8 @@ function Course({ course  } : CourseProps) {
           variant="contained"
           size="large"
           onClick={() => {
-            router.push("/course/" + course._id);
+            router.push("/admin/" + courseId);
+            // console.log(course._id)
           }}
         >
           Edit
@@ -102,4 +98,3 @@ function Course({ course  } : CourseProps) {
     </Card>
   );
 }
-
