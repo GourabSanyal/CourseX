@@ -21,10 +21,13 @@ function Appbar() {
       padding: 4,
       zIndex: 1
   }}>
-      <div style={{marginLeft: 10, cursor: "pointer"}} onClick={() => {
-          // navigate("/")
+      <div style={{
+        marginLeft: 10, 
+        cursor: "pointer",
+      }} onClick={() => 
           router.push('/')
-      }}>
+      }
+      >
           <Typography variant={"h6"}>Coursera</Typography>
       </div>
 
@@ -41,7 +44,6 @@ function Appbar() {
               <div style={{marginRight: 10}}>
                   <Button
                       onClick={() => {
-                          // navigate("/courses")
                           router.push('/courses')
                       }}
                   >Courses</Button>
@@ -72,15 +74,25 @@ function Appbar() {
           paddingTop: 4,
         }}
       >
-        <div>
+        <div style={{ cursor : "pointer"}} onClick={() => router.push('/')}>
           <Typography variant={"h6"}>Coursera</Typography>
         </div>
         <div style={{ display: "flex" }}>
+        <div style={{ marginRight: 10 }}>
+            <Button
+              // variant={"contained"}
+              onClick={() => {
+                // navigate("/signin");
+              }}
+            >
+              Admin Login
+            </Button>
+          </div>
           <div style={{ marginRight: 10 }}>
             <Button
               variant={"contained"}
               onClick={() => {
-                // navigate("/signin");
+                router.push("/user/signin")
               }}
             >
               Sign In
