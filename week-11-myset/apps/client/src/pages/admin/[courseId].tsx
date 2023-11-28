@@ -50,10 +50,10 @@ function singleCoursePage() {
         <GrayTopper title={course.title} />
         <Grid container>
           <Grid item lg={8} md={12} sm={12}>
-            <UpdateCard course={course} setCourse={setCourse} />
+            <CourseCard course={course} />
           </Grid>
           <Grid item lg={4} md={12} sm={12}>
-            <CourseCard course={course} />
+            <UpdateCard course={course} setCourse={setCourse} />
           </Grid>
         </Grid>
       </div>
