@@ -44,7 +44,7 @@ export default function Home() {
                               size={"large"}
                               variant={"contained"}
                               onClick={() => {
-                                router.push("/signin")
+                                router.push("/user/signin")
                               }}
                           >Signin</Button>
                       </div>
