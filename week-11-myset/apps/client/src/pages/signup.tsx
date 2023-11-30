@@ -18,7 +18,7 @@ export default function SignPage() {
             password,
           });
           localStorage.setItem("token", response.data.token);
-          router.push("/courses");
+          router.push("/courses");        
         }}
       />
     </div>
