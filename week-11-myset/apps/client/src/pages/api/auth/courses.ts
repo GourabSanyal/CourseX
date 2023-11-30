@@ -13,34 +13,38 @@ type Course = {
   published: boolean;
 };
 
-type Data = {
-  courses: Course[];
+type ErrorObj = {
+  message: string;
+  statusCode: number;
 };
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data[]>
+  res: NextApiResponse<Course[] | ErrorObj>
 ) {
   try {
     await ensureDbConnected();
     const authHeader = req.headers.authorization;
-
     if (authHeader) {
       const token = authHeader.split(" ")[1];
       verifyTokenAndGetUser(token, async (user: string) => {
         if (!user) {
-          res.status(403).json({ message: "Auth token expired" });
+          const errorResponse: ErrorObj = {
+            message: "Auth token expired",
+            statusCode: 403,
+          };
+          res.status(403).json(errorResponse);
         } else {
           const courses: Course[] = await Course.find({});
-          res.status(200).json([{ courses }]);
+          res.status(200).json(courses);
         }
       });
     } else {
-      res.status(401).json({ message: "Database connection error" });
+      res.status(400).json({ message: "error", statusCode: 401 });
     }
   } catch (error) {
     console.log("error from api -> ", error);
 
-    res.status(500).json({ error: "Internal Server Error hahas" });
+    res.status(500).json({ message: "message", statusCode: 500 });
   }
 }
