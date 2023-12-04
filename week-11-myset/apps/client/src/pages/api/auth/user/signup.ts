@@ -10,9 +10,14 @@ type Data = {
   password: string;
 };
 
+type responseData = {
+  message: string,
+  token?: string
+}
+
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<Data |responseData >
 ) {
   await ensureDbConnected();
   const { username, password } = req.headers;
