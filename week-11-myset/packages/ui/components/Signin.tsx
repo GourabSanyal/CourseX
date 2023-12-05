@@ -60,7 +60,7 @@ export function Signin(props: {
             }}
           >
             {" "}
-            Signup
+            Sign In
           </Button>
         </Card>
       </div>
