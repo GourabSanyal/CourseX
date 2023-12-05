@@ -102,7 +102,7 @@ function Appbar() {
             <Button
               variant={"contained"}
               onClick={() => {
-                router.push("/signup");
+                router.push("/user/signup");
               }}
             >
               Sign Up
