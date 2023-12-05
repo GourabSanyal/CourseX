@@ -2,7 +2,6 @@ import { Signin } from "ui";
 import axios from "axios";
 import { userState } from "store";
 import { useRouter } from "next/navigation";
-import {useEffect} from "react";
 import { useSetRecoilState } from "recoil";
 
 export default function UserSignInPage() {
@@ -12,12 +11,14 @@ export default function UserSignInPage() {
     <div>
       <Signin
         onClick={async (email, password) => {
-          const response = await axios.post("/api/auth/signup", {
+          const response = await axios.post("/api/auth/user/signin", {
             email,
             password,
           });
           localStorage.setItem("token", response.data.token);
-          router.push("/courses");
+          router.push("/user/allCoursePage");
+          // console.log("from component --> ",username, password);
+          
         }}
       />
     </div>
