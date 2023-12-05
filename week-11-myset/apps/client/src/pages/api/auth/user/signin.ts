@@ -26,13 +26,14 @@ export default async function handler(
 
   if (user) {
     const token = jwt.sign(
-      { usernmae: username, password: password },
+      { username: username, password: password },
       "SECRET",
       {
         expiresIn: "3h",
       }
     );
     res.status(200).json({ message : "Login in successful", token})
+    // console.log("user  --> ",user)
   } else {
     res.status(403).json({ message : "User login failed, please try again!"})
   }
