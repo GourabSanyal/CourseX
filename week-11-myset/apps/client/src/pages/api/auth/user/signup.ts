@@ -11,26 +11,27 @@ type Data = {
 };
 
 type responseData = {
-  message: string,
-  token?: string
-}
+  message: string;
+  token?: string;
+};
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data |responseData >
+  res: NextApiResponse<Data | responseData>
 ) {
   await ensureDbConnected();
-  const { username, password } = req.headers;
+  const { email, password } = req.body;
+  let username = email;
 
   let user = await User.findOne({ username });
 
   if (user) {
-    res.status(403).json({ message: "User already exist" });
+    res.status(403).json({ message: "User already exist, please login to continue" });
   } else {
     const obj = { username: username, password: password };
     const newUser = new User(obj);
     newUser.save();
-    const token = jwt.sign({ username, role: "admin" }, "SECRET", {
+    const token = jwt.sign({ username, role: "user" }, "SECRET", {
       expiresIn: "3h",
     });
     res.json({ message: "User registered successfully", token });
