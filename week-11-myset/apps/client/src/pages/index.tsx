@@ -35,7 +35,7 @@ export default function Home() {
                               size={"large"}
                               variant={"contained"}
                               onClick={() => {
-                                router.push("/signup")
+                                router.push("/user/signup")
                               }}
                           >Signup</Button>
                       </div>
