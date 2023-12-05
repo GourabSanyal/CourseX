@@ -20,19 +20,20 @@ export default async function handler(
   res: NextApiResponse<Data | responseData>
 ) {
   await ensureDbConnected();
-  const { email, password } = req.headers;
+  const { email, password } = req.body;
   let username = email;
-  let user = await User.findOne({ username });
-  console.log("user from api --> ", user);
-  
-  // if (user) {
-  //   const token = jwt.sign({ username, role: "user" }, "SECRET", {
-  //     expiresIn: "3h",
-  //   });
-  //   res.status(200).json({ message: "User logged in succesfully", token });
-  // } else {
-  //   res
-  //     .status(403)
-  //     .json({ message: "User not found, please create a new account" });
-  // }
+  let user = await User.findOne({ username, password });
+
+  if (user) {
+    const token = jwt.sign(
+      { usernmae: username, password: password },
+      "SECRET",
+      {
+        expiresIn: "3h",
+      }
+    );
+    res.status(200).json({ message : "Login in successful", token})
+  } else {
+    res.status(403).json({ message : "User login failed, please try again!"})
+  }
 }
