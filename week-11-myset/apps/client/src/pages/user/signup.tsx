@@ -1,4 +1,4 @@
-import { Signin } from "ui";
+import { Signup } from "ui";
 import axios from "axios";
 import { userState } from "store";
 import { useRouter } from "next/navigation";
@@ -8,10 +8,10 @@ export default function UserSignInPage() {
   const router = useRouter();
   return (
     <div>
-      <Signin
-        onClick={async (username, password) => {
+      <Signup
+        onClick={async (email, password) => {
           const response = await axios.post("/api/auth/user/signup", {
-            username,
+            email,
             password,
           });
           localStorage.setItem("token", response.data.token);
