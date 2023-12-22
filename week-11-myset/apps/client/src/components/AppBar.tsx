@@ -1,5 +1,5 @@
 import { Button, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isUserLoading, userEmailState, userState } from "store";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,28 @@ function Appbar() {
   const setUser = useSetRecoilState(userState);
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
+
+  const isSignInRef = useRef(true);
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  const handleAdminModalSubmit = (email: string, password: string) => {
+    if (isSignInRef.current) {
+      // Handle sign-in logic
+      console.log("Sign In:", email, password);
+    } else {
+      // Handle sign-up logic
+      console.log("Sign Up:", email, password);
+    }
+
+    // Optionally, close the modal after submission
+    // handleCloseModal();
+  };
 
   const openAdminLoginModal = () => {
     setModalOpen(true);
@@ -99,7 +121,12 @@ function Appbar() {
             >
               Admin Login
             </Button>
-            <AdminModal open={modalOpen} onClose={closeAdminLoginModal} />
+            <AdminModal
+              open={modalOpen}
+              onClose={handleCloseModal}
+              onSubmit={handleAdminModalSubmit}
+              isSignInRef={isSignInRef}
+            />
           </div>
           <div style={{ marginRight: 10 }}>
             <Button

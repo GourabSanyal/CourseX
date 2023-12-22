@@ -1,6 +1,10 @@
+/* eslint-disable @typescript-eslint/no-confusing-void-expression */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable react/jsx-sort-props */
-// components/AdminModal.tsx
+/* eslint-disable import/no-extraneous-dependencies */
+// components/AdminModal.js
+
+// components/AdminModal.js
 import React, { useState } from "react";
 import {
   Dialog,
@@ -10,29 +14,46 @@ import {
   TextField,
   Button,
   Link,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 interface AdminModalProps {
   open: boolean;
   onClose: () => void;
+  onSubmit: (email: string, password: string) => void;
+  isSignInRef: React.MutableRefObject<boolean>;
 }
 
-export function AdminModal({ open, onClose }: AdminModalProps) : React.JSX.Element {
-  const [isSignIn, setIsSignIn] = useState(true);
+export function AdminModal({
+  open,
+  onClose,
+  onSubmit,
+  isSignInRef,
+}: AdminModalProps): JSX.Element {
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  // const isSignInRef = useRef(true);
 
   const handleToggleForm = () => {
-    setIsSignIn(!isSignIn);
+    isSignInRef.current = !isSignInRef.current;
+  };
+
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Implement your login or signup logic here
+    onSubmit(email, password);
   };
 
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>
-        {isSignIn ? "Admin Sign In" : "Admin Sign Up"}
+        {isSignInRef.current ? "Admin Sign In" : "Admin Sign Up"}
         <Button
           onClick={onClose}
           style={{ position: "absolute", top: 10, right: 10 }}
@@ -42,36 +63,58 @@ export function AdminModal({ open, onClose }: AdminModalProps) : React.JSX.Eleme
       </DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit}>
-          <TextField label="Email" fullWidth margin="normal" required />
           <TextField
-            label="Password"
-            type="password"
+            label="Email"
             fullWidth
             margin="normal"
             required
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
-          {!isSignIn && (
+          <TextField
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            fullWidth
+            margin="normal"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleTogglePasswordVisibility}
+                    edge="end"
+                  >
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+          {!isSignInRef.current && (
             <TextField
               label="Confirm Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               fullWidth
               margin="normal"
               required
             />
           )}
           <Button type="submit" variant="contained" color="primary" fullWidth>
-            {isSignIn ? "Sign In" : "Sign Up"}
+            {isSignInRef.current ? "Sign In" : "Sign Up"}
           </Button>
         </form>
         <Typography variant="body2" align="center" style={{ marginTop: 10 }}>
-          {isSignIn
+          {isSignInRef.current
             ? "Don't have an admin account? "
             : "Already have an admin account? "}
           <Link component="button" variant="body2" onClick={handleToggleForm}>
-            {isSignIn ? "Register as an Admin here" : "Sign In here"}
+            {isSignInRef.current ? "Register as an Admin here" : "Sign In here"}
           </Link>
         </Typography>
       </DialogContent>
     </Dialog>
   );
-};
+}
