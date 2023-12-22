@@ -6,6 +6,6 @@
 
 import * as React from "react";
 
-export function Button() {
+export function Button():  React.JSX.Element {
   return <button onClick={() => alert("boop")}>Boop</button>;
 }
