@@ -22,7 +22,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 interface AdminModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (email: string, password: string) => void;
+  onSubmit: (email: string, password: string,  confirmPassword?: string) => void;
   isSignInRef: React.MutableRefObject<boolean>;
 }
 
@@ -35,10 +35,13 @@ export function AdminModal({
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const isSignInRef = useRef(true);
+  const [rerenderFlag, setRerenderFlag] = useState(false);
 
   const handleToggleForm = () => {
+    setEmail('')
+    setPassword('')
     isSignInRef.current = !isSignInRef.current;
+    setRerenderFlag(!rerenderFlag); 
   };
 
   const handleTogglePasswordVisibility = () => {
@@ -93,15 +96,6 @@ export function AdminModal({
               ),
             }}
           />
-          {!isSignInRef.current && (
-            <TextField
-              label="Confirm Password"
-              type={showPassword ? "text" : "password"}
-              fullWidth
-              margin="normal"
-              required
-            />
-          )}
           <Button type="submit" variant="contained" color="primary" fullWidth>
             {isSignInRef.current ? "Sign In" : "Sign Up"}
           </Button>
