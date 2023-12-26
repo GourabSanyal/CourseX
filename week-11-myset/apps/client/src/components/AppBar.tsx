@@ -4,6 +4,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isUserLoading, userEmailState, userState } from "store";
 import { useRouter } from "next/navigation";
 import { AdminModal } from "ui";
+import axios from "axios";
 
 function Appbar() {
   const userLoading = useRecoilValue(isUserLoading);
@@ -21,13 +22,31 @@ function Appbar() {
     setModalOpen(false);
   };
 
+  const adminSignIn = async(email: string, password: string) => {
+    const response = await axios.post("api/auth/admin/signin", {
+      email,
+      password,
+    });
+    localStorage.setItem("token", response.data.token);
+    router.push("/user/allCoursePage");
+  }
+
+  const adminSignUp = async(email: string, password: string) => {
+    const response = await axios.post("api/auth/admin/signup", {
+      email,
+      password,
+    });
+    localStorage.setItem("token", response.data.token);
+    router.push("/user/allCoursePage");
+  }
+  
   const handleAdminModalSubmit = (email: string, password: string) => {
     if (isSignInRef.current) {
-      // Handle sign-in logic
-      console.log("Sign In:", email, password);
+      adminSignIn(email, password);
+      console.log(`Sign In:${isSignInRef.current}`, email, password);
     } else {
-      // Handle sign-up logic
-      console.log("Sign Up:", email, password);
+      adminSignUp(email, password)
+      console.log(`Sign Up:${isSignInRef.current}`, email, password);
     }
 
     // Optionally, close the modal after submission
