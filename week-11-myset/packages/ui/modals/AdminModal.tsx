@@ -1,3 +1,12 @@
+/* eslint-disable no-implicit-coercion */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/await-thenable */
 /* eslint-disable @typescript-eslint/no-confusing-void-expression */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable react/jsx-sort-props */
@@ -5,7 +14,7 @@
 // components/AdminModal.js
 
 // components/AdminModal.js
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -18,45 +27,54 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useForm, SubmitHandler } from "react-hook-form";
 
 interface AdminModalProps {
   open: boolean;
-  onClose: () => void;
-  onSubmit: (email: string, password: string,  confirmPassword?: string) => void;
+  onClose?: () => void;
+  onSubmit: (
+    email: string,
+    password: string,
+    confirmPassword?: string
+  ) => Promise<void>;
   isSignInRef: React.MutableRefObject<boolean>;
+  onError?: (errorMessage: string) => void;
+}
+interface FormData {
+  email: string;
+  password: string;
 }
 
 export function AdminModal({
   open,
   onClose,
   onSubmit,
-  isSignInRef,
+  isSignInRef, // onError,
 }: AdminModalProps): JSX.Element {
+  const { register, handleSubmit, formState, reset } = useForm<FormData>();
+  const { errors } = formState;
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rerenderFlag, setRerenderFlag] = useState(false);
 
   const handleToggleForm = () => {
-    setEmail('')
-    setPassword('')
+    reset();
     isSignInRef.current = !isSignInRef.current;
-    setRerenderFlag(!rerenderFlag); 
+    setRerenderFlag(!rerenderFlag);
   };
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(email, password);
+  const handleFormSubmit: SubmitHandler<FormData> = async (data) => {
+    await console.log("data -> ", data);
   };
 
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>
-        {isSignInRef.current ? "Admin Sign In" : "Admin Sign Up"}
         <Button
           onClick={onClose}
           style={{ position: "absolute", top: 10, right: 10 }}
@@ -65,15 +83,20 @@ export function AdminModal({
         </Button>
       </DialogTitle>
       <DialogContent>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(handleFormSubmit)}>
           <TextField
             label="Email"
             fullWidth
             margin="normal"
-            required
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register("email", {
+              required: "Email is required",
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                message: "Invalid email address",
+              },
+            })}
+            error={!!errors.email}
+            helperText={errors.email?.message}
           />
           <TextField
             label="Password"
@@ -81,8 +104,19 @@ export function AdminModal({
             fullWidth
             margin="normal"
             required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 10,
+                message: "Password must be at least 10 characters long",
+              },
+              pattern: {
+                value: /\d+/gi,
+                message: "Password must contain at least one number",
+              },
+            })}
+            error={!!errors.password}
+            helperText={errors.password?.message}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
