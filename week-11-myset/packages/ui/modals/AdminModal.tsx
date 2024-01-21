@@ -28,6 +28,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { red } from "@mui/material/colors";
 
 interface AdminModalProps {
   open: boolean;
@@ -38,7 +39,7 @@ interface AdminModalProps {
     confirmPassword?: string
   ) => Promise<void>;
   isSignInRef: React.MutableRefObject<boolean>;
-  onError?: (errorMessage: string) => void;
+  onError?: string | null;
 }
 interface FormData {
   email: string;
@@ -49,19 +50,19 @@ export function AdminModal({
   open,
   onClose,
   onSubmit,
-  isSignInRef, // onError,
+  isSignInRef,
+  onError,
 }: AdminModalProps): JSX.Element {
-  const { register, handleSubmit, formState, reset } = useForm<FormData>();
+  const { register, handleSubmit, formState, reset, setError } = useForm<FormData>();
   const { errors } = formState;
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [rerenderFlag, setRerenderFlag] = useState(false);
 
   const handleToggleForm = () => {
     reset();
     isSignInRef.current = !isSignInRef.current;
     setRerenderFlag(!rerenderFlag);
+    // propOnError(null)
   };
 
   const handleTogglePasswordVisibility = () => {
@@ -69,7 +70,15 @@ export function AdminModal({
   };
 
   const handleFormSubmit: SubmitHandler<FormData> = async (data) => {
-    await console.log("data -> ", data);
+    // await console.log("data -> ", data);
+    try {
+      await onSubmit(data.email, data.password);
+    } catch (error) {
+      if (error) {
+        console.log("error from modal ->", error);
+        
+      }
+    }
   };
 
   return (
@@ -134,6 +143,17 @@ export function AdminModal({
             {isSignInRef.current ? "Sign In" : "Sign Up"}
           </Button>
         </form>
+        {onError ?
+          <Typography
+            variant="body2"
+            align="center"
+            style={{ marginTop: 10, color: "red" }}
+          >
+            {onError}
+
+          </Typography> : null
+        }
+
         <Typography variant="body2" align="center" style={{ marginTop: 10 }}>
           {isSignInRef.current
             ? "Don't have an admin account? "

@@ -5,6 +5,7 @@ import { isUserLoading, userEmailState, userState } from "store";
 import { useRouter } from "next/navigation";
 import { AdminModal } from "ui";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
 
 function Appbar() {
   const userLoading = useRecoilValue(isUserLoading);
@@ -12,8 +13,10 @@ function Appbar() {
   const setUser = useSetRecoilState(userState);
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
+  const [onError, setOnError] = useState<string | null>(null);
 
   const isSignInRef = useRef(true);
+
   const handleOpenModal = () => {
     setModalOpen(true);
   };
@@ -22,35 +25,54 @@ function Appbar() {
     setModalOpen(false);
   };
 
-  const adminSignIn = async(email: string, password: string) => {
-    const response = await axios.post("api/auth/admin/signin", {
-      email,
-      password,
-    });
-    localStorage.setItem("token", response.data.token);
-    router.push("/user/allCoursePage");
-  }
-
-  const adminSignUp = async(email: string, password: string) => {
-    const response = await axios.post("api/auth/admin/signup", {
-      email,
-      password,
-    });
-    localStorage.setItem("token", response.data.token);
-    router.push("/user/allCoursePage");
-  }
-  
-  const handleAdminModalSubmit = (email: string, password: string) => {
-    if (isSignInRef.current) {
-      adminSignIn(email, password);
-      console.log(`Sign In:${isSignInRef.current}`, email, password);
-    } else {
-      adminSignUp(email, password)
-      console.log(`Sign Up:${isSignInRef.current}`, email, password);
+  const adminSignIn = async (email: string, password: string) => {
+    try {
+      const response = await axios.post("api/auth/admin/signin", {
+        email,
+        password,
+      })
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
+        let errorRes = error.response.data.message
+        setOnError(errorRes)
+      } else {
+        console.log("An error occurred: ", error);
+      }
     }
+  };
 
-    // Optionally, close the modal after submission
-    // handleCloseModal();
+  const adminSignUp = async (email: string, password: string) => {
+    const response = await axios.post("api/auth/signup", {
+      email,
+      password,
+    });
+    localStorage.setItem("token", response.data.token);
+    // router.push("/user/allCoursePage");
+    handleCloseModal();
+  };
+
+  // const handleModalError = (errorMessage : string) => {
+  //   setErrorFromModal(errorMessage);
+  //   // Show the toast based on the error message
+  //   if (errorMessage === 'Admin is logging in') {
+  //     toast.info(errorMessage, { autoClose: 2000 });
+  //   } else if (errorMessage === 'Login successful') {
+  //     toast.success(errorMessage);
+  //   } else {
+  //     toast.error(errorMessage);
+  //   }
+  // };
+
+  const handleAdminSubmission = async(email:string, password: string): Promise<void> => {
+    try {
+      if (isSignInRef.current) {
+        adminSignIn(email, password)
+      } else {
+        adminSignUp(email, password)
+      }
+    } catch (err: any) {
+    setOnError(err.message)
+    }
   };
 
   const openAdminLoginModal = () => {
@@ -130,6 +152,20 @@ function Appbar() {
         <div style={{ cursor: "pointer" }} onClick={() => router.push("/")}>
           <Typography variant={"h6"}>Coursera</Typography>
         </div>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
+        {/* Same as */}
+        <ToastContainer />
         <div style={{ display: "flex" }}>
           <div style={{ marginRight: 10 }}>
             <Button
@@ -143,8 +179,9 @@ function Appbar() {
             <AdminModal
               open={modalOpen}
               onClose={handleCloseModal}
-              onSubmit={handleAdminModalSubmit}
+              onSubmit={handleAdminSubmission}
               isSignInRef={isSignInRef}
+              onError={onError}
             />
           </div>
           <div style={{ marginRight: 10 }}>
