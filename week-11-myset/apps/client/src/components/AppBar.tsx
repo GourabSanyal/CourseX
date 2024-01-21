@@ -13,7 +13,10 @@ function Appbar() {
   const setUser = useSetRecoilState(userState);
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
-  const [onError, setOnError] = useState<string | null>(null);
+  const [onError, setOnError] = useState<string | null | undefined>(null);
+  const handleResetError = () => {
+    setOnError(null);
+  };
 
   const isSignInRef = useRef(true);
 
@@ -31,6 +34,9 @@ function Appbar() {
         email,
         password,
       })
+      localStorage.setItem("token", response.data.token);
+      handleCloseModal();
+      router.push("/user/allCoursePage");
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 403) {
         let errorRes = error.response.data.message
@@ -47,21 +53,9 @@ function Appbar() {
       password,
     });
     localStorage.setItem("token", response.data.token);
-    // router.push("/user/allCoursePage");
+    router.push("/user/allCoursePage");
     handleCloseModal();
   };
-
-  // const handleModalError = (errorMessage : string) => {
-  //   setErrorFromModal(errorMessage);
-  //   // Show the toast based on the error message
-  //   if (errorMessage === 'Admin is logging in') {
-  //     toast.info(errorMessage, { autoClose: 2000 });
-  //   } else if (errorMessage === 'Login successful') {
-  //     toast.success(errorMessage);
-  //   } else {
-  //     toast.error(errorMessage);
-  //   }
-  // };
 
   const handleAdminSubmission = async(email:string, password: string): Promise<void> => {
     try {
@@ -182,6 +176,7 @@ function Appbar() {
               onSubmit={handleAdminSubmission}
               isSignInRef={isSignInRef}
               onError={onError}
+              handleResetError={handleResetError}
             />
           </div>
           <div style={{ marginRight: 10 }}>

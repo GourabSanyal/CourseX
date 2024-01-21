@@ -14,7 +14,7 @@
 // components/AdminModal.js
 
 // components/AdminModal.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -39,7 +39,8 @@ interface AdminModalProps {
     confirmPassword?: string
   ) => Promise<void>;
   isSignInRef: React.MutableRefObject<boolean>;
-  onError?: string | null;
+  onError?: string | null | undefined;
+  handleResetError?: () => void; 
 }
 interface FormData {
   email: string;
@@ -52,31 +53,32 @@ export function AdminModal({
   onSubmit,
   isSignInRef,
   onError,
+  handleResetError,
 }: AdminModalProps): JSX.Element {
-  const { register, handleSubmit, formState, reset, setError } = useForm<FormData>();
+  const { register, handleSubmit, formState, reset } = useForm<FormData>();
   const { errors } = formState;
   const [showPassword, setShowPassword] = useState(false);
   const [rerenderFlag, setRerenderFlag] = useState(false);
-
-  const handleToggleForm = () => {
-    reset();
-    isSignInRef.current = !isSignInRef.current;
-    setRerenderFlag(!rerenderFlag);
-    // propOnError(null)
-  };
+  
+  const handleToggleForm = useCallback(() => {
+      reset();
+      isSignInRef.current = !isSignInRef.current;
+      setRerenderFlag(!rerenderFlag);
+      if (handleResetError) {
+        handleResetError(); 
+    }
+  },[ handleResetError, isSignInRef, rerenderFlag, reset]);
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const handleFormSubmit: SubmitHandler<FormData> = async (data) => {
-    // await console.log("data -> ", data);
     try {
       await onSubmit(data.email, data.password);
     } catch (error) {
       if (error) {
         console.log("error from modal ->", error);
-        
       }
     }
   };
