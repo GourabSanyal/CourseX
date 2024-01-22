@@ -36,7 +36,8 @@ function Appbar() {
       })
       localStorage.setItem("token", response.data.token);
       handleCloseModal();
-      router.push("/user/allCoursePage");
+      router.push("/admin/adminHome");
+      setUser({ isLoading: false, userEmail : email})
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 403) {
         let errorRes = error.response.data.message
@@ -53,7 +54,7 @@ function Appbar() {
       password,
     });
     localStorage.setItem("token", response.data.token);
-    router.push("/user/allCoursePage");
+    router.push("/admin/adminHome");
     handleCloseModal();
   };
 
