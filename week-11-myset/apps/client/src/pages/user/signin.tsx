@@ -6,6 +6,8 @@ import { useSetRecoilState } from "recoil";
 
 export default function UserSignInPage() {
 
+  const setUser = useSetRecoilState(userState)
+
   const router = useRouter();
   return (
     <div>
@@ -17,6 +19,7 @@ export default function UserSignInPage() {
           });
           localStorage.setItem("token", response.data.token);
           router.push("/user/allCoursePage");
+          setUser({ isLoading: false, userEmail: email})
           // console.log("from component --> ",username, password);
           
         }}
