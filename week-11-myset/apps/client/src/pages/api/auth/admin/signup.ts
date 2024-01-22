@@ -6,6 +6,7 @@ import { Admin } from "db";
 import jwt from "jsonwebtoken";
 
 type Data = {
+  username: string;
   email: string;
   password: string;
 };
@@ -20,20 +21,19 @@ export default async function handler(
   res: NextApiResponse<Data | responseData>
 ) {
   await ensureDbConnected();
-  const { email, password } = req.body;
-  let username = email;
+  const { username, email, password } = req.body;
 
-  let admin = await Admin.findOne({ username });
+  let admin = await Admin.findOne({ email });
 
   if (admin) {
-    res.status(403).json({ message: "Admin already exist" });
+    res.status(409).json({ message: "Admin already exist" });
   } else {
-    const obj = { username: username, password: password };
+    const obj = { username: username, email: email, password: password };
     const newAdmin = new Admin(obj);
     newAdmin.save();
-    const token = jwt.sign({ username, role: "admin" }, "SECRET", {
+    const token = jwt.sign({ email, role: "admin" }, "SECRET", {
       expiresIn: "3h",
     });
-    res.json({ message: "Admin created successfully", token });
+    res.status(201).json({ message: "Admin created successfully", token });
   }
 }
