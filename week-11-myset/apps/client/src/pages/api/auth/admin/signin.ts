@@ -28,29 +28,6 @@ export default async function handler(
   const { email, password } = req.body;
   let username = email;
   let admin = await Admin.findOne({ username, password });
-
-  const authHeader = req.headers.authorization;
-
-  if (authHeader) {
-    const token = authHeader.split(" ")[1];
-    verifyTokenAndGetUser(token, async (user: string) => {
-      if (!user) {
-        const errorResponse: ErrorObj = {
-          message: "Auth token expired",
-          statusCode: 403,
-        };
-      } else {
-        const token = jwt.sign({username: username, role : "admin"},"SECRET",{
-          expiresIn: "3h"
-        } )
-        res.status(200).json({ message: "Admin logged in", token})
-      }
-    });
-  } else {
-    res.status(400).json({ message: "error"});
-  }
-
-  // check and change from here once
   if(admin) {
     const token = jwt.sign({username: username, role : "admin"},"SECRET",{
       expiresIn: "3h"
