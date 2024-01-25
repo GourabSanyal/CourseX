@@ -26,14 +26,21 @@ export default async function handler(
 ) {
   await ensureDbConnected();
   const { email, password } = req.body;
-  let username = email;
-  let admin = await Admin.findOne({ username, password });
+
+  if (!email){
+    res.status(401).json({ message : "Email is required"})
+  }
+  if (!password){
+    res.status(401).json({ message : "Password is required"})
+  }
+
+  let admin = await Admin.findOne({ email, password });
+
   if(admin) {
-    const token = jwt.sign({username: username, role : "admin"},"SECRET",{
+    const token = jwt.sign({email: email, role : "admin"},"SECRET",{
       expiresIn: "3h"
     } )
     res.status(200).json({ message: "Admin logged in", token})
-
   } else {
     res.status(403).json({ message : "Admin not found, please sign up to continue"})
   }
