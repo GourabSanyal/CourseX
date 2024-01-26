@@ -23,10 +23,26 @@ export default async function handler(
   await ensureDbConnected();
   const { username, email, password } = req.body;
 
-  let admin = await Admin.findOne({ email });
+  if (!username) {
+    return res.status(400).json({ message: "Username can't be empty" });
+  }
+  
+  if (!email) {
+    return res.status(400).json({ message: "Email can't be empty" });
+  }
+  
+  if (!password) {
+    return res.status(400).json({ message: "Password can't be empty" });
+  }
+
+  // console.log("eamil ", email)
+  // console.log("eamil ", username)
+  // console.log("password ", password)
+
+  let admin = await Admin.findOne({ username, email });
 
   if (admin) {
-    res.status(409).json({ message: "Admin already exist" });
+    res.status(409).json({ message: `Admin ${username} already exist` });
   } else {
     const obj = { username: username, email: email, password: password };
     const newAdmin = new Admin(obj);
@@ -34,6 +50,6 @@ export default async function handler(
     const token = jwt.sign({ email, role: "admin" }, "SECRET", {
       expiresIn: "3h",
     });
-    res.status(201).json({ message: "Admin created successfully", token });
+    res.status(201).json({ message: `Admin ${username} created successfully`, token });
   }
 }
