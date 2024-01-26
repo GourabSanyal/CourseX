@@ -34,15 +34,16 @@ interface AdminModalProps {
   open: boolean;
   onClose?: () => void;
   onSubmit: (
+    username: string | undefined,
     email: string,
-    password: string,
-    confirmPassword?: string
+    password: string
   ) => Promise<void>;
   isSignInRef: React.MutableRefObject<boolean>;
   onError?: string | null | undefined;
-  handleResetError?: () => void; 
+  handleResetError?: () => void;
 }
 interface FormData {
+  username?: string | undefined;
   email: string;
   password: string;
 }
@@ -59,15 +60,15 @@ export function AdminModal({
   const { errors } = formState;
   const [showPassword, setShowPassword] = useState(false);
   const [rerenderFlag, setRerenderFlag] = useState(false);
-  
+
   const handleToggleForm = useCallback(() => {
-      reset();
-      isSignInRef.current = !isSignInRef.current;
-      setRerenderFlag(!rerenderFlag);
-      if (handleResetError) {
-        handleResetError(); 
+    reset();
+    isSignInRef.current = !isSignInRef.current;
+    setRerenderFlag(!rerenderFlag);
+    if (handleResetError) {
+      handleResetError();
     }
-  },[ handleResetError, isSignInRef, rerenderFlag, reset]);
+  }, [handleResetError, isSignInRef, rerenderFlag, reset]);
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -75,7 +76,11 @@ export function AdminModal({
 
   const handleFormSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      await onSubmit(data.email, data.password);
+      if (isSignInRef.current){
+        await onSubmit(undefined, data.email, data.password)
+      } else {
+        await onSubmit(data.username, data.email, data.password);
+      }
     } catch (error) {
       if (error) {
         console.log("error from modal ->", error);
@@ -95,6 +100,22 @@ export function AdminModal({
       </DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit(handleFormSubmit)}>
+          {!isSignInRef.current ? (
+            <TextField
+              label="Username"
+              fullWidth
+              margin="normal"
+              {...register("username", {
+                required: "Username is required",
+                pattern: {
+                  value: /^[a-zA-Z0-9._%+-]+$/,
+                  message: "Invalid username",
+                },
+              })}
+              error={!!errors.email}
+              helperText={errors.email?.message}
+            />
+          ) : null}
           <TextField
             label="Email"
             fullWidth
@@ -145,16 +166,15 @@ export function AdminModal({
             {isSignInRef.current ? "Sign In" : "Sign Up"}
           </Button>
         </form>
-        {onError ?
+        {onError ? (
           <Typography
             variant="body2"
             align="center"
             style={{ marginTop: 10, color: "red" }}
           >
             {onError}
-
-          </Typography> : null
-        }
+          </Typography>
+        ) : null}
 
         <Typography variant="body2" align="center" style={{ marginTop: 10 }}>
           {isSignInRef.current
