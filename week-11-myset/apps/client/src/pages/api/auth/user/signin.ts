@@ -21,20 +21,22 @@ export default async function handler(
 ) {
   await ensureDbConnected();
   const { email, password } = req.body;
-  let username = email;
-  let user = await User.findOne({ username, password });
+
+  if (!email) {
+    return res.status(400).json({ message: "Email can't be empty" });
+  }
+
+  if (!password) {
+    return res.status(400).json({ message: "Password can't be empty" });
+  }
+  let user = await User.findOne({ email, password });
 
   if (user) {
-    const token = jwt.sign(
-      { username: username, password: password },
-      "SECRET",
-      {
-        expiresIn: "3h",
-      }
-    );
-    res.status(200).json({ message : "Login in successful", token})
-    // console.log("user  --> ",user)
+    const token = jwt.sign({ email: email, password: password }, "SECRET", {
+      expiresIn: "3h",
+    });
+    res.status(200).json({ message: "Login in successful", token });
   } else {
-    res.status(403).json({ message : "User login failed, please try again!"})
+    res.status(403).json({ message: "User login failed, please try again!" });
   }
 }
