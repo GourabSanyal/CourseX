@@ -1,5 +1,5 @@
 import { Button, Typography } from "@mui/material";
-import { useEffect, useState, useRef } from "react";
+import {  useState, useRef } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isUserLoading, userEmailState, userState } from "store";
 import { useRouter } from "next/navigation";
