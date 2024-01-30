@@ -27,18 +27,19 @@ export default async function handler(
   if (!username) {
     return res.status(400).json({ message: "Username can't be empty" });
   }
-  
+
   if (!email) {
     return res.status(400).json({ message: "Email can't be empty" });
   }
-  
+
   if (!password) {
     return res.status(400).json({ message: "Password can't be empty" });
   }
 
-
   if (user) {
-    res.status(403).json({ message: "User already exist, please login to continue" });
+    res
+      .status(403)
+      .json({ message: "User already exist, please login to continue" });
   } else {
     const obj = { username: username, email: email, password: password };
     const newUser = new User(obj);
