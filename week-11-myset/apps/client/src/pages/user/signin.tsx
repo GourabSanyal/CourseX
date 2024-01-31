@@ -18,7 +18,7 @@ export default function UserSignInPage() {
             password,
           });
           localStorage.setItem("token", response.data.token);
-          router.push("/user/allCoursePage");
+          router.push("/api/auth/courses");
           setUser({ isLoading: false, userEmail: email})
           // console.log("from component --> ",username, password);
           
