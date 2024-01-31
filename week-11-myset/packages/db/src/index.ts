@@ -3,12 +3,14 @@ import mongoose from "mongoose";
 // Define mongoose schemas
 const userSchema = new mongoose.Schema({
   username: { type: String },
+  email: String,
   password: String,
   purchasedCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
 });
 
 const adminSchema = new mongoose.Schema({
   username: String,
+  email: String,
   password: String,
 });
 
@@ -21,5 +23,7 @@ const courseSchema = new mongoose.Schema({
 });
 
 export const User = mongoose.models.User || mongoose.model("User", userSchema);
-export const Admin = mongoose.models.Admin || mongoose.model("Admin", adminSchema);
-export const Course = mongoose.models.Course || mongoose.model("Course", courseSchema);
+export const Admin =
+  mongoose.models.Admin || mongoose.model("Admin", adminSchema);
+export const Course =
+  mongoose.models.Course || mongoose.model("Course", courseSchema);
