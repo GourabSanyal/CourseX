@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable react/button-has-type */
 /* eslint-disable react/jsx-sort-props */
 /* eslint-disable react/self-closing-comp */
@@ -16,7 +18,9 @@ import {
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Interface } from "readline";
+import axios from "axios";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { isUserLoading, userEmailState, userState } from "store";
 
 interface SignupProps {
   onClick: (username: string, email: string, password: string) => void;
@@ -28,7 +32,10 @@ interface FormData {
   password: string;
 }
 
-export function Signup({ onError, onClick }: SignupProps): JSX.Element {
+export function Signup({ onError }: SignupProps): JSX.Element {
+  // const userLoading = useRecoilValue(isUserLoading);
+  // const userEmail = useRecoilValue(userEmailState);
+  const setUser = useSetRecoilState(userState);
   const [showPassword, setShowPassword] = useState(false);
   const {
     register,
@@ -36,8 +43,22 @@ export function Signup({ onError, onClick }: SignupProps): JSX.Element {
     formState: { errors },
   } = useForm();
 
-  const onSubmit: SubmitHandler<FormData> = (data) => {
-    onClick(data.username, data.email, data.password);
+  const handleUserSignUp = async(username: string, email: string, password: string) => {
+    const response = await axios.post("", {
+      username, email, password
+    })
+    localStorage.setItem("token", response.data.token);
+    setUser({ isLoading : false, userEmail: email})
+   
+    
+  }
+
+  const onSubmit: SubmitHandler<FormData> = async(data) => {
+    try {
+      await handleUserSignUp(data.username, data.email, data.password)
+    } catch (error) {
+      // onError(error)
+    }
   };
 
   const handleTogglePasswordVisibility = () => {
