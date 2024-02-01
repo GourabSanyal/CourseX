@@ -19,8 +19,8 @@ import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from "axios";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { isUserLoading, userEmailState, userState } from "store";
+import { useSetRecoilState } from "recoil";
+import { userState } from "store";
 
 interface SignupProps {
   onClick: (username: string, email: string, password: string) => void;
@@ -37,27 +37,30 @@ export function Signup({ onError }: SignupProps): JSX.Element {
   // const userEmail = useRecoilValue(userEmailState);
   const setUser = useSetRecoilState(userState);
   const [showPassword, setShowPassword] = useState(false);
+  const [submissionError, setSubmissionError] = useState(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const router = useRouter();
 
   const handleUserSignUp = async(username: string, email: string, password: string) => {
-    const response = await axios.post("", {
+    const response = await axios.post("/api/auth/user/signup", {
       username, email, password
     })
     localStorage.setItem("token", response.data.token);
     setUser({ isLoading : false, userEmail: email})
-   
-    
+    router
   }
 
   const onSubmit: SubmitHandler<FormData> = async(data) => {
     try {
       await handleUserSignUp(data.username, data.email, data.password)
     } catch (error) {
-      // onError(error)
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
+        setSubmissionError(error.response.data.message)
+      }
     }
   };
 
@@ -140,16 +143,13 @@ export function Signup({ onError }: SignupProps): JSX.Element {
                 ),
               }}
             />
-            {onError ? (
               <Typography
                 variant="body2"
                 align="center"
-                style={{ marginTop: 10, color: "red" }}
+                style={{ color: "red" }}
               >
-                {onError}
+                {submissionError}
               </Typography>
-            ) : null}
-            <br />
             <br />
             <Button type="submit" size="large" variant="contained">
               Signup
