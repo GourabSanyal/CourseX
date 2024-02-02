@@ -10,27 +10,21 @@ export default function SignPage() {
   const router = useRouter();
   const [onError, setOnError] = useState<string | null | undefined>(null);
 
-  const signUp = async (username: string, email: string, password: string) => {
+  const signUp = async (username: string, email: string, password: string): Promise<void> => {
     try {
       const response = await axios.post("/api/auth/user/signup", {
         username,
         email,
         password,
       });
-      // localStorage.setItem("token", response.data.token);
-      // setUser({ isLoading: false, userEmail: email });
+      localStorage.setItem("token", response.data.token);
+      setUser({ isLoading: false, userEmail: email });
       // router.push("/courses");
       console.log('res --> ',response);
       
     } catch (error) {
-      if (axios.isAxiosError(error)){
-          let errorRes
-        if (error.response?.status === 403) {
-          errorRes = error.response.data.message
-        } else {
-          errorRes = error.message || "An error occured"
-        }
-        setOnError(errorRes)
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
+        setOnError(error.response.data.message)
       }
     }
   }
@@ -38,7 +32,7 @@ export default function SignPage() {
   return (
     <div>
       <Signup
-        onClick={signUp}
+        onSubmit={signUp}
         onError={onError}
       />
     </div>
