@@ -39,10 +39,10 @@ export default async function handler(
   // console.log("eamil ", username)
   // console.log("password ", password)
 
-  let admin = await Admin.findOne({ username, email });
+  let admin = await Admin.findOne({ email });
 
   if (admin) {
-    res.status(409).json({ message: `Admin ${username} already exist` });
+    res.status(409).json({ message: `Admin ${username} already exist, please login to continue` });
   } else {
     const obj = { username: username, email: email, password: password };
     const newAdmin = new Admin(obj);
