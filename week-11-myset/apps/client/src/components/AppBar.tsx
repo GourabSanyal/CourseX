@@ -60,7 +60,7 @@ function Appbar() {
     handleCloseModal();
   };
 
-  const handleAdminSubmission = async(username: string, email:string, password: string): Promise<void> => {
+  const handleAdminSubmission = async(username: string | null | undefined, email:string, password: string): Promise<void> => {
     try {
       if (isSignInRef.current) {
         adminSignIn(email, password)
