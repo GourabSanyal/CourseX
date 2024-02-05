@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable react/button-has-type */
@@ -23,7 +24,11 @@ import { useSetRecoilState } from "recoil";
 import { userState } from "store";
 
 interface SignupProps {
-  onClick: (username: string, email: string, password: string) => void;
+  onSubmit: (
+    username: string,
+    email: string,
+    password: string
+  ) => void;
   onError?: string | null | undefined;
 }
 interface FormData {
@@ -32,35 +37,35 @@ interface FormData {
   password: string;
 }
 
-export function Signup({ onError }: SignupProps): JSX.Element {
-  // const userLoading = useRecoilValue(isUserLoading);
-  // const userEmail = useRecoilValue(userEmailState);
-  const setUser = useSetRecoilState(userState);
+export function Signup({ onError, onSubmit }: SignupProps): JSX.Element {
   const [showPassword, setShowPassword] = useState(false);
   const [submissionError, setSubmissionError] = useState(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
-  const router = useRouter();
+  } = useForm<FormData>();
 
-  const handleUserSignUp = async(username: string, email: string, password: string) => {
-    const response = await axios.post("/api/auth/user/signup", {
-      username, email, password
-    })
-    localStorage.setItem("token", response.data.token);
-    setUser({ isLoading : false, userEmail: email})
-    router
-  }
+  // const handleUserSignUp = async(username: string, email: string, password: string) => {
+  //   const response = await axios.post("/api/auth/user/signup", {
+  //     username, email, password
+  //   })
+  //   localStorage.setItem("token", response.data.token);
+  //   setUser({ isLoading : false, userEmail: email})
+  //   router
+  // }
 
-  const onSubmit: SubmitHandler<FormData> = async(data) => {
+  const handleFormSubmit: SubmitHandler<FormData> = (data: FormData)=> {
+    // await onSubmit(data.username, data.email, data.password);
+
     try {
-      await handleUserSignUp(data.username, data.email, data.password)
+      console.log("from child-->", data.username, data.email, data.password);
+      onSubmit(data.username, data.email, data.password);
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 403) {
-        setSubmissionError(error.response.data.message)
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
+        setSubmissionError(error.response.data.message);
       }
+      // console.log("error from children ->", error);
     }
   };
 
@@ -82,7 +87,7 @@ export function Signup({ onError }: SignupProps): JSX.Element {
       </div>
       <div style={{ display: "flex", justifyContent: "center" }}>
         <Card style={{ width: 400, padding: 20 }}>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(handleFormSubmit)}>
             <TextField
               label="Username"
               fullWidth
@@ -95,7 +100,7 @@ export function Signup({ onError }: SignupProps): JSX.Element {
                 },
               })}
               error={!!errors.username}
-              helperText={errors.email?.message}
+              helperText={errors.username?.message}
             />
             <TextField
               label="Email"
@@ -116,7 +121,6 @@ export function Signup({ onError }: SignupProps): JSX.Element {
               type={showPassword ? "text" : "password"}
               fullWidth
               margin="normal"
-              required
               {...register("password", {
                 required: "Password is required",
                 minLength: {
@@ -143,6 +147,7 @@ export function Signup({ onError }: SignupProps): JSX.Element {
                 ),
               }}
             />
+            {onError ? (
               <Typography
                 variant="body2"
                 align="center"
@@ -150,6 +155,7 @@ export function Signup({ onError }: SignupProps): JSX.Element {
               >
                 {submissionError}
               </Typography>
+            ) : null}
             <br />
             <Button type="submit" size="large" variant="contained">
               Signup
