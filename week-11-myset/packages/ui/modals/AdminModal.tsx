@@ -28,12 +28,13 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { log } from "console";
 
 interface AdminModalProps {
   open: boolean;
   onClose?: () => void;
   onSubmit: (
-    username: string | undefined,
+    username: string | null | undefined,
     email: string,
     password: string
   ) => Promise<void>;
@@ -75,9 +76,11 @@ export function AdminModal({
 
   const handleFormSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      if (isSignInRef.current){
-        await onSubmit(undefined, data.email, data.password)
+      if (isSignInRef.current) {
+        await onSubmit(null, data.email, data.password);
       } else {
+        console.log("from child -->", data);
+        
         await onSubmit(data.username, data.email, data.password);
       }
     } catch (error) {
@@ -174,7 +177,6 @@ export function AdminModal({
             {onError}
           </Typography>
         ) : null}
-
         <Typography variant="body2" align="center" style={{ marginTop: 10 }}>
           {isSignInRef.current
             ? "Don't have an admin account? "
