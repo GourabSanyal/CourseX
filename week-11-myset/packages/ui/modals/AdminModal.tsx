@@ -115,7 +115,7 @@ export function AdminModal({
                 },
               })}
               error={!!errors.email}
-              helperText={errors.email?.message}
+              helperText={errors.username?.message}
             />
           ) : null}
           <TextField
