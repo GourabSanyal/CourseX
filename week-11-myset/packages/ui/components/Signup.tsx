@@ -32,7 +32,7 @@ export function Signup(props: {
           display: "flex",
           justifyContent: "center",
         }}
-      >
+        >
         <Typography variant="h6">Welcome to Coursera. Sign In below</Typography>
       </div>
       <div style={{ display: "flex", justifyContent: "center" }}>
@@ -82,27 +82,25 @@ export function Signup(props: {
           />
           <br />
           <br />
-          {props.onError ? (
-            <Typography
-              align="center"
-              style={{ marginTop: 10, color: "red" }}
-              variant="body2"
-            >
-              {props.onError}
-            </Typography>
-          ) : null}
-          <br />
-          <br />
           <Button
             onClick={() => {
-              props.onClick(email, password, username);
+              props.onClick(username, email, password);
             }}
             size="large"
             variant="contained"
-          >
+            >
             {" "}
             Sign Up
           </Button>
+            {props.onError ? (
+              <Typography
+                align="center"
+                style={{ marginTop: 10, color: "red" }}
+                variant="body2"
+              >
+                {props.onError}
+              </Typography>
+            ) : null}
         </Card>
       </div>
     </div>
