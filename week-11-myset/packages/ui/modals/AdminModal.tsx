@@ -28,7 +28,6 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { log } from "console";
 
 interface AdminModalProps {
   open: boolean;
