@@ -1,18 +1,19 @@
-/* eslint-disable react/button-has-type */
-/* eslint-disable react/jsx-sort-props */
-/* eslint-disable react/self-closing-comp */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-
-"use client";
-
-import { Typography, Card, TextField, Button } from "@mui/material";
+/* eslint-disable unicorn/filename-case */
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Typography, Card, TextField, Button, InputAdornment, IconButton } from "@mui/material";
 import { useState } from "react";
 
 export function Signin(props: {
-  onClick: (username: string, password: string) => void;
-}) {
+  onClick: (email: string, password: string) => void;
+  onError: string | undefined;
+}) : React.JSX.Element {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <div>
@@ -24,44 +25,64 @@ export function Signin(props: {
           justifyContent: "center",
         }}
       >
-        <Typography variant={"h6"}>
+        <Typography variant="h6">
           Welcome to Coursera. Sign In below
         </Typography>
       </div>
       <div style={{ display: "flex", justifyContent: "center" }}>
         <Card style={{ width: 400, padding: 20 }}>
           <TextField
+            fullWidth
+            label="Email"
             onChange={(event) => {
               setEmail(event.target.value);
             }}
-            fullWidth
-            label="Email"
             variant="outlined"
           />
           <br />
           <br />
           <TextField
-            onChange={(e) => {
-              setPassword(e.target.value);
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    edge="end"
+                    onClick={handleTogglePasswordVisibility}
+                  >
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
             }}
             fullWidth
             label="Password"
+            onChange={(event) => {
+              setPassword(event.target.value);
+            }}
+            type={showPassword ? "text" : "password"}
             variant="outlined"
-            type="password"
           />
           <br />
           <br />
-
           <Button
-            size={"large"}
-            variant="contained"
             onClick={() => {
               props.onClick(email, password);
             }}
+            size="large"
+            variant="contained"
           >
             {" "}
             Sign In
           </Button>
+          {props.onError ? (
+              <Typography
+                align="center"
+                style={{ marginTop: 10, color: "red" }}
+                variant="body2"
+              >
+                {props.onError}
+              </Typography>
+            ) : null}
         </Card>
       </div>
     </div>
