@@ -35,10 +35,6 @@ export default async function handler(
     return res.status(400).json({ message: "Password can't be empty" });
   }
 
-  // console.log("eamil ", email)
-  // console.log("eamil ", username)
-  // console.log("password ", password)
-
   let admin = await Admin.findOne({ email });
 
   if (admin) {
