@@ -49,18 +49,32 @@ function Appbar() {
   };
 
   const adminSignUp = async (username: string, email: string, password: string) => {
-    const response = await axios.post("api/auth/admin/signup", {
-      username,
-      email,
-      password,
-    });
-    localStorage.setItem("token", response.data.token);
-    router.push("/admin/adminHome");
-    setUser({ isLoading: false, userEmail : email})
-    handleCloseModal();
+    console.log("from admin signup --> ", username, email, password);
+    try {
+      const response = await axios.post("api/auth/admin/signup", {
+        username,
+        email,
+        password,
+      });
+      localStorage.setItem("token", response.data.token);
+      router.push("/admin/adminHome");
+      setUser({ isLoading: false, userEmail : email})
+      handleCloseModal();
+      
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
+        let errorRes = error.response.data.message
+        setOnError(errorRes)
+      } else {
+        console.log("An error occurred: ", error);
+      }
+    }
+    
   };
 
   const handleAdminSubmission = async(username: string | null | undefined, email:string, password: string): Promise<void> => {
+    console.log("from prop -->", username);
+    
     try {
       if (isSignInRef.current) {
         adminSignIn(email, password)
