@@ -113,7 +113,7 @@ export function AdminModal({
                   message: "Invalid username",
                 },
               })}
-              error={!!errors.email}
+              error={!!errors.username}
               helperText={errors.username?.message}
             />
           ) : null}
