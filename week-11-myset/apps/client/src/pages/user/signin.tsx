@@ -8,18 +8,16 @@ import { useState } from "react";
 export default function UserSignInPage() {
   const [onError, setOnError] = useState("");
   const setUser = useSetRecoilState(userState)
-
   const router = useRouter();
 
   const handleSubmit = async (email: string, password: string) => {
-    console.log("from component --> ", email, password);
     try {
       const response = await axios.post("/api/auth/user/signin", {
         email,
         password,
       });
       localStorage.setItem("token", response.data.token);
-      router.push("/api/user/allCoursePage");
+      router.push("/user/allCoursePage");
       setUser({ isLoading: false, userEmail: email})            
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 403) {
