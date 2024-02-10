@@ -29,14 +29,17 @@ export default async function handler(
   if (!password) {
     return res.status(400).json({ message: "Password can't be empty" });
   }
-  let user = await User.findOne({ email, password });
+  let user = await User.findOne({ email });
 
   if (user) {
+    if (password !== user.password) {
+      return res.status(403).json({ message: "Access denied: Invalid password." });
+    }
     const token = jwt.sign({ email: email, password: password }, "SECRET", {
       expiresIn: "3h",
     });
-    res.status(200).json({ message: "Login in successful", token });
+    res.status(200).json({ message: "Login successful", token });
   } else {
-    res.status(403).json({ message: "User login failed, please try again!" });
+    res.status(403).json({ message: "User doesn't exist. Signup to continue!" });
   }
 }
