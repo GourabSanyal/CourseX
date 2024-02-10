@@ -1,3 +1,4 @@
+/* eslint-disable prefer-named-capture-group */
 /* eslint-disable unicorn/filename-case */
 import {
   Typography,
@@ -9,15 +10,28 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useForm } from "react-hook-form";
+
+interface FormValues {
+  username?: string;
+  email: string;
+  password: string;
+};
 
 export function Signup(props: {
-  onClick: (username: string, email: string, password: string) => void;
+  onClick: (username: string, email: string, password: string) => Promise<void>;
   onError: string | undefined;
 }): React.JSX.Element {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>();
+
+  const handleSubmitForm =  async(data: FormValues) => {
+    await props.onClick(data.username, data.email, data.password)
+  };
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -32,66 +46,81 @@ export function Signup(props: {
           display: "flex",
           justifyContent: "center",
         }}
-        >
-        <Typography variant="h6">Welcome to Coursera. Sign In below</Typography>
+      >
+        <Typography variant="h6">Welcome to Coursera. Sign Up below</Typography>
       </div>
       <div style={{ display: "flex", justifyContent: "center" }}>
         <Card style={{ width: 400, padding: 20 }}>
-          <TextField
-            fullWidth
-            label="Username"
-            onChange={(event) => {
-              setUsername(event.target.value);
-            }}
-            type="username"
-            variant="outlined"
-          />
-          <br />
-          <br />
-          <TextField
-            fullWidth
-            label="Email"
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
-            type="email"
-            variant="outlined"
-          />
-          <br />
-          <br />
-          <TextField
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    edge="end"
-                    onClick={handleTogglePasswordVisibility}
-                  >
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            fullWidth
-            label="Password"
-            onChange={(event) => {
-              setPassword(event.target.value);
-            }}
-            type={showPassword ? "text" : "password"}
-            variant="outlined"
-          />
-          <br />
-          <br />
-          <Button
-            onClick={() => {
-              props.onClick(username, email, password);
-            }}
-            size="large"
-            variant="contained"
+          <form>
+            <TextField
+              fullWidth
+              label="Username"
+              margin="normal"
+              {...register("username", {
+                required: "Username is required",
+                pattern: {
+                  value: /^[a-zA-Z0-9._%+-]+$/,
+                  message: "Invalid username",
+                },
+              })}
+              error={Boolean(errors.username)}
+              helperText={errors.username?.message}
+            />
+            <TextField
+              fullWidth
+              label="Email"
+              margin="normal"
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                  message: "Invalid email address",
+                },
+              })}
+              error={Boolean(errors.email)}
+              helperText={errors.email?.message}
+            />
+            <TextField
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      edge="end"
+                      onClick={handleTogglePasswordVisibility}
+                    >
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              fullWidth
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              variant="outlined"
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 10,
+                  message: "Password must be at least 10 characters long",
+                },
+                pattern: {
+                  value: /\d+/gi,
+                  message: "Password must contain at least one number",
+                },
+              })}
+              error={Boolean(errors.password)}
+              helperText={errors.password?.message}
+            />
+            <br />
+            <br />
+            <Button
+              onClick={handleSubmit(handleSubmitForm)}
+              size="large"
+              variant="contained"
             >
-            {" "}
-            Sign Up
-          </Button>
+              {" "}
+              Sign Up
+            </Button>
             {props.onError ? (
               <Typography
                 align="center"
@@ -101,6 +130,7 @@ export function Signup(props: {
                 {props.onError}
               </Typography>
             ) : null}
+          </form>
         </Card>
       </div>
     </div>
