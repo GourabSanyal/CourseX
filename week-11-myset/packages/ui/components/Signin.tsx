@@ -3,6 +3,12 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Typography, Card, TextField, Button, InputAdornment, IconButton } from "@mui/material";
 import { useState } from "react";
 
+interface FormValues {
+  username?: string;
+  email: string;
+  password: string;
+};
+
 export function Signin(props: {
   onClick: (email: string, password: string) => void;
   onError: string | undefined;
