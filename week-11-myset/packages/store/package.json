@@ -10,8 +10,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
+  "devDependencies": {
     "@types/recoil": "^0.0.9",
     "recoil": "^0.7.7"
-  }
+  },
+  "dependencies": {}
 }
