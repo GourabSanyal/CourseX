@@ -18,7 +18,7 @@ export default function UserSignInPage() {
         password,
       });
       localStorage.setItem("token", response.data.token);
-      router.push("/user/allCoursePage");
+      router.push("/user/home");
       setUser({ isLoading: false, userEmail : email})
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 403) {
