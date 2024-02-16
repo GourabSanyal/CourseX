@@ -36,8 +36,9 @@ function Appbar() {
       })
       localStorage.setItem("token", response.data.token);
       handleCloseModal();
-      router.push("/admin/adminHome");
+      router.push("/courses");
       setUser({ isLoading: false, userEmail : email})
+      // console.log(setUser)
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 403) {
         let errorRes = error.response.data.message
@@ -107,6 +108,7 @@ function Appbar() {
           zIndex: 1,
         }}
       >
+        {userEmail}
         <div
           style={{
             marginLeft: 10,
@@ -160,6 +162,7 @@ function Appbar() {
           paddingTop: 4,
         }}
       >
+        {userEmail}
         <div style={{ cursor: "pointer" }} onClick={() => router.push("/")}>
           <Typography variant={"h6"}>Coursera</Typography>
         </div>
