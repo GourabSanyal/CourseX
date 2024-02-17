@@ -108,7 +108,6 @@ function Appbar() {
           zIndex: 1,
         }}
       >
-        {userEmail}
         <div
           style={{
             marginLeft: 10,
