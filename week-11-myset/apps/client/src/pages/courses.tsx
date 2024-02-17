@@ -27,15 +27,6 @@ export default function CoursesPage() {
   const router = useRouter();
   const [courses, setCourses] = useState([]);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const refreshFlag = localStorage.getItem("pageRefreshed");
-    if (token && !refreshFlag) {
-      localStorage.setItem("pageRefreshed", "true");
-      router.refresh();
-    }
-  }, []);
-
   const getData = async () => {
     const response = await axios.get("/api/auth/courses", {
       headers: { Authorization: "Bearer " + localStorage.getItem("token") },
