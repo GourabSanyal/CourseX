@@ -26,5 +26,7 @@
     "recoil": "^0.7.7",
     "ui": "*"
   },
-  "dependencies": {}
+  "dependencies": {
+    "recoil-persist": "^5.1.0"
+  }
 }
