@@ -4,11 +4,13 @@ import { userState } from "store";
 import { useRouter } from "next/navigation";
 import { useSetRecoilState } from "recoil";
 import { useState } from "react";
+import { useSession } from 'next-auth/react'
 
 export default function UserSignInPage() {
   const [onError, setOnError] = useState("");
   const setUser = useSetRecoilState(userState)
   const router = useRouter();
+  const {data, status} = useSession(); 
 
   const handleSubmit = async (email: string, password: string) => {
     try {
