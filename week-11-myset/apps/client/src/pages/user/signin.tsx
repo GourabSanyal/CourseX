@@ -18,7 +18,8 @@ export default function UserSignInPage() {
         email,
         password,
       });
-      localStorage.setItem("token", response.data.token);
+      // localStorage.setItem("token", response.data.token);
+      document.cookie = `token=${response.data.token}`
       router.push("/user/home");
       setUser({ isLoading: false, userEmail: email})            
     } catch (error) {
