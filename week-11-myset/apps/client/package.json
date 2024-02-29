@@ -27,7 +27,5 @@
     "recoil": "^0.7.7",
     "ui": "*"
   },
-  "dependencies": {
-    
-  }
+  "dependencies": {}
 }
