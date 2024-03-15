@@ -2,7 +2,20 @@ import { useEffect, useState } from "react";
 import { Card, TextField, Typography, Button } from "@mui/material";
 import axios from "axios";
 
-export default function UpdateCard({ course, setCourse }) {
+interface Course {
+  _id: string;
+  title: string;
+  description: string;
+  imageLink: string;
+  price: number;
+}
+
+interface UpdateCardProps {
+  course: Course;
+  setCourse: React.Dispatch<React.SetStateAction<Course>>;
+}
+
+export default function UpdateCard({ course, setCourse  } : UpdateCardProps) {
   const cardTitle = course.title;
   const [title, setTitle] = useState(cardTitle);
   const [description, setDescription] = useState(course.description);
@@ -49,7 +62,7 @@ export default function UpdateCard({ course, setCourse }) {
         <br /> <br />
         <TextField
           value={price}
-          onChange={(e) => setPrice(e.target.value)}
+          onChange={(e) => setPrice(parseInt(e.target.value))}
           label="Number"
           fullWidth
           variant="outlined"
