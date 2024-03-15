@@ -5,14 +5,16 @@ import { RecoilRoot, useSetRecoilState, useRecoilValue } from "recoil";
 import { isUserLoading, userState } from "store";
 import { useEffect} from 'react'
 import Appbar from "@/components/AppBar";
+import { useRouter, Router } from "next/router";
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps, router }: AppProps) {
   return <RecoilRoot>
-    <App2 Component= {Component} pageProps={...pageProps} />
+    <App2 Component= {Component} pageProps={pageProps} router={router}/>
   </RecoilRoot>
 }
 
-function App2({ Component, pageProps}) {
+function App2({ Component, pageProps} :AppProps) {
+  const { router, ...restPageProps } = pageProps; 
   const userLoading = useRecoilValue(isUserLoading)
   if (userLoading){
     return <div>
@@ -22,7 +24,7 @@ function App2({ Component, pageProps}) {
   }
   return <div>
     <Appbar />
-    <Component {...pageProps} />
+    <Component {...restPageProps} />
   </div> 
 }
 
