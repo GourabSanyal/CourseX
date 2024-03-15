@@ -49,7 +49,7 @@ function Appbar() {
   };
 
   const adminSignUp = async (
-    username: string,
+    username: string | null | undefined,
     email: string,
     password: string
   ) => {
