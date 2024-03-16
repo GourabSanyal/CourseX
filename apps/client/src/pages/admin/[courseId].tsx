@@ -8,7 +8,7 @@ import UpdateCard from "@/components/cards/UpdateCard";
 import CourseCard from "@/components/cards/CourseCard";
 
 type Course = {
-  _id: string; // You can adjust this type as needed
+  _id: string; 
   title: string;
   description: string;
   price: number;
@@ -26,7 +26,6 @@ function singleCoursePage() {
       const res = await axios.get(`/api/updateCourse/${courseId}`, {});
       const data = res.data
       setCourse(data);
-      console.log("data from ui --> ", data);
     }
   };
 
@@ -55,7 +54,7 @@ function singleCoursePage() {
             <CourseCard course={course} />
           </Grid>
           <Grid item lg={4} md={12} sm={12}>
-            <UpdateCard course={course} setCourse={() => {setCourse}} />
+            <UpdateCard course={course} setCourse={setCourse} />
           </Grid>
         </Grid>
       </div>
