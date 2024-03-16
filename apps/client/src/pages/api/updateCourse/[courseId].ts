@@ -27,6 +27,7 @@ export default async function handler(
     const { courseId } = req.query;
     // console.log("single course api --> ", courseId);
     const course: CourseData[] = await Course.findById(courseId);
+    console.log('course from api ->', course)
 
     // res.json({message:`hitting ${courseId}`})
     // res.status(200).json(course)
