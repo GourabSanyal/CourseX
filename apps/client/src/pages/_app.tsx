@@ -5,7 +5,6 @@ import { RecoilRoot, useSetRecoilState, useRecoilValue } from "recoil";
 import { isUserLoading, userState } from "store";
 import { useEffect} from 'react'
 import Appbar from "@/components/AppBar";
-import { useRouter, Router } from "next/router";
 
 export default function App({ Component, pageProps, router }: AppProps) {
   return <RecoilRoot>
