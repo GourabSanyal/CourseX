@@ -10,7 +10,7 @@ export default function UserSignInPage() {
   const [onError, setOnError] = useState("");
   const setUser = useSetRecoilState(userState)
   const router = useRouter();
-  const {data: session, status} = useSession(); 
+  // const {data: session, status} = useSession(); 
 
   const handleSubmit = async (email: string, password: string) => {
     try {
