@@ -27,15 +27,25 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
+    "/admin/[courseId]": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/admin/[courseId].js"
+    ],
+    "/courses": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/courses.js"
+    ],
+    "/user/home": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/user/home.js"
+    ],
     "/user/signin": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/user/signin.js"
-    ],
-    "/user/signup": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/user/signup.js"
     ]
   },
   "ampFirstPages": []

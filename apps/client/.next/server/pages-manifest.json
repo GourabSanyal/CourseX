@@ -2,8 +2,14 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/": "pages/index.js",
+  "/api/auth/user/signin": "pages/api/auth/user/signin.js",
+  "/api/auth/admin/signin": "pages/api/auth/admin/signin.js",
+  "/courses": "pages/courses.js",
+  "/user/home": "pages/user/home.js",
+  "/api/auth/courses": "pages/api/auth/courses.js",
+  "/admin/[courseId]": "pages/admin/[courseId].js",
+  "/api/updateCourse/[courseId]": "pages/api/updateCourse/[courseId].js",
   "/api/auth/me": "pages/api/auth/me.js",
-  "/user/signin": "pages/user/signin.js",
-  "/user/signup": "pages/user/signup.js"
+  "/": "pages/index.js",
+  "/user/signin": "pages/user/signin.js"
 }
