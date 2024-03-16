@@ -13,13 +13,13 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 
 interface FormValues {
-  username?: string;
+  username?: string | undefined;
   email: string;
   password: string;
 };
 
 export function Signup(props: {
-  onClick: (username: string, email: string, password: string) => Promise<void>;
+  onClick: (username: string | undefined, email: string, password: string) => Promise<void>;
   onError: string | undefined;
 }): React.JSX.Element {
   const [showPassword, setShowPassword] = useState(false);
