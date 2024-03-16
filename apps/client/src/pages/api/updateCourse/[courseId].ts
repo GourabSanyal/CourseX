@@ -25,17 +25,21 @@ export default async function handler(
   try {
     // await ensureDbConnected();
     const { courseId } = req.query;
-    // console.log("single course api --> ", courseId);
-    const course: CourseData[] = await Course.findById(courseId);
-
-    // res.json({message:`hitting ${courseId}`})
-    // res.status(200).json(course)
-
+    const course: CourseData[] | null = await Course.findByIdAndUpdate(
+      courseId,
+      req.body,
+      { new: true }
+    );
     // const authHeader = req.headers.authorization;
-    if (course) {
-      res.status(200).json(course);
+    if (!course) {
+      res
+        .status(400)
+        .json({
+          message: "Was not able to update course, please try again",
+          statusCode: 401,
+        });
     } else {
-      res.status(400).json({ message: "error", statusCode: 401 });
+      res.status(200).json(course);
     }
 
     // if (authHeader) {

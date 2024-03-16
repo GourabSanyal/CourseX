@@ -17,10 +17,12 @@ export default async function handler(
     const token = authHeader.split(" ")[1];
     verifyTokenAndGetUser(token, (user: string) => {
       if (!user) {
-        res.status(403).json({});
+        res.status(403).json({
+          name: ""
+        });
         return
       }
-      res.json({ user: user });
+      res.json({ name: user });
     });
   }
 }

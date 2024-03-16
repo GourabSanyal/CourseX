@@ -10,7 +10,7 @@ export default function UserSignInPage() {
   const setUser = useSetRecoilState(userState);
   const router = useRouter();
 
-  const handleSubmit = async (username: string, email: string, password: string) :Promise<void> => {
+  const handleSubmit = async (username: string | undefined, email: string, password: string) :Promise<void> => {
     try {
       const response = await axios.post("/api/auth/user/signup", {
         username,

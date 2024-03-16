@@ -1,6 +1,6 @@
 import { Typography, Card } from "@mui/material";
 
-export default function CourseCard(props) {
+export default function CourseCard(props: { course: any }) {
   const course = props.course;
   return (
     <div

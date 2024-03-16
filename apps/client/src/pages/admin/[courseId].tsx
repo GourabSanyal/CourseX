@@ -7,8 +7,8 @@ import { Grid } from "@mui/material";
 import UpdateCard from "@/components/cards/UpdateCard";
 import CourseCard from "@/components/cards/CourseCard";
 
-type CourseData = {
-  _id: string; // You can adjust this type as needed
+type Course = {
+  _id: string; 
   title: string;
   description: string;
   price: number;
@@ -17,15 +17,16 @@ type CourseData = {
 };
 
 function singleCoursePage() {
-  const [course, setCourse] = useState([]);
+  const [course, setCourse] = useState<Course | null >(null);
   const routerQuery = useRouter();
   const { courseId } = routerQuery.query;
 
   const getSingleCourse = async () => {
-    const res = await axios.get("/api/course/" + courseId, {});
-    const data = res.data
-    setCourse(data);
-    console.log("data from ui --> ", data);
+    if (courseId){
+      const res = await axios.get(`/api/updateCourse/${courseId}`, {});
+      const data = res.data
+      setCourse(data);
+    }
   };
 
   useEffect(() => {
