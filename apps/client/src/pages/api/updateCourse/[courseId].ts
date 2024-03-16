@@ -25,7 +25,7 @@ export default async function handler(
   try {
     // await ensureDbConnected();
     const { courseId } = req.query;
-    const course: CourseData[] = await Course.findByIdAndUpdate(
+    const course: CourseData[] | null = await Course.findByIdAndUpdate(
       courseId,
       req.body,
       { new: true }
