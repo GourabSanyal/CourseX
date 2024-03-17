@@ -7,5 +7,4 @@ export const adminEmailState = selector({
         const state = get(adminState)
         return state.userEmail
     }
-
 })
