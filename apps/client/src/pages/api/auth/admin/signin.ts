@@ -13,6 +13,7 @@ type Data = {
 type responseData = {
   message: string;
   token?: string;
+  username?: string
 };
 
 type ErrorObj = {
@@ -37,10 +38,11 @@ export default async function handler(
   let admin = await Admin.findOne({ email, password });
 
   if(admin) {
+    let username = admin.username
     const token = jwt.sign({email: email, role : "admin"},"SECRET",{
       expiresIn: "3h"
     } )
-    res.status(200).json({ message: "Admin logged in", token})
+    res.status(200).json({ message: "Admin logged in", token, username })
   } else {
     res.status(403).json({ message : "Admin not found, please sign up to continue"})
   }
