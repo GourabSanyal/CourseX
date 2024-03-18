@@ -46,6 +46,6 @@ export default async function handler(
     const token = jwt.sign({ email, role: "admin" }, "SECRET", {
       expiresIn: "3h",
     });
-    res.status(201).json({ message: `Admin ${username} created successfully`, token });
+    res.status(201).json({ message: `Admin ${username} created successfully`, token, username });
   }
 }
