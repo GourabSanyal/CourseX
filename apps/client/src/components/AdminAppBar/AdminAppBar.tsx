@@ -141,55 +141,9 @@ function AdminAppBar() {
               </Button>
             </div>
           )}
-          {/* <div style={{ display: "flex" }}> */}
-          {/* <div style={{ marginRight: 10 }}></div> */}
-          {/* <div style={{ marginRight: 10 }}>
-            <Button
-              onClick={() => {
-                console.log("clicked");
-                router.push("/");
-              }}
-            >
-              Your Courses
-            </Button>
-            <Button
-              onClick={() => {
-                console.log("clicked");
-                router.push("/");
-              }}
-            >
-              Add Course
-            </Button>
-            <Button
-              onClick={() => {
-                console.log("clicked");
-                router.push("/");
-              }}
-            >
-              All Course
-            </Button>
-          </div>
-          <div>
-            <Button
-              variant={"contained"}
-              onClick={() => {
-                console.log("clicked");
-                setAdmin({
-                  isLoading: false,
-                  userEmail: null,
-                  username: null,
-                });
-                router.push("/");
-              }}
-            >
-              Logout
-            </Button>
-          </div>
-        </div> */}
         </div>
       </Toolbar>
     </AppBar>
-    // </div>
   );
 }
 
