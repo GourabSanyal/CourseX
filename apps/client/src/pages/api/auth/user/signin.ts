@@ -35,7 +35,7 @@ export default async function handler(
     if (password !== user.password) {
       return res.status(403).json({ message: "Access denied: Invalid password." });
     }
-    const token = jwt.sign({ email: email, password: password }, "SECRET", {
+    const token = jwt.sign({ email: email, password: password, role: "user" }, "SECRET", {
       expiresIn: "3h",
     });
     res.status(200).json({ message: "Login successful", token });

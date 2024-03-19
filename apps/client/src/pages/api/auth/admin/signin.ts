@@ -39,7 +39,7 @@ export default async function handler(
 
   if(admin) {
     let username = admin.username
-    const token = jwt.sign({email: email, role : "admin"},"SECRET",{
+    const token = jwt.sign({email, username , role : "admin"},"SECRET",{
       expiresIn: "3h"
     } )
     res.status(200).json({ message: "Admin logged in", token, username })
