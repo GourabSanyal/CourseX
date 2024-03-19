@@ -4,7 +4,9 @@ import { ensureDbConnected } from "@/lib/dbConnect";
 import { verifyTokenAndGetUser } from "@/lib/verifyTokenAndGetUser";
 
 type Data = {
-  name: string;
+  role: string | null;
+  username :  string | null;
+  email : string | null
 };
 
 export default async function handler(
@@ -15,14 +17,20 @@ export default async function handler(
   const authHeader = req.headers.authorization;
   if (authHeader) {
     const token = authHeader.split(" ")[1];
-    verifyTokenAndGetUser(token, (user: string) => {
+    verifyTokenAndGetUser(token, (user: any) => {
       if (!user) {
         res.status(403).json({
-          name: ""
+          role: "",
+          username : '',
+          email : ''
         });
         return
       }
-      res.json({ name: user });
+      const { role, username , email } = user
+      res.json({ role, username, email });
     });
+  } 
+  else {
+    res.status(403).json({ role : null, username: null, email: null})
   }
 }
