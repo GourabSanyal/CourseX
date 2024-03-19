@@ -12,4 +12,5 @@ export * from "./selectors/userName"
 export * from "./atoms/admin/admin"
 export * from "./selectors/admin/adminEmail"
 export * from "./selectors/admin/isAdminLoading"
+export * from "./selectors/admin/adminUserName"
 
