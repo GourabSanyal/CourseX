@@ -2,15 +2,23 @@ import { Button, Typography } from "@mui/material";
 import { useState, useRef } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isUserLoading, userEmailState, userState } from "store";
+import { adminState, adminEmailState, isAdminLoading} from 'store';
 import { useRouter } from "next/navigation";
 import { AdminModal } from "ui";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 
 function Appbar() {
+  // admin state
+  const adminLoading = useRecoilValue(isAdminLoading)
+  const adminEmail = useRecoilValue(adminEmailState)
+  const setAdmin = useSetRecoilState(adminState)
+  
+  //user state
   const userLoading = useRecoilValue(isUserLoading);
   const userEmail = useRecoilValue(userEmailState);
   const setUser = useSetRecoilState(userState);
+
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
   const [onError, setOnError] = useState<string | null | undefined>(null);
@@ -37,7 +45,8 @@ function Appbar() {
       localStorage.setItem("token", response.data.token);
       handleCloseModal();
       router.push("/courses");
-      setUser({ isLoading: false, userEmail: email });
+      let username = response.data.username
+      setAdmin({ isLoading: false, userEmail: email, username: username } );
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 403) {
         let errorRes = error.response.data.message;
@@ -62,7 +71,7 @@ function Appbar() {
       });
       localStorage.setItem("token", response.data.token);
       router.push("/admin/adminHome");
-      setUser({ isLoading: false, userEmail: email });
+      setUser({ isLoading: false, userEmail: email, username :username });
       handleCloseModal();
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 409) {
@@ -147,6 +156,7 @@ function Appbar() {
                 setUser({
                   isLoading: false,
                   userEmail: null,
+                  username: null
                 });
                 router.push("/");
               }}
