@@ -1,8 +1,19 @@
-import { Button, Typography } from "@mui/material";
+// import { Button, Typography } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Menu,
+  MenuItem,
+  Button,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
 import { useState, useRef } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isUserLoading, userEmailState, userState } from "store";
-import { adminState, adminEmailState, isAdminLoading} from 'store';
+import { adminState, adminEmailState, isAdminLoading } from "store";
 import { useRouter } from "next/navigation";
 import { AdminModal } from "ui";
 import axios from "axios";
@@ -10,10 +21,10 @@ import { ToastContainer, toast } from "react-toastify";
 
 function Appbar() {
   // admin state
-  const adminLoading = useRecoilValue(isAdminLoading)
-  const adminEmail = useRecoilValue(adminEmailState)
-  const setAdmin = useSetRecoilState(adminState)
-  
+  const adminLoading = useRecoilValue(isAdminLoading);
+  const adminEmail = useRecoilValue(adminEmailState);
+  const setAdmin = useSetRecoilState(adminState);
+
   //user state
   const userLoading = useRecoilValue(isUserLoading);
   const userEmail = useRecoilValue(userEmailState);
@@ -22,6 +33,21 @@ function Appbar() {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
   const [onError, setOnError] = useState<string | null | undefined>(null);
+
+  //responsivemess mobile logic
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // Adjust the breakpoint as needed
+
+  const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   const handleResetError = () => {
     setOnError(null);
   };
@@ -45,8 +71,8 @@ function Appbar() {
       localStorage.setItem("token", response.data.token);
       handleCloseModal();
       router.push("/courses");
-      let username = response.data.username
-      setAdmin({ isLoading: false, userEmail: email, username: username } );
+      let username = response.data.username;
+      setAdmin({ isLoading: false, userEmail: email, username: username });
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 403) {
         let errorRes = error.response.data.message;
@@ -71,7 +97,7 @@ function Appbar() {
       });
       localStorage.setItem("token", response.data.token);
       router.push("/admin/adminHome");
-      setUser({ isLoading: false, userEmail: email, username :username });
+      setUser({ isLoading: false, userEmail: email, username: username });
       handleCloseModal();
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 409) {
@@ -108,96 +134,25 @@ function Appbar() {
     setModalOpen(false);
   };
 
-  if (userLoading) {
-    return <></>;
-  }
-
-  if (userEmail) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          padding: 4,
-          zIndex: 1,
-        }}
-      >
+  return (
+    <AppBar>
+      <Toolbar>
         <div
           style={{
-            marginLeft: 10,
-            cursor: "pointer",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexGrow: 1,
           }}
-          onClick={() => router.push("/")}
         >
-          <Typography variant={"h6"}>Coursera</Typography>
-        </div>
-
-        <div style={{ display: "flex" }}>
-          <div style={{ marginRight: 10, display: "flex" }}>
-            <div style={{ marginRight: 10 }}>
-              <Button onClick={() => {}}>Add course</Button>
-            </div>
-
-            <div style={{ marginRight: 10 }}>
-              <Button
-                onClick={() => {
-                  router.push("/courses");
-                }}
-              >
-                Courses
-              </Button>
-            </div>
-
-            <Button
-              variant={"contained"}
-              onClick={() => {
-                localStorage.removeItem("token");
-                localStorage.removeItem("pageRefreshed");
-                setUser({
-                  isLoading: false,
-                  userEmail: null,
-                  username: null
-                });
-                router.push("/");
-              }}
-            >
-              Logout
-            </Button>
+          <div onClick={() => router.push("/")}>
+            <Typography variant={"h6"}>Coursera</Typography>
           </div>
         </div>
-      </div>
-    );
-  } else {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          paddingTop: 4,
-        }}
-      >
-        {userEmail}
-        <div style={{ cursor: "pointer" }} onClick={() => router.push("/")}>
-          <Typography variant={"h6"}>Coursera</Typography>
-        </div>
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
-        {/* Same as */}
-        <ToastContainer />
         <div style={{ display: "flex" }}>
           <div style={{ marginRight: 10 }}>
             <Button
-              // variant={"contained"}
+              style={{ color: "white" }}
               onClick={() => {
                 openAdminLoginModal();
               }}
@@ -234,9 +189,11 @@ function Appbar() {
             </Button>
           </div>
         </div>
-      </div>
-    );
-  }
+        {/* </div> */}
+      </Toolbar>
+    </AppBar>
+  );
+  // }
 }
 
 export default Appbar;
