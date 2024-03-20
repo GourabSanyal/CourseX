@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// import { Button, Typography, AppBar, Toolbar, useTheme, useMediaQuery } from "@mui/material";
 import {
   AppBar,
   Toolbar,
@@ -50,7 +49,9 @@ function AdminAppBar() {
             flexGrow: 1,
           }}
         >
-          <Typography variant={"h5"}>CourseX</Typography>
+          <div onClick={() => router.push("/")}>
+            <Typography variant={"h5"}>CourseX</Typography>
+          </div>
           {isMobile ? (
             <div>
               <IconButton
@@ -69,7 +70,7 @@ function AdminAppBar() {
                   vertical: "top",
                   horizontal: "right",
                 }}
-                  keepMounted
+                keepMounted
                 transformOrigin={{
                   vertical: "top",
                   horizontal: "right",
@@ -113,7 +114,7 @@ function AdminAppBar() {
               }}
             >
               <Button
-              style={{ color : 'white'}}
+                style={{ color: "white" }}
                 onClick={() => {
                   router.push("/");
                 }}
@@ -121,7 +122,7 @@ function AdminAppBar() {
                 Your Courses
               </Button>
               <Button
-                style={{ color : 'white'}}
+                style={{ color: "white" }}
                 onClick={() => {
                   router.push("/");
                 }}
@@ -129,7 +130,7 @@ function AdminAppBar() {
                 Add Course
               </Button>
               <Button
-              style={{ color : 'white'}}
+                style={{ color: "white" }}
                 onClick={() => {
                   router.push("/");
                 }}
