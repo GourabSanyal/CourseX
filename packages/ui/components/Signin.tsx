@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 interface FormValues {
-  username?: string;
+  // username?: string | null | undefined;
   email: string;
   password: string;
 };
