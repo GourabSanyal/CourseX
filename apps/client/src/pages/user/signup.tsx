@@ -19,7 +19,7 @@ export default function UserSignInPage() {
       });
       localStorage.setItem("token", response.data.token);
       router.push("/user/home");
-      setUser({ isLoading: false, userEmail : email})
+      setUser({ isLoading: false, userEmail : email, username: username})
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 403) {
         let errorRes = error.response.data.message;
