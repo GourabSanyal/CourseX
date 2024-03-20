@@ -1,61 +1,105 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
-// import {Button} from 'ui'
-import {useRouter} from 'next/router'
-import { useRecoilValue, useSetRecoilState} from 'recoil'
-import { isUserLoading, userEmailState } from 'store'
-import { Grid, Typography, Button } from '@mui/material'
+import { Inter } from "next/font/google";
+import { useRouter } from "next/router";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  adminEmailState,
+  adminUserName,
+  isAdminLoading,
+  isUserLoading,
+  userEmailState,
+} from "store";
+import { Grid, Typography, Button } from "@mui/material";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  const router = useRouter()
-  const userEmail = useRecoilValue(userEmailState)
-  const userLoading = useRecoilValue(isUserLoading)
+  const router = useRouter();
+  const userEmail = useRecoilValue(userEmailState);
+  const userLoading = useRecoilValue(isUserLoading);
+  const adminEmail = useRecoilValue(adminEmailState);
+  const adminLoading = useRecoilValue(isAdminLoading);
 
   if (userLoading) {
-    return <></>
-}
+    return <></>;
+  }
 
-  return <div>
-      <Grid container style={{padding: "5vw"}}>
-          <Grid item xs={12} md={6} lg={6}>
-              <div style={{marginTop: 100}}>
-                  <Typography variant={"h2"}>
-                      Coursera Admin
-                  </Typography>
-                  <Typography variant={"h5"}>
-                      A place to learn, earn and grow
-                  </Typography>
-                  {!userLoading && !userEmail && <div style={{display: "flex", marginTop: 20}}>
-                      <div style={{marginRight: 10}}>
-                          <Button
-                              size={"large"}
-                              variant={"contained"}
-                              onClick={() => {
-                                router.push("/user/signup")
-                              }}
-                          >Signup</Button>
-                      </div>
-                      <div>
-                          <Button
-                              size={"large"}
-                              variant={"contained"}
-                              onClick={() => {
-                                router.push("/user/signin")
-                              }}
-                          >Signin</Button>
-                      </div>
-                  </div>}
+  return (
+    <div
+      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+    >
+      <Grid
+        container
+        style={{
+          padding: "5vw",
+          flexWrap: "wrap-reverse",
+          justifyContent: "center",
+        }}
+      >
+        <Grid
+          item
+          xs={12}
+          md={6}
+          lg={6}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <div style={{ textAlign: "center" }}>
+            <Typography variant="h2">CourseX</Typography>
+            <Typography variant="h5">Learn, earn and grow</Typography>
+            {(!userLoading && !userEmail && !adminEmail && !adminLoading) && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: 20,
+                }}
+              >
+                <div style={{ marginRight: 10 }}>
+                  <Button
+                    color="primary"
+                    size="large"
+                    variant="contained"
+                    onClick={() => router.push("/user/signup")}
+                  >
+                    Signup
+                  </Button>
+                </div>
+                <div>
+                  <Button
+                    color="primary"
+                    size="large"
+                    variant="contained"
+                    onClick={() => router.push("/user/signin")}
+                  >
+                    Signin
+                  </Button>
+                </div>
               </div>
-              <div>
-              </div>
-          </Grid>
-          <Grid item xs={12} md={6} lg={6}  style={{marginTop: 20}}>
-              <img src={"https://img.freepik.com/free-vector/empty-classroom-interior-with-chalkboard_1308-65378.jpg"} width={500} height={400} alt={"course-image"}/>
-          </Grid>
+            )}
+          </div>
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          lg={6}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            margin: "auto",
+          }}
+        >
+          <img
+            src="https://img.freepik.com/free-vector/empty-classroom-interior-with-chalkboard_1308-65378.jpg"
+            alt="course-image"
+            style={{ maxWidth: "100%", height: "auto" }}
+          />
+        </Grid>
       </Grid>
-  </div>
+    </div>
+  );
 }
