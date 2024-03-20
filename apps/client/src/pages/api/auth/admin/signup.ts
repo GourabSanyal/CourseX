@@ -26,11 +26,11 @@ export default async function handler(
   if (!username) {
     return res.status(400).json({ message: "Username can't be empty" });
   }
-  
+
   if (!email) {
     return res.status(400).json({ message: "Email can't be empty" });
   }
-  
+
   if (!password) {
     return res.status(400).json({ message: "Password can't be empty" });
   }
@@ -38,7 +38,11 @@ export default async function handler(
   let admin = await Admin.findOne({ email });
 
   if (admin) {
-    res.status(409).json({ message: `Admin ${username} already exist, please login to continue` });
+    res
+      .status(409)
+      .json({
+        message: `Admin ${username} already exist, please login to continue`,
+      });
   } else {
     const obj = { username: username, email: email, password: password };
     const newAdmin = new Admin(obj);
@@ -46,6 +50,12 @@ export default async function handler(
     const token = jwt.sign({ email, role: "admin" }, "SECRET", {
       expiresIn: "3h",
     });
-    res.status(201).json({ message: `Admin ${username} created successfully`, token, username });
+    res
+      .status(201)
+      .json({
+        message: `Admin ${username} created successfully`,
+        token,
+        username,
+      });
   }
 }
