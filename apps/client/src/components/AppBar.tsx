@@ -70,7 +70,7 @@ function Appbar() {
       });
       localStorage.setItem("token", response.data.token);
       handleCloseModal();
-      router.push("/courses");
+      router.push("/admin/adminHome");
       let username = response.data.username;
       setAdmin({ isLoading: false, userEmail: email, username: username });
     } catch (error) {
