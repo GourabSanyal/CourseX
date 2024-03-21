@@ -84,23 +84,7 @@ function AdminAppBar() {
                     handleClose();
                   }}
                 >
-                  Your Courses
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    router.push("/");
-                    handleClose();
-                  }}
-                >
                   Add Course
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    router.push("/");
-                    handleClose();
-                  }}
-                >
-                  All Course
                 </MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
@@ -119,23 +103,7 @@ function AdminAppBar() {
                   router.push("/");
                 }}
               >
-                Your Courses
-              </Button>
-              <Button
-                style={{ color: "white" }}
-                onClick={() => {
-                  router.push("/");
-                }}
-              >
                 Add Course
-              </Button>
-              <Button
-                style={{ color: "white" }}
-                onClick={() => {
-                  router.push("/");
-                }}
-              >
-                All Course
               </Button>
               <Button variant="contained" onClick={handleLogout}>
                 Logout
