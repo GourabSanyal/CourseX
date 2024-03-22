@@ -80,6 +80,14 @@ function AdminAppBar() {
               >
                 <MenuItem
                   onClick={() => {
+                    router.push("/admin/dashboard");
+                    handleClose();
+                  }}
+                >
+                  Dashboard
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
                     router.push("/");
                     handleClose();
                   }}
@@ -100,7 +108,15 @@ function AdminAppBar() {
               <Button
                 style={{ color: "white" }}
                 onClick={() => {
-                  router.push("/");
+                  router.push("/admin/adminHome");
+                }}
+              >
+                Dashboard
+              </Button>
+              <Button
+                style={{ color: "white" }}
+                onClick={() => {
+                  router.push("/admin/addCourse");
                 }}
               >
                 Add Course
