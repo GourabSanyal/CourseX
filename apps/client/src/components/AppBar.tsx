@@ -70,7 +70,7 @@ function Appbar() {
       });
       localStorage.setItem("token", response.data.token);
       handleCloseModal();
-      router.push("/admin/adminHome");
+      router.push("/admin/dashboard");
       let username = response.data.username;
       setAdmin({ isLoading: false, userEmail: email, username: username });
     } catch (error) {
@@ -96,7 +96,7 @@ function Appbar() {
         password,
       });
       localStorage.setItem("token", response.data.token);
-      router.push("/admin/adminHome");
+      router.push("/admin/dashboard");
       setUser({ isLoading: false, userEmail: email, username: username });
       handleCloseModal();
     } catch (error) {
