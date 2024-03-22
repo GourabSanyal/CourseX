@@ -17,7 +17,6 @@ import { adminState, adminEmailState, isAdminLoading } from "store";
 import { useRouter } from "next/navigation";
 import { AdminModal } from "ui";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
 
 function Appbar() {
   // admin state
