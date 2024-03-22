@@ -33,7 +33,7 @@ function AdminAppBar() {
   };
 
   const handleLogout = () => {
-    console.log("clicked");
+    localStorage.removeItem('token')
     setAdmin({ isLoading: false, userEmail: null, username: null });
     router.push("/");
   };
