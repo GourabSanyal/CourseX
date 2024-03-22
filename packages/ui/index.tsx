@@ -5,4 +5,6 @@ export { Card } from "./card";
 export { Button } from "./Button";
 export { AdminModal } from "./modals/AdminModal";
 
+export { NewCourseCard } from './components/NewCourseCard';
+
 export * from './components';
