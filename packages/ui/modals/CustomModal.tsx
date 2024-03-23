@@ -45,14 +45,14 @@ export function CustomModal({
 }: CustomModalProps): JSX.Element {
   return (
     <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
+      aria-labelledby="modal-modal-title"
+      onClose={handleClose}
+      open={open}
     >
       <Box sx={style}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography id="modal-modal-title" variant="h6" component="h2">
+          <Typography component="h2" id="modal-modal-title" variant="h6">
             {heading}
           </Typography>
           <CloseIcon onClick={handleClose} style={{ cursor: "pointer" }} />
@@ -60,24 +60,24 @@ export function CustomModal({
         <Typography id="modal-modal-description" sx={{ mt: 2 }}>
           {primaryText}
         </Typography>
-        {secondaryText && (
+        {secondaryText ? (
           <Typography sx={{ mt: 1 }}>{secondaryText}</Typography>
-        )}
+        ) : null}
         <Box display="flex" justifyContent="flex-end" mt={2}>
-          {primaryButtonText && (
+          {primaryButtonText ? (
             <Button
-              variant="contained"
               onClick={handlePrimaryButtonClick}
               sx={{ mr: 1 }}
+              variant="contained"
             >
               {primaryButtonText}
             </Button>
-          )}
-          {secondaryButtonText && (
-            <Button variant="outlined" onClick={handleSecondaryButtonClick}>
+          ) : null}
+          {secondaryButtonText ? (
+            <Button onClick={handleSecondaryButtonClick} variant="outlined">
               {secondaryButtonText}
             </Button>
-          )}
+          ) : null}
         </Box>
       </Box>
     </Modal>
