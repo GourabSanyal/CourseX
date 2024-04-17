@@ -108,7 +108,7 @@ function AdminAppBar() {
               <Button
                 style={{ color: "white" }}
                 onClick={() => {
-                  router.push("/admin/adminHome");
+                  router.push("/admin/dashboard");
                 }}
               >
                 Dashboard
