@@ -30,7 +30,12 @@ export default async function handler(
 ) {
   try {
     await ensureDbConnected();
+    console.log("data recieved in api -->", req.body);
+    
     const authHeader = req.headers.authorization;
+    console.log("auth token", authHeader?.split(" ")[1]);
+    // console.log("req in api", req.headers);
+    
     if (authHeader) {
       const token = authHeader.split(" ")[1];
       verifyTokenAndGetUser(token, async (user: string) => {
@@ -48,7 +53,7 @@ export default async function handler(
         }
       });
     } else {
-      res.status(400).json({ message: "error", statusCode: 401 });
+      res.status(400).json({ message: "No auth token available, login to continue", statusCode: 400 });
     }
   } catch (error) {
     console.error("Error creating course:", error);
