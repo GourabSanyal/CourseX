@@ -6,5 +6,6 @@ export { Button } from "./Button";
 export { AdminModal } from "./modals/AdminModal";
 
 export { NewCourseCard } from './components/NewCourseCard';
+export {CustomModal} from './modals/CustomModal';
 
 export * from './components';
