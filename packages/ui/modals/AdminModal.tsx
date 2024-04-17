@@ -188,3 +188,15 @@ export function AdminModal({
     </Dialog>
   );
 }
+
+// interface CustomModalProps {
+//   open: boolean;
+//   handleClose: () => void;
+//   heading: string;
+//   primaryText: string;
+//   secondaryText?: string;
+//   primaryButtonText?: string;
+//   secondaryButtonText?: string;
+//   handlePrimaryButtonClick?: () => void;
+//   handleSecondaryButtonClick?: () => void;
+// }
