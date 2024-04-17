@@ -52,7 +52,7 @@ export default async function handler(
     //   res.status(400).json({ message: "error", statusCode: 401 });
     // }
   } catch (error) {
-    console.log("error from api -> ", error);
+    console.log("error from updateCourse/[courseId] -> ", error);
 
     // res.status(500).json({ message: "message", statusCode: 500 });
   }
