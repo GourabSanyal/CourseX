@@ -3,11 +3,10 @@ import React, { useState } from "react";
 import { useRecoilValue } from "recoil";
 import { adminState } from "store";
 import { NewCourseCard } from "ui";
+import {CustomModal} from "ui/modals/CustomModal";
 
 const addCourse = () => {
   const [onError, setOnError] = useState("");
-  //   const adminUsername = useRecoilValue(adminState).username;
-
   const handleSubmit = async (
     title: string,
     description: string,
@@ -47,6 +46,9 @@ const addCourse = () => {
   return (
     <div>
       <NewCourseCard onClick={handleSubmit} onError={onError} />
+      {/* <CustomModal 
+        
+      /> */}
     </div>
   );
 };
