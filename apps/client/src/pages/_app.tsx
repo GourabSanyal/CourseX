@@ -46,6 +46,9 @@ function App2({ Component, pageProps }: AppProps) {
   return (
     <div>
       {isAdmin ? <AdminAppBar /> : isUser ? <UserAppBar /> : <Appbar />}
+      {/* <AdminAppBar /> */}
+      {/* <UserAppBar /> */}
+      {/* <Appbar/> */}
       <Component {...restPageProps} />
     </div>
   );
