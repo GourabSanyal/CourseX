@@ -31,22 +31,43 @@ export default async function handler(
   try {
     await ensureDbConnected()
     const { email } = req.body;
-    // console.log(email);
-    
+    const authHeader = req.headers.authorization
     let admin = await Admin.findOne({ email });
     let courses: Course[] = await Course.find({
       _id: { $in: admin.createdCourses },
     });
+    
+    if (authHeader){
+      const token = authHeader.split(" ")[1]
+      verifyTokenAndGetUser(token, async(user: string) => {
+        if (!user){
+          res.json({ message : "Auth token expired, please relogin to continue", statusCode: 403})
+        } else {
+          if (!courses.length) {
+            res.json({
+              message: "You have not created any course yet!",
+              statusCode: 200,
+            });
+          } else {
+            res.json({ message: "This is all your courses", data: courses });
+          }
+        }
+      })
+    } else {
+      res.status(400).json({ message: "No auth token available, login to continue", statusCode: 400 });
+    }
+
+
     // console.log("admin", admin, "courses", courses);
     
-    if (!courses.length) {
-      res.json({
-        message: "You have not created any course yet!",
-        statusCode: 200,
-      });
-    } else {
-      res.json({ message: "This is all your courses", data: courses });
-    }
+    // if (!courses.length) {
+    //   res.json({
+    //     message: "You have not created any course yet!",
+    //     statusCode: 200,
+    //   });
+    // } else {
+    //   res.json({ message: "This is all your courses", data: courses });
+    // }
   } catch (error) {
     res.json({
       message: "Error from api admin/your-coourses",
