@@ -46,9 +46,6 @@ function App2({ Component, pageProps }: AppProps) {
   return (
     <div>
       {isAdmin ? <AdminAppBar /> : isUser ? <UserAppBar /> : <Appbar />}
-      {/* <AdminAppBar /> */}
-      {/* <UserAppBar /> */}
-      {/* <Appbar/> */}
       <Component {...restPageProps} />
     </div>
   );
@@ -64,9 +61,6 @@ function InitUser() {
           Authorization: "Bearer " + localStorage.getItem("token"),
         },
       });
-
-      console.log("res", response.data);
-
       if (!response.data) {
         setUser({
           isLoading: false,
