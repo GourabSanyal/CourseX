@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ensureDbConnected } from "@/lib/dbConnect";
 import { verifyTokenAndGetUser } from "@/lib/verifyTokenAndGetUser";
-import { Course } from "db";
+import { Admin, Course } from "db";
+import { JwtPayload } from "jsonwebtoken";
 
 type Course = {
   _id: string; // You can adjust this type as needed
@@ -30,15 +31,15 @@ export default async function handler(
 ) {
   try {
     await ensureDbConnected();
-    console.log("data recieved in api -->", req.body);
+    // console.log("data recieved in api -->", req.body);
     
     const authHeader = req.headers.authorization;
-    console.log("auth token", authHeader?.split(" ")[1]);
+    // console.log("auth token", authHeader?.split(" ")[1]);
     // console.log("req in api", req.headers);
     
     if (authHeader) {
       const token = authHeader.split(" ")[1];
-      verifyTokenAndGetUser(token, async (user: string) => {
+      verifyTokenAndGetUser(token, async (user: JwtPayload | boolean) => {
         if (!user) {
           const errorResponse: ErrorObj = {
             message: "Auth token expired",
@@ -46,7 +47,16 @@ export default async function handler(
           };
           res.status(403).json(errorResponse);
         } else {
-          const course: Course = new Course(req.body);
+          const course = new Course(req.body);
+          console.log("user", user);
+          
+          await course.save()
+
+          // get admin email from user object
+          let adminEmail = (user as JwtPayload).email
+
+          //update admins created course array
+          await Admin.findOneAndUpdate({ email : adminEmail }, { $push : {createdCourses : course._id}})
           res
             .status(201)
             .json({ message: "Course created successfully", data: course });
