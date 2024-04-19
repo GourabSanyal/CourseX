@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { ensureDbConnected } from "@/lib/dbConnect";
 import { verifyTokenAndGetUser } from "@/lib/verifyTokenAndGetUser";
 import { Course } from "db";
+import { JwtPayload } from "jsonwebtoken";
 
 type Course = {
   _id: string; // You can adjust this type as needed
@@ -27,7 +28,7 @@ export default async function handler(
     const authHeader = req.headers.authorization;
     if (authHeader) {
       const token = authHeader.split(" ")[1];
-      verifyTokenAndGetUser(token, async (user: string) => {
+      verifyTokenAndGetUser(token, async (user: JwtPayload | boolean) => {
         if (!user) {
           const errorResponse: ErrorObj = {
             message: "Auth token expired",
