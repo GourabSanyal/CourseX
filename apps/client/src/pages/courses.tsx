@@ -54,7 +54,7 @@ export default function CoursesPage() {
   );
 }
 
-function Course({ course }: CourseProps) {
+export function Course({ course }: CourseProps) {
   const router = useRouter();
   let courseId = course._id;
   return (
