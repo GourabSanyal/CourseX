@@ -1,4 +1,4 @@
-import { Box, Grid, Tab, Typography } from "@mui/material";
+import { Box, CircularProgress, Grid, Tab, Typography } from "@mui/material";
 import { Tabs } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -7,7 +7,7 @@ import { adminState } from "store";
 import { Course } from "../courses";
 
 type Course = {
-  _id: string; // You can adjust this type as needed
+  _id: string;
   title: string;
   description: string;
   price: number;
@@ -17,7 +17,6 @@ type Course = {
 
 const dashboard = () => {
   const adminUsername = useRecoilValue(adminState).username;
-  const adminEmail = useRecoilValue(adminState).userEmail;
   const [activeTab, setActiveTab] = useState(0);
   const [courses, setCourses] = useState([]);
   const [allCourses, setAllCourses] = useState([]);
@@ -30,7 +29,6 @@ const dashboard = () => {
     });
     const data = response.data;
     setCourses(data.data);
-    console.log("your courses", data);
   };
 
   const fetchAllCourses = async () => {
@@ -39,9 +37,7 @@ const dashboard = () => {
         Authorization: "Bearer " + localStorage.getItem("token"),
       },
     });
-    const data = response.data;
-    setAllCourses(data);
-    console.log("all courses", data);
+    setAllCourses(response.data);
   };
 
   useEffect(() => {
@@ -52,10 +48,6 @@ const dashboard = () => {
     }
   }, [activeTab]);
 
-  useEffect(() => {
-    console.log("rehydrated courses state", courses);
-  }, [courses]);
-
   const handleTabChange = (event : any, newValue : number) => {
     setActiveTab(newValue);
   };
@@ -65,8 +57,8 @@ const dashboard = () => {
       style={{ display: "flex", justifyContent: "center", minHeight: "100vh" }}
     >
       <div style={{ marginTop: "9vh" }}>
-        <Grid xl={2}>
-          <Typography variant="h4">Welcome {adminUsername}</Typography>
+        <Grid container justifyContent="center" alignItems="center" direction="column">
+          <Typography variant="h4" align="center" gutterBottom>Welcome {adminUsername}</Typography>
           <div style={{ justifyContent: "center", alignItems: "center" }}>
             <Tabs
               style={{ marginLeft: "-20px" }}
@@ -78,7 +70,8 @@ const dashboard = () => {
             </Tabs>
           </div>
         </Grid>
-        {activeTab === 0 && Array.isArray(courses) && courses.length > 0 ? (
+        {activeTab === 0 && 
+          Array.isArray(courses) && courses.length > 0 ? (
           <div
             style={{
               display: "flex",
@@ -103,14 +96,16 @@ const dashboard = () => {
             ))}
           </div>
         ) : (
-          <Typography
-            variant="h6"
-            style={{ marginTop: 50, textAlign: "center" }}
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent : 'center',
+              alignItems : 'center',
+              height : '300px'
+            }}
           >
-            {activeTab === 0
-              ? "You still don't have any courses, create one to continue"
-              : "No courses available"}
-          </Typography>
+            <CircularProgress />
+          </Box>
         )}
       </div>
     </div>
