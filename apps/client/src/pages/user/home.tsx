@@ -1,9 +1,13 @@
 import React, {useEffect, useState} from 'react'
 import { Box, CircularProgress, Grid, Tab, Typography } from "@mui/material";
 import { Tabs } from "@mui/material";
+import {  userState } from 'store';
+import { useRecoilValue } from 'recoil';
 
 const userHome = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const username = useRecoilValue(userState).username;
+  const [courses, setCourses] = useState([]);
 
   useEffect(() => {
     if (activeTab === 0) {
@@ -23,7 +27,7 @@ const userHome = () => {
   >
     <div style={{ marginTop: "9vh" }}>
       <Grid container justifyContent="center" alignItems="center" direction="column">
-        <Typography variant="h4" align="center" gutterBottom>Welcome {adminUsername}</Typography>
+        <Typography variant="h4" align="center" gutterBottom>Welcome {username}</Typography>
         <div style={{ justifyContent: "center", alignItems: "center" }}>
           <Tabs
             style={{ marginLeft: "-20px" }}
