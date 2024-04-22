@@ -4,6 +4,15 @@ import { Tabs } from "@mui/material";
 import {  userState } from 'store';
 import { useRecoilValue } from 'recoil';
 
+type Course = {
+  _id: string;
+  title: string;
+  description: string;
+  price: number;
+  imageLink: string;
+  published: boolean;
+};
+
 const userHome = () => {
   const [activeTab, setActiveTab] = useState(0);
   const username = useRecoilValue(userState).username;
