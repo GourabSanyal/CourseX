@@ -3,6 +3,7 @@ import { Box, CircularProgress, Grid, Tab, Typography } from "@mui/material";
 import { Tabs } from "@mui/material";
 import {  userState } from 'store';
 import { useRecoilValue } from 'recoil';
+import { Course } from "../courses";
 
 type Course = {
   _id: string;
@@ -17,6 +18,7 @@ const userHome = () => {
   const [activeTab, setActiveTab] = useState(0);
   const username = useRecoilValue(userState).username;
   const [courses, setCourses] = useState([]);
+  const [allCourses, setAllCourses] = useState([]);
 
   useEffect(() => {
     if (activeTab === 0) {
@@ -43,7 +45,7 @@ const userHome = () => {
             value={activeTab}
             onChange={handleTabChange}
           >
-            <Tab label="Your courses" />
+            <Tab label="Your purchases" />
             <Tab label="All courses" />
           </Tabs>
         </div>
