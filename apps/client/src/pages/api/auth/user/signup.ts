@@ -47,6 +47,6 @@ export default async function handler(
     const token = jwt.sign({ email, role: "user" }, "SECRET", {
       expiresIn: "3h",
     });
-    res.json({ message: "User registered successfully", token });
+    res.json({ message: "User registered successfully", token, username });
   }
 }
