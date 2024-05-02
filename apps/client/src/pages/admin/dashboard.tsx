@@ -20,8 +20,12 @@ const dashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [courses, setCourses] = useState([]);
   const [allCourses, setAllCourses] = useState([]);
+  const [error, setError]= useState<string>('')
+  const [loadingYourCourses, setLoadingYourCourses] = useState<boolean>(false);
+  const [loadingAllCourses, setLoadingAllCourses] = useState<boolean>(false);
 
   const fetchCourses = async () => {
+    setLoadingYourCourses(true)
     const response = await axios.get("/api/admin/your-courses", {
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token"),
@@ -29,15 +33,25 @@ const dashboard = () => {
     });
     const data = response.data;
     setCourses(data.data);
+    if (!response.data.length) {
+      setError(response.data.message);
+    }
+    setLoadingYourCourses(false);
   };
 
   const fetchAllCourses = async () => {
+    setLoadingAllCourses(true);
     const response = await axios.get("/api/common/all-courses", {
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token"),
       },
     });
     setAllCourses(response.data);
+    if (!response.data.length) {
+      setError(response.data.message);
+    }
+    console.log("res", response.data);
+    setLoadingAllCourses(false);
   };
 
   useEffect(() => {
@@ -70,42 +84,36 @@ const dashboard = () => {
             </Tabs>
           </div>
         </Grid>
-        {activeTab === 0 && 
-          Array.isArray(courses) && courses.length > 0 ? (
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "center",
-            }}
-          >
-            {courses.map((course: Course) => (
-              <Course key={course._id} course={course} />
-            ))}
-          </div>
-        ) : activeTab === 1 && Array.isArray(courses) && courses.length > 0 ? (
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "center",
-            }}
-          >
+        {activeTab === 0 ? (
+          loadingYourCourses ? (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "300px" }}>
+              <CircularProgress />
+            </Box>
+          ) : Array.isArray(courses) && courses.length > 0 ? (
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+              {courses.map((course: Course) => (
+                <Course key={course._id} course={course} />
+              ))}
+            </div>
+          ) : (
+            <Typography variant="body1" align="center" mt={10}>
+              {error || "No courses available"}
+            </Typography>
+          )
+        ) : loadingAllCourses ? (
+          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "300px" }}>
+            <CircularProgress />
+          </Box>
+        ) : Array.isArray(allCourses) && allCourses.length > 0 ? (
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
             {allCourses.map((course: Course) => (
               <Course key={course._id} course={course} />
             ))}
           </div>
         ) : (
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent : 'center',
-              alignItems : 'center',
-              height : '300px'
-            }}
-          >
-            <CircularProgress />
-          </Box>
+          <Typography variant="body1" align="center" mt={10}>
+            {error || "No courses available"}
+          </Typography>
         )}
       </div>
     </div>
