@@ -35,9 +35,12 @@ export default async function handler(
     res.status(401).json({ message : "Password is required"})
   }
 
-  let admin = await Admin.findOne({ email, password });
+  let admin = await Admin.findOne({ email});
 
   if(admin) {
+    if (password !== admin.password) {
+      return res.status(403).json({ message: "Access denied: Invalid password." });
+    }
     let username = admin.username
     const token = jwt.sign({email, username , role : "admin"},"SECRET",{
       expiresIn: "3h"
