@@ -19,6 +19,9 @@ const userHome = () => {
   const username = useRecoilValue(userState).username;
   const [courses, setCourses] = useState([]);
   const [allCourses, setAllCourses] = useState([]);
+  const [error, setError]= useState<string>('')
+  const [loadingYourCourses, setLoadingYourCourses] = useState<boolean>(false);
+  const [loadingAllCourses, setLoadingAllCourses] = useState<boolean>(false);
 
   useEffect(() => {
     if (activeTab === 0) {
@@ -50,43 +53,37 @@ const userHome = () => {
           </Tabs>
         </div>
       </Grid>
-      {activeTab === 0 && 
-        Array.isArray(courses) && courses.length > 0 ? (
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-          }}
-        >
-          {courses.map((course: Course) => (
-            <Course key={course._id} course={course} />
-          ))}
-        </div>
-      ) : activeTab === 1 && Array.isArray(courses) && courses.length > 0 ? (
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-          }}
-        >
-          {allCourses.map((course: Course) => (
-            <Course key={course._id} course={course} />
-          ))}
-        </div>
-      ) : (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent : 'center',
-            alignItems : 'center',
-            height : '300px'
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      )}
+      {activeTab === 0 ? (
+          loadingYourCourses ? (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "300px" }}>
+              <CircularProgress />
+            </Box>
+          ) : Array.isArray(courses) && courses.length > 0 ? (
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+              {courses.map((course: Course) => (
+                <Course key={course._id} course={course} />
+              ))}
+            </div>
+          ) : (
+            <Typography variant="body1" align="center" mt={10}>
+              {error || "No courses available"}
+            </Typography>
+          )
+        ) : loadingAllCourses ? (
+          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "300px" }}>
+            <CircularProgress />
+          </Box>
+        ) : Array.isArray(allCourses) && allCourses.length > 0 ? (
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+            {allCourses.map((course: Course) => (
+              <Course key={course._id} course={course} />
+            ))}
+          </div>
+        ) : (
+          <Typography variant="body1" align="center" mt={10}>
+            {error || "No courses available"}
+          </Typography>
+        )}
     </div>
   </div>
   )
