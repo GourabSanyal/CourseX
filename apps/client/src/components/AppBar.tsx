@@ -31,7 +31,7 @@ function Appbar() {
 
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
-  const [onError, setOnError] = useState<string | null | undefined>(null);
+  const [onError, setOnError] = useState<string | null >(null);
 
   //responsivemess mobile logic
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -68,6 +68,7 @@ function Appbar() {
         password,
       });
       localStorage.setItem("token", response.data.token);
+      
       handleCloseModal();
       router.push("/admin/dashboard");
       let username = response.data.username;
@@ -87,7 +88,6 @@ function Appbar() {
     email: string,
     password: string
   ) => {
-    console.log("from admin signup --> ", username, email, password);
     try {
       const response = await axios.post("api/auth/admin/signup", {
         username,
@@ -96,7 +96,7 @@ function Appbar() {
       });
       localStorage.setItem("token", response.data.token);
       router.push("/admin/dashboard");
-      setUser({ isLoading: false, userEmail: email, username: username });
+      setAdmin({ isLoading: false, userEmail: email, username: username });
       handleCloseModal();
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 409) {
@@ -113,7 +113,6 @@ function Appbar() {
     email: string,
     password: string
   ): Promise<void> => {
-    console.log("from prop -->", username);
 
     try {
       if (isSignInRef.current) {
