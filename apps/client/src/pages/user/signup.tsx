@@ -10,7 +10,11 @@ export default function UserSignInPage() {
   const setUser = useSetRecoilState(userState);
   const router = useRouter();
 
-  const handleSubmit = async (username: string | undefined, email: string, password: string) :Promise<void> => {
+  const handleSubmit = async (
+    username: string | null | undefined,
+    email: string,
+    password: string
+  ): Promise<void> => {
     try {
       const response = await axios.post("/api/auth/user/signup", {
         username,
@@ -19,7 +23,7 @@ export default function UserSignInPage() {
       });
       localStorage.setItem("token", response.data.token);
       router.push("/user/home");
-      setUser({ isLoading: false, userEmail : email, username: username})
+      setUser({ isLoading: false, userEmail: email, username: username });
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 403) {
         let errorRes = error.response.data.message;
@@ -32,10 +36,7 @@ export default function UserSignInPage() {
 
   return (
     <div>
-      <Signup
-        onClick={handleSubmit}
-        onError={onError}
-      />
+      <Signup onClick={handleSubmit} onError={onError} />
     </div>
   );
 }
