@@ -13,12 +13,11 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import { useRouter } from "next/navigation";
 import { adminState } from "store";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
 function AdminAppBar() {
   const router = useRouter();
   const setAdmin = useSetRecoilState(adminState);
-
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const theme = useTheme();
@@ -33,7 +32,7 @@ function AdminAppBar() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
+    localStorage.removeItem("token");
     setAdmin({ isLoading: false, userEmail: null, username: null });
     router.push("/");
   };

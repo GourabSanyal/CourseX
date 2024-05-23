@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// import { Button, Typography, AppBar, Toolbar, useTheme, useMediaQuery } from "@mui/material";
 import {
   AppBar,
   Toolbar,
@@ -13,8 +12,8 @@ import {
 } from "@material-ui/core";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useRouter } from "next/navigation";
-import { adminState, userState } from "store";
-import { useSetRecoilState } from "recoil";
+import { userState } from "store";
+import { useSetRecoilState, useRecoilValue } from "recoil";
 
 function UserAppBar() {
   const router = useRouter();
@@ -34,7 +33,7 @@ function UserAppBar() {
   };
 
   const handleLogout = () => {
-    console.log("clicked");
+    localStorage.removeItem("token");
     setUser({ isLoading: false, userEmail: null, username: null });
     router.push("/");
   };
@@ -50,7 +49,7 @@ function UserAppBar() {
             flexGrow: 1,
           }}
         >
-          <div onClick={() => router.push('/')}>
+          <div onClick={() => router.push("/")}>
             <Typography variant={"h5"}>CourseX</Typography>
           </div>
 
@@ -86,23 +85,7 @@ function UserAppBar() {
                     handleClose();
                   }}
                 >
-                  Your Courses
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    router.push("/");
-                    handleClose();
-                  }}
-                >
                   Add Course
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    router.push("/");
-                    handleClose();
-                  }}
-                >
-                  All Course
                 </MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
@@ -121,23 +104,7 @@ function UserAppBar() {
                   router.push("/");
                 }}
               >
-                Your Courses
-              </Button>
-              <Button
-                style={{ color: "white" }}
-                onClick={() => {
-                  router.push("/");
-                }}
-              >
                 Add Course
-              </Button>
-              <Button
-                style={{ color: "white" }}
-                onClick={() => {
-                  router.push("/");
-                }}
-              >
-                All Course
               </Button>
               <Button variant="contained" onClick={handleLogout}>
                 Logout
