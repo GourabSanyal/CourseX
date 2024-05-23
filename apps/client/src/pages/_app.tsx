@@ -45,7 +45,7 @@ function App2({ Component, pageProps }: AppProps) {
   }
   return (
     <div>
-      {isAdmin ? <AdminAppBar /> : isUser ? <UserAppBar /> : <Appbar />}
+      { isUser ? <UserAppBar /> : isAdmin ? <AdminAppBar /> : <Appbar />}
       <Component {...restPageProps} />
     </div>
   );
@@ -98,6 +98,11 @@ function InitUser() {
       }
     } catch (error) {
       setUser({
+        isLoading: false,
+        userEmail: null,
+        username: null,
+      });
+      setAdmin({
         isLoading: false,
         userEmail: null,
         username: null,
