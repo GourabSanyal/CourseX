@@ -10,17 +10,18 @@ type Course = {
   price: number;
   imageLink: string;
   published: boolean;
+  // createdBy: string;
 };
 
 type CourseProps = {
-  course: {
-    _id: string; // You can adjust this type as needed
-    title: string;
-    description: string;
-    price: number;
-    imageLink: string;
-    published: boolean;
-  };
+  course: Course;
+  userRole: string;
+  userId: string | null;
+  createdCourses?: Course[];
+  purchasedCourses?: Course[];
+  onDelete?: () => void;
+  onEdit?: () => void;
+  onBuy?: () => void;
 };
 
 export default function CoursesPage() {
@@ -47,16 +48,120 @@ export default function CoursesPage() {
     <div
       style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
     >
-      {courses.map((course: Course) => {
+      {/* {courses.map((course: Course) => {
         return <Course key={course._id} course={course} />;
-      })}
+      })} */}
     </div>
   );
 }
 
-export function Course({ course }: CourseProps) {
+export function Course({
+  course,
+  userRole,
+  onDelete,
+  onBuy,
+  onEdit,
+  userId,
+  createdCourses,
+  purchasedCourses,
+}: CourseProps) {
   const router = useRouter();
-  let courseId = course._id;
+  // let courseId = course._id;
+
+  // const token = localStorage.getItem("token");
+
+  // const isOwnCourse =
+  // userRole === "admin" ? course.createdBy === userId : false;
+
+  if (createdCourses) {
+    var isCretedByAdmin = createdCourses.some((c) => c._id === course._id);
+  }
+  if (purchasedCourses) {
+    var isPurchasedByUser = purchasedCourses.some((c) => c._id === course._id);
+  }
+
+  const renderButtons = () => {
+    if (userRole === "admin") {
+      // Admin panel
+      if (isCretedByAdmin) {
+        return (
+          <>
+            <Button
+              variant="contained"
+              size="small"
+              color="error"
+              onClick={onDelete}
+              style={{ marginRight: 8 }}
+            >
+              Delete
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => {
+                // router.push("/admin/" + courseId);
+                onEdit && onEdit();
+              }}
+            >
+              Edit
+            </Button>
+          </>
+        );
+      } else {
+        return (
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => {
+              // router.push("/user/view/" + courseId);
+            }}
+          >
+            View admin
+          </Button>
+        );
+      }
+    } else if (userRole === "user") {
+      // User panel
+      if (isPurchasedByUser) {
+        return (
+          <>
+            <Button
+              variant="contained"
+              size="small"
+              color="error"
+              onClick={onDelete}
+              style={{ marginRight: 8 }}
+            >
+              Delete user
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => {
+                // router.push("/admin/" + courseId);
+                onEdit && onEdit();
+              }}
+            >
+              Edit user
+            </Button>
+          </>
+        );
+      } else {
+        return (
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => {
+              // router.push("/user/view/" + courseId);
+            }}
+          >
+            View user
+          </Button> 
+        );
+      }
+    }
+  };
+
   return (
     <Card
       style={{
@@ -74,7 +179,8 @@ export function Course({ course }: CourseProps) {
       </Typography>
       <img src={course.imageLink} style={{ width: 300 }}></img>
       <div style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
-        <Button
+        {renderButtons()}
+        {/* <Button
           variant="contained"
           size="large"
           onClick={() => {
@@ -83,7 +189,7 @@ export function Course({ course }: CourseProps) {
           }}
         >
           Edit
-        </Button>
+        </Button> */}
       </div>
     </Card>
   );
