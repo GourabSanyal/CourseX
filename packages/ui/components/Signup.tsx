@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable prefer-named-capture-group */
 /* eslint-disable unicorn/filename-case */
 import {
@@ -13,13 +14,17 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 
 interface FormValues {
-  username?: string | undefined;
+  username?: string | null | undefined;
   email: string;
   password: string;
-};
+}
 
 export function Signup(props: {
-  onClick: (username: string | undefined, email: string, password: string) => Promise<void>;
+  onClick: (
+    username: string | null | undefined,
+    email: string,
+    password: string
+  ) => Promise<void>;
   onError: string | undefined;
 }): React.JSX.Element {
   const [showPassword, setShowPassword] = useState(false);
@@ -29,8 +34,8 @@ export function Signup(props: {
     formState: { errors },
   } = useForm<FormValues>();
 
-  const handleSubmitForm =  async(data: FormValues) => {
-    await props.onClick(data.username, data.email, data.password)
+  const handleSubmitForm = async (data: FormValues) => {
+    await props.onClick(data.username, data.email, data.password);
   };
 
   const handleTogglePasswordVisibility = () => {
