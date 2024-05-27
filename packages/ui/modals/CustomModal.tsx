@@ -1,85 +1,108 @@
-/* eslint-disable unicorn/filename-case */
-import React from "react";
-import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import CloseIcon from "@mui/icons-material/Close";
+/* eslint-disable react/function-component-definition */
+/* eslint-disable react/jsx-sort-props */
+/* eslint-disable react/jsx-no-leaked-render */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/button-has-type */
+/* eslint-disable @typescript-eslint/no-confusing-void-expression */
+/* eslint-disable no-alert */
+
+import React, { ReactNode } from 'react';
+import {
+  Modal,
+  Box,
+  Typography,
+  Button,
+  Fade,
+  styled,
+} from '@mui/material';
+
+// Styled components for customization
+const ModalContainer = styled(Box)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  outline: none;
+`;
+
+const ModalHeader = styled(Box)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+`;
+
+const ModalContent = styled(Box)`
+  margin-bottom: 24px;
+`;
+
+const ModalActions = styled(Box)`
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+`;
 
 interface CustomModalProps {
   open: boolean;
   onClose: () => void;
-  handleClose: () => void;
-  heading: string;
-  primaryText: string;
-  secondaryText?: string;
+  title?: string;
+  subTitle?: string;
   primaryButtonText?: string;
+  primaryButtonAction?: () => void;
   secondaryButtonText?: string;
-  handlePrimaryButtonClick?: () => void;
-  handleSecondaryButtonClick?: () => void;
+  secondaryButtonAction?: () => void;
 }
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-
-export function CustomModal({
+export const CustomModal : React.FC <CustomModalProps> = ({
   open,
   onClose,
-  handleClose,
-  heading,
-  primaryText,
-  secondaryText,
+  title,
+  subTitle,
   primaryButtonText,
+  primaryButtonAction,
   secondaryButtonText,
-  handlePrimaryButtonClick,
-  handleSecondaryButtonClick,
-}: CustomModalProps): JSX.Element {
+  secondaryButtonAction,
+}) => {
   return (
     <Modal
-      aria-describedby="modal-modal-description"
-      aria-labelledby="modal-modal-title"
-      onClose={handleClose}
       open={open}
+      onClose={onClose}
+      closeAfterTransition
     >
-      <Box sx={style}>
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography component="h2" id="modal-modal-title" variant="h6">
-            {heading}
-          </Typography>
-          <CloseIcon onClick={handleClose} style={{ cursor: "pointer" }} />
-        </Box>
-        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-          {primaryText}
-        </Typography>
-        {secondaryText ? (
-          <Typography sx={{ mt: 1 }}>{secondaryText}</Typography>
-        ) : null}
-        <Box display="flex" justifyContent="flex-end" mt={2}>
-          {primaryButtonText ? (
-            <Button
-              onClick={handlePrimaryButtonClick}
-              sx={{ mr: 1 }}
-              variant="contained"
-            >
-              {primaryButtonText}
-            </Button>
-          ) : null}
-          {secondaryButtonText ? (
-            <Button onClick={handleSecondaryButtonClick} variant="outlined">
-              {secondaryButtonText}
-            </Button>
-          ) : null}
-        </Box>
-      </Box>
+      <Fade in={open}>
+        <ModalContainer>
+          <ModalHeader>
+            <Typography variant="h6">{title}</Typography>
+            <Button onClick={onClose}>Close</Button>
+          </ModalHeader>
+          <ModalContent>
+            <Typography variant="body1">{subTitle}</Typography>
+          </ModalContent>
+          <ModalActions>
+            {primaryButtonText && (
+              <Button
+                variant="contained"
+                onClick={primaryButtonAction}
+                color="primary"
+              >
+                {primaryButtonText}
+              </Button>
+            )}
+            {secondaryButtonText && (
+              <Button
+                variant="outlined"
+                onClick={secondaryButtonAction}
+                color="secondary"
+              >
+                {secondaryButtonText}
+              </Button>
+            )}
+          </ModalActions>
+        </ModalContainer>
+      </Fade>
     </Modal>
   );
-}
+};
