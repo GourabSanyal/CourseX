@@ -28,11 +28,16 @@ const dashboard = () => {
   const [loadingAllCourses, setLoadingAllCourses] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
+  const [handleModalOpen, setHandleModalOpen] = useState<boolean>(false)
   const email = useRecoilValue(adminEmailState);
 
   const editCourse = (courseId: string) => {
     router.push(`/admin/${courseId}`)
   }
+
+  // const viewCourseDetails = () => {
+  //   handleModalOpen(true)
+  // }
 
   useEffect(() => {
     const getUserRole = async () => {
@@ -184,8 +189,11 @@ const dashboard = () => {
                 userId={userId}
                 createdCourses={role === "admin" ? courses : []}
                 // purchasedCourses={role === "user" ? allCourses : []}
+                onEdit={() => editCourse(course._id)}
+                onview={() => viewCourseDetails(course._id)}
               />
             ))}
+            {/* <CustomModal open={handleModalOpen} onClose={handleModalClose} /> */}
           </div>
         ) : (
           <Typography variant="body1" align="center" mt={10}>

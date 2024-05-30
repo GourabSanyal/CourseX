@@ -22,6 +22,8 @@ type CourseProps = {
   onDelete?: () => void;
   onEdit?: () => void;
   onBuy?: () => void;
+  onview?: () => void;
+
 };
 
 export default function CoursesPage() {
@@ -107,7 +109,7 @@ export function Course({
             variant="contained"
             size="small"
             onClick={() => {
-              // router.push("/user/view/" + courseId);
+              onView()
             }}
           >
             View admin
