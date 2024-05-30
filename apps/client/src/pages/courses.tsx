@@ -22,6 +22,8 @@ type CourseProps = {
   onDelete?: () => void;
   onEdit?: () => void;
   onBuy?: () => void;
+  onview?: () => void;
+
 };
 
 export default function CoursesPage() {
@@ -66,12 +68,6 @@ export function Course({
   purchasedCourses,
 }: CourseProps) {
   const router = useRouter();
-  // let courseId = course._id;
-
-  // const token = localStorage.getItem("token");
-
-  // const isOwnCourse =
-  // userRole === "admin" ? course.createdBy === userId : false;
 
   if (createdCourses) {
     var isCretedByAdmin = createdCourses.some((c) => c._id === course._id);
@@ -103,7 +99,7 @@ export function Course({
                 onEdit && onEdit();
               }}
             >
-              Edit
+              Edit Admin
             </Button>
           </>
         );
@@ -113,7 +109,7 @@ export function Course({
             variant="contained"
             size="small"
             onClick={() => {
-              // router.push("/user/view/" + courseId);
+              onView()
             }}
           >
             View admin

@@ -5,6 +5,8 @@ import React, { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { adminEmailState, adminState } from "store";
 import { Course } from "../courses";
+import {CustomModal} from "ui"
+import { useRouter } from "next/router";
 
 type Course = {
   _id: string;
@@ -16,6 +18,7 @@ type Course = {
 };
 2;
 const dashboard = () => {
+  const router = useRouter();
   const adminUsername = useRecoilValue(adminState).username;
   const [activeTab, setActiveTab] = useState(0);
   const [courses, setCourses] = useState<Course[]>();
@@ -25,7 +28,16 @@ const dashboard = () => {
   const [loadingAllCourses, setLoadingAllCourses] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
+  const [handleModalOpen, setHandleModalOpen] = useState<boolean>(false)
   const email = useRecoilValue(adminEmailState);
+
+  const editCourse = (courseId: string) => {
+    router.push(`/admin/${courseId}`)
+  }
+
+  // const viewCourseDetails = () => {
+  //   handleModalOpen(true)
+  // }
 
   useEffect(() => {
     const getUserRole = async () => {
@@ -34,11 +46,9 @@ const dashboard = () => {
       });
       let role = response.data.role;
       setRole(role);
-      console.log("admin role -->", role);
     };
 
     const fetchUserId = async () => {
-      console.log("admin email role -->", email, role);
       const response = await axios.get("/api/common/get-user-id", {
         data: { email, role },
       });
@@ -143,6 +153,7 @@ const dashboard = () => {
                   userId={userId}
                   createdCourses={role === "admin" ? courses : []}
                   // purchasedCourses={role === "user" ? courses : []}
+                  onEdit={() => editCourse(course._id)}
                 />
               ))}
             </div>
@@ -178,8 +189,11 @@ const dashboard = () => {
                 userId={userId}
                 createdCourses={role === "admin" ? courses : []}
                 // purchasedCourses={role === "user" ? allCourses : []}
+                onEdit={() => editCourse(course._id)}
+                onview={() => viewCourseDetails(course._id)}
               />
             ))}
+            {/* <CustomModal open={handleModalOpen} onClose={handleModalClose} /> */}
           </div>
         ) : (
           <Typography variant="body1" align="center" mt={10}>
