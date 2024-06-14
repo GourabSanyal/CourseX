@@ -190,7 +190,7 @@ const dashboard = () => {
                 createdCourses={role === "admin" ? courses : []}
                 // purchasedCourses={role === "user" ? allCourses : []}
                 onEdit={() => editCourse(course._id)}
-                onview={() => viewCourseDetails(course._id)}
+                // onview={() => viewCourseDetails(course._id)}
               />
             ))}
             {/* <CustomModal open={handleModalOpen} onClose={handleModalClose} /> */}

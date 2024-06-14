@@ -109,7 +109,7 @@ export function Course({
             variant="contained"
             size="small"
             onClick={() => {
-              onView()
+              // onView()
             }}
           >
             View admin
