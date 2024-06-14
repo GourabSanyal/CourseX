@@ -10,6 +10,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
+import { CustomModal } from "ui";
 import { useState, useRef } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isUserLoading, userEmailState, userState } from "store";
@@ -31,7 +32,8 @@ function Appbar() {
 
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
-  const [onError, setOnError] = useState<string | null >(null);
+  const [onError, setOnError] = useState<string | null>(null);
+  const [loginModalOpen, setLoginModalOpen] = useState<boolean>(false);
 
   //responsivemess mobile logic
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -56,9 +58,13 @@ function Appbar() {
   const handleOpenModal = () => {
     setModalOpen(true);
   };
+  const handleLoginOpenModal = (id: string) => {
+    setLoginModalOpen(true);
+  };
 
   const handleCloseModal = () => {
-    setModalOpen(false);
+    setModalOpen(false); // closes admin modal
+    setLoginModalOpen(false); // closes users modal
   };
 
   const adminSignIn = async (email: string, password: string) => {
@@ -68,7 +74,7 @@ function Appbar() {
         password,
       });
       localStorage.setItem("token", response.data.token);
-      
+
       handleCloseModal();
       router.push("/admin/dashboard");
       let username = response.data.username;
@@ -113,7 +119,6 @@ function Appbar() {
     email: string,
     password: string
   ): Promise<void> => {
-
     try {
       if (isSignInRef.current) {
         adminSignIn(email, password);
@@ -125,8 +130,12 @@ function Appbar() {
     }
   };
 
+  const openAppLoginModal = () => {
+    setLoginModalOpen(true); // NEW - opens oAuth login modal
+  };
+
   const openAdminLoginModal = () => {
-    setModalOpen(true);
+    setModalOpen(true); // OLD - for admin login
   };
   const closeAdminLoginModal = () => {
     setModalOpen(false);
@@ -148,6 +157,22 @@ function Appbar() {
           </div>
         </div>
         <div style={{ display: "flex" }}>
+          <div style={{ marginRight: 10 }}>
+            <Button
+              style={{ color: "white" }}
+              onClick={() => {
+                openAppLoginModal();
+              }}
+            >
+              Login
+            </Button>
+            <CustomModal
+              open={loginModalOpen}
+              onClose={handleCloseModal}
+              heading="Login and start learning"
+              subHeading="Start your journey"
+            />
+          </div>
           <div style={{ marginRight: 10 }}>
             <Button
               style={{ color: "white" }}
