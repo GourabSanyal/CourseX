@@ -11,9 +11,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable react/jsx-sort-props */
 /* eslint-disable import/no-extraneous-dependencies */
-// components/AdminModal.js
 
-// components/AdminModal.js
 import React, { useEffect, useState, useCallback } from "react";
 import {
   Dialog,

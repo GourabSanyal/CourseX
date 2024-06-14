@@ -176,16 +176,6 @@ export function Course({
       <img src={course.imageLink} style={{ width: 300 }}></img>
       <div style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
         {renderButtons()}
-        {/* <Button
-          variant="contained"
-          size="large"
-          onClick={() => {
-            router.push("/admin/" + courseId);
-            // console.log(course._id)
-          }}
-        >
-          Edit
-        </Button> */}
       </div>
     </Card>
   );
