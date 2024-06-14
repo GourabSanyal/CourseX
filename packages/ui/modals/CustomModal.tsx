@@ -71,13 +71,13 @@ export function CustomModal({
           margin="0.5rem"
         >
           <Grid container spacing={2} justifyContent="center">
-            <Grid item>
-              <Button type="submit" variant="contained" color="primary" onClick={primaryButtonSubmit}>
+            <Grid item xs={12} sm='auto'>
+              <Button fullWidth type="submit" variant="contained" color="primary" onClick={primaryButtonSubmit}>
                 {primaryButtonText}
               </Button>
             </Grid>
-            <Grid item>
-              <Button type="submit" variant="contained" color="primary" onClick={secondaryButtonSubmit}>
+            <Grid item xs={12}  sm='auto' >
+              <Button fullWidth type="submit" variant="contained" color="primary" onClick={secondaryButtonSubmit}>
                 {secondaryButtonText}
               </Button>
             </Grid>
