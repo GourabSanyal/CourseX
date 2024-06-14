@@ -20,7 +20,9 @@ import {
   Typography,
   Button,
   Box,
+  Grid,
 } from "@mui/material";
+import { Button as AppButton } from "../Button";
 
 interface CustomModalProps {
   open: boolean;
@@ -38,7 +40,7 @@ export function CustomModal({
   subHeading,
 }: CustomModalProps): JSX.Element {
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth='xs' fullWidth>
       <DialogTitle>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box>
@@ -49,12 +51,32 @@ export function CustomModal({
               {subHeading}
             </Typography>
           </Box>
-          <Button onClick={onClose} style={{ marginLeft: 'auto' }}>
+          <Button onClick={onClose} style={{ marginLeft: "auto" }}>
             X
           </Button>
         </Box>
       </DialogTitle>
-      <DialogContent dividers>
+      <DialogContent>
+        <Box
+          justifyContent="space-around"
+          display="flex"
+          flexWrap="wrap"
+          margin="0.5rem"
+        >
+          <Grid container spacing={2} justifyContent="center">
+            <Grid item>
+              <Button type="submit" variant="contained" color="primary">
+                Login As Admin
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button type="submit" variant="contained" color="primary">
+                Login As User
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+
         {onError ? (
           <Typography
             variant="body2"
@@ -69,16 +91,3 @@ export function CustomModal({
     </Dialog>
   );
 }
-
-
-
-
-
-// {/* <Typography variant="body2" align="center" style={{ marginTop: 10 }}>
-//           {isSignInRef.current
-//             ? "Don't have an admin account? "
-//             : "Already have an admin account? "}
-//           <Link component="button" variant="body2" onClick={handleToggleForm}>
-//             {isSignInRef.current ? "Register as an Admin here" : "Sign In here"}
-//           </Link>
-//         </Typography> */}
