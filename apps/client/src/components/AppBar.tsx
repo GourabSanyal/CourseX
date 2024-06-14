@@ -1,11 +1,7 @@
-// import { Button, Typography } from "@mui/material";
 import {
   AppBar,
   Toolbar,
   Typography,
-  IconButton,
-  Menu,
-  MenuItem,
   Button,
   useMediaQuery,
   useTheme,
@@ -18,6 +14,8 @@ import { adminState, adminEmailState, isAdminLoading } from "store";
 import { useRouter } from "next/navigation";
 import { AdminModal } from "ui";
 import axios from "axios";
+import { signIn, signOut, useSession } from 'next-auth/react'
+
 
 function Appbar() {
   // admin state
@@ -40,6 +38,9 @@ function Appbar() {
   const open = Boolean(anchorEl);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // Adjust the breakpoint as needed
+
+  // next auth
+  const session = useSession()
 
   const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -141,6 +142,13 @@ function Appbar() {
     setModalOpen(false);
   };
 
+  const adminLogin = () => {
+    console.log("admin login")
+  }
+  const userLogin = () => {
+    console.log("user login")
+  }
+
   return (
     <AppBar>
       <Toolbar>
@@ -171,6 +179,10 @@ function Appbar() {
               onClose={handleCloseModal}
               heading="Login and start learning"
               subHeading="Start your journey"
+              primaryButtonText="Login as Admin"
+              secondaryButtonText="Login As User"
+              primaryButtonSubmit={() =>adminLogin()}
+              secondaryButtonSubmit={() => userLogin()}
             />
           </div>
           <div style={{ marginRight: 10 }}>
