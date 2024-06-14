@@ -22,7 +22,6 @@ import {
   Box,
   Grid,
 } from "@mui/material";
-import { Button as AppButton } from "../Button";
 
 interface CustomModalProps {
   open: boolean;
@@ -30,6 +29,10 @@ interface CustomModalProps {
   onError?: string | null | undefined;
   heading: string;
   subHeading: string;
+  primaryButtonText?: string
+  primaryButtonSubmit? : () => void | Promise<void>
+  secondaryButtonText?: string
+  secondaryButtonSubmit ?: () => void | Promise<void>
 }
 
 export function CustomModal({
@@ -38,6 +41,10 @@ export function CustomModal({
   onError,
   heading,
   subHeading,
+  primaryButtonText,
+  primaryButtonSubmit,
+  secondaryButtonText,
+  secondaryButtonSubmit
 }: CustomModalProps): JSX.Element {
   return (
     <Dialog open={open} onClose={onClose} maxWidth='xs' fullWidth>
@@ -65,13 +72,13 @@ export function CustomModal({
         >
           <Grid container spacing={2} justifyContent="center">
             <Grid item>
-              <Button type="submit" variant="contained" color="primary">
-                Login As Admin
+              <Button type="submit" variant="contained" color="primary" onClick={primaryButtonSubmit}>
+                {primaryButtonText}
               </Button>
             </Grid>
             <Grid item>
-              <Button type="submit" variant="contained" color="primary">
-                Login As User
+              <Button type="submit" variant="contained" color="primary" onClick={secondaryButtonSubmit}>
+                {secondaryButtonText}
               </Button>
             </Grid>
           </Grid>
