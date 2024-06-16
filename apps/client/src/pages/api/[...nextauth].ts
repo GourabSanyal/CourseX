@@ -1,6 +1,6 @@
 import NextAuth from "next-auth/next";
 import {Session, User} from 'next-auth'
-import { CredentialsProvider } from "next-auth/providers/credentials";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { Provider } from "next-auth/providers";
 import { ensureDbConnected } from "@/lib/dbConnect";
 import { JWT } from "next-auth/jwt";
