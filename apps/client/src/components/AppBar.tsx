@@ -14,8 +14,8 @@ import { adminState, adminEmailState, isAdminLoading } from "store";
 import { useRouter } from "next/navigation";
 import { AdminModal } from "ui";
 import axios from "axios";
-import { signIn, signOut, useSession } from 'next-auth/react'
-
+import { signIn, signOut, useSession } from "next-auth/react";
+import { Session } from "next-auth";
 
 function Appbar() {
   // admin state
@@ -40,7 +40,8 @@ function Appbar() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // Adjust the breakpoint as needed
 
   // next auth
-  const session = useSession()
+  const session = useSession();
+  console.log("session ->", session);
 
   const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -143,11 +144,12 @@ function Appbar() {
   };
 
   const adminLogin = () => {
-    console.log("admin login")
-  }
+    console.log("admin login");
+    signIn();
+  };
   const userLogin = () => {
-    console.log("user login")
-  }
+    console.log("user login");
+  };
 
   return (
     <AppBar>
@@ -163,72 +165,92 @@ function Appbar() {
           <div onClick={() => router.push("/")}>
             <Typography variant={"h6"}>Coursera</Typography>
           </div>
+          {session ? (
+            <div>
+              <div style={{ display: "flex" }}>
+                <div style={{ marginRight: 10 }}>
+                  <Button
+                    style={{ color: "white" }}
+                    onClick={() => {
+                      // redirect to dashboard here
+                    }}
+                  >
+                    Dashboard
+                  </Button>
+                </div>
+                <div style={{ marginRight: 10 }}>
+                  <Button variant={"contained"} onClick={() => {}}>
+                    Logout
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: "flex" }}>
+              <div style={{ marginRight: 10 }}>
+                <Button
+                  style={{ color: "white" }}
+                  onClick={() => {
+                    openAppLoginModal();
+                  }}
+                >
+                  Login
+                </Button>
+                <CustomModal
+                  open={loginModalOpen}
+                  onClose={handleCloseModal}
+                  heading="Login and start learning"
+                  subHeading="Start your journey"
+                  primaryButtonText="Login as Admin"
+                  secondaryButtonText="Login As User"
+                  primaryButtonSubmit={() => adminLogin()}
+                  secondaryButtonSubmit={() => userLogin()}
+                />
+              </div>
+              <div style={{ marginRight: 10 }}>
+                <Button
+                  style={{ color: "white" }}
+                  onClick={() => {
+                    openAdminLoginModal();
+                  }}
+                >
+                  Admin Login
+                </Button>
+                <AdminModal
+                  open={modalOpen}
+                  onClose={handleCloseModal}
+                  onSubmit={handleAdminSubmission}
+                  isSignInRef={isSignInRef}
+                  onError={onError}
+                  handleResetError={handleResetError}
+                />
+              </div>
+              <div style={{ marginRight: 10 }}>
+                <Button
+                  variant={"contained"}
+                  onClick={() => {
+                    router.push("/user/signin");
+                  }}
+                >
+                  Sign In
+                </Button>
+              </div>
+              <div>
+                <Button
+                  variant={"contained"}
+                  onClick={() => {
+                    router.push("/user/signup");
+                  }}
+                >
+                  Sign Up
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
-        <div style={{ display: "flex" }}>
-          <div style={{ marginRight: 10 }}>
-            <Button
-              style={{ color: "white" }}
-              onClick={() => {
-                openAppLoginModal();
-              }}
-            >
-              Login
-            </Button>
-            <CustomModal
-              open={loginModalOpen}
-              onClose={handleCloseModal}
-              heading="Login and start learning"
-              subHeading="Start your journey"
-              primaryButtonText="Login as Admin"
-              secondaryButtonText="Login As User"
-              primaryButtonSubmit={() =>adminLogin()}
-              secondaryButtonSubmit={() => userLogin()}
-            />
-          </div>
-          <div style={{ marginRight: 10 }}>
-            <Button
-              style={{ color: "white" }}
-              onClick={() => {
-                openAdminLoginModal();
-              }}
-            >
-              Admin Login
-            </Button>
-            <AdminModal
-              open={modalOpen}
-              onClose={handleCloseModal}
-              onSubmit={handleAdminSubmission}
-              isSignInRef={isSignInRef}
-              onError={onError}
-              handleResetError={handleResetError}
-            />
-          </div>
-          <div style={{ marginRight: 10 }}>
-            <Button
-              variant={"contained"}
-              onClick={() => {
-                router.push("/user/signin");
-              }}
-            >
-              Sign In
-            </Button>
-          </div>
-          <div>
-            <Button
-              variant={"contained"}
-              onClick={() => {
-                router.push("/user/signup");
-              }}
-            >
-              Sign Up
-            </Button>
-          </div>
-        </div>
-        {/* </div> */}
       </Toolbar>
     </AppBar>
   );
-  // }
 }
 
 export default Appbar;
