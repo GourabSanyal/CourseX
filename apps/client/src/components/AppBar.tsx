@@ -7,7 +7,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import { CustomModal } from "ui";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isUserLoading, userEmailState, userState } from "store";
 import { adminState, adminEmailState, isAdminLoading } from "store";
@@ -15,13 +15,15 @@ import { useRouter } from "next/navigation";
 import { AdminModal } from "ui";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { Session } from "next-auth";
+import { MenuItem, Menu, IconButton } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 
 function Appbar() {
   // admin state
   const adminLoading = useRecoilValue(isAdminLoading);
   const adminEmail = useRecoilValue(adminEmailState);
   const setAdmin = useSetRecoilState(adminState);
+  const [adminAuthenticated, setAdminAuthenticated] = useState<boolean>(false)
 
   //user state
   const userLoading = useRecoilValue(isUserLoading);
@@ -42,6 +44,13 @@ function Appbar() {
   // next auth
   const session = useSession();
   console.log("session ->", session);
+
+  // admin authentication
+   useEffect(() => {
+    if (session.status === "authenticated") {
+      setAdminAuthenticated(true);
+    }
+  }, [session.status]);
 
   const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -147,6 +156,10 @@ function Appbar() {
     console.log("admin login");
     signIn();
   };
+  const adminLogout = () => {
+    console.log("admin logout");
+    signOut();
+  };
   const userLogin = () => {
     console.log("user login");
   };
@@ -165,7 +178,55 @@ function Appbar() {
           <div onClick={() => router.push("/")}>
             <Typography variant={"h6"}>Coursera</Typography>
           </div>
-          {session ? (
+          {isMobile ? (
+            <div>
+              <IconButton
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="inherit"
+              >
+                <MenuIcon />
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={open}
+                onClose={handleClose}
+              >
+                <MenuItem
+                  onClick={() => {
+                    router.push("/admin/dashboard");
+                  }}
+                >
+                  Dashboard
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    router.push("/");
+                    handleClose();
+                  }}
+                >
+                  Add Course
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    adminLogout()
+                  }}
+                >Logout</MenuItem>
+              </Menu>
+            </div>
+          ) : adminAuthenticated ? (
             <div>
               <div style={{ display: "flex" }}>
                 <div style={{ marginRight: 10 }}>
@@ -179,7 +240,22 @@ function Appbar() {
                   </Button>
                 </div>
                 <div style={{ marginRight: 10 }}>
-                  <Button variant={"contained"} onClick={() => {}}>
+                  <Button
+                    style={{ color: "white" }}
+                    onClick={() => {
+                      // redirect to dashboard here
+                    }}
+                  >
+                    Add Course
+                  </Button>
+                </div>
+                <div style={{ marginRight: 10 }}>
+                  <Button
+                    variant={"contained"}
+                    onClick={() => {
+                      adminLogout()
+                    }}
+                  >
                     Logout
                   </Button>
                 </div>
