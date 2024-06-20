@@ -154,7 +154,7 @@ function Appbar() {
 
   const adminLogin = () => {
     console.log("admin login");
-    signIn();
+    signIn('credentials', {role : "admin"});
   };
   const adminLogout = () => {
     console.log("admin logout");
@@ -179,6 +179,8 @@ function Appbar() {
             <Typography variant={"h6"}>Coursera</Typography>
           </div>
           {isMobile ? (
+            // {session ? {}: {}}
+            //if admin and user not authenticated 
             <div>
               <IconButton
                 aria-label="account of current user"
@@ -188,7 +190,7 @@ function Appbar() {
                 color="inherit"
               >
                 <MenuIcon />
-              </IconButton>
+              </IconButton> 
               <Menu
                 id="menu-appbar"
                 anchorEl={anchorEl}
@@ -206,27 +208,35 @@ function Appbar() {
               >
                 <MenuItem
                   onClick={() => {
-                    router.push("/admin/dashboard");
+                    adminLogin()
                   }}
                 >
-                  Dashboard
+                  Login
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
-                    router.push("/");
-                    handleClose();
+                    openAdminLoginModal();
                   }}
                 >
-                  Add Course
+                  Admin Login
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
-                    adminLogout()
+                    router.push("/user/signin");
                   }}
-                >Logout</MenuItem>
+                >Sign In</MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    router.push("/user/signup");
+                  }}
+                >Sign up</MenuItem>
               </Menu>
             </div>
+            //if admin authenticated
+            // if user authenticated
+
           ) : adminAuthenticated ? (
+            // if admin authenticated
             <div>
               <div style={{ display: "flex" }}>
                 <div style={{ marginRight: 10 }}>
@@ -261,7 +271,9 @@ function Appbar() {
                 </div>
               </div>
             </div>
+            // if user autheticated
           ) : (
+            // if admin and user not authenticated 
             <div style={{ display: "flex" }}>
               <div style={{ marginRight: 10 }}>
                 <Button
