@@ -17,13 +17,15 @@ import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { MenuItem, Menu, IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import UnAuthenticatedAppBar from "./AppBar/UnAuthenticatedAppBar";
+import AdminAppBar from "./AppBar/AdminAppBar";
 
 function Appbar() {
   // admin state
   const adminLoading = useRecoilValue(isAdminLoading);
   const adminEmail = useRecoilValue(adminEmailState);
   const setAdmin = useSetRecoilState(adminState);
-  const [adminAuthenticated, setAdminAuthenticated] = useState<boolean>(false)
+  const [adminAuthenticated, setAdminAuthenticated] = useState<boolean>(false);
 
   //user state
   const userLoading = useRecoilValue(isUserLoading);
@@ -46,7 +48,7 @@ function Appbar() {
   console.log("session ->", session);
 
   // admin authentication
-   useEffect(() => {
+  useEffect(() => {
     if (session.status === "authenticated") {
       setAdminAuthenticated(true);
     }
@@ -154,7 +156,7 @@ function Appbar() {
 
   const adminLogin = () => {
     console.log("admin login");
-    signIn('credentials', {role : "admin"});
+    signIn("credentials", { role: "admin" });
   };
   const adminLogout = () => {
     console.log("admin logout");
@@ -178,167 +180,310 @@ function Appbar() {
           <div onClick={() => router.push("/")}>
             <Typography variant={"h6"}>Coursera</Typography>
           </div>
-          {isMobile ? (
-            // {session ? {}: {}}
-            //if admin and user not authenticated 
-            <div>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton> 
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={open}
-                onClose={handleClose}
-              >
-                <MenuItem
-                  onClick={() => {
-                    adminLogin()
-                  }}
-                >
-                  Login
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    openAdminLoginModal();
-                  }}
-                >
-                  Admin Login
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    router.push("/user/signin");
-                  }}
-                >Sign In</MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    router.push("/user/signup");
-                  }}
-                >Sign up</MenuItem>
-              </Menu>
-            </div>
-            //if admin authenticated
-            // if user authenticated
-
-          ) : adminAuthenticated ? (
-            // if admin authenticated
-            <div>
-              <div style={{ display: "flex" }}>
-                <div style={{ marginRight: 10 }}>
-                  <Button
-                    style={{ color: "white" }}
-                    onClick={() => {
-                      // redirect to dashboard here
-                    }}
-                  >
-                    Dashboard
-                  </Button>
-                </div>
-                <div style={{ marginRight: 10 }}>
-                  <Button
-                    style={{ color: "white" }}
-                    onClick={() => {
-                      // redirect to dashboard here
-                    }}
-                  >
-                    Add Course
-                  </Button>
-                </div>
-                <div style={{ marginRight: 10 }}>
-                  <Button
-                    variant={"contained"}
-                    onClick={() => {
-                      adminLogout()
-                    }}
-                  >
-                    Logout
-                  </Button>
-                </div>
-              </div>
-            </div>
-            // if user autheticated
+          {adminAuthenticated ? (
+            <AdminAppBar />
           ) : (
-            // if admin and user not authenticated 
-            <div style={{ display: "flex" }}>
-              <div style={{ marginRight: 10 }}>
-                <Button
-                  style={{ color: "white" }}
-                  onClick={() => {
-                    openAppLoginModal();
-                  }}
-                >
-                  Login
-                </Button>
-                <CustomModal
-                  open={loginModalOpen}
-                  onClose={handleCloseModal}
-                  heading="Login and start learning"
-                  subHeading="Start your journey"
-                  primaryButtonText="Login as Admin"
-                  secondaryButtonText="Login As User"
-                  primaryButtonSubmit={() => adminLogin()}
-                  secondaryButtonSubmit={() => userLogin()}
-                />
-              </div>
-              <div style={{ marginRight: 10 }}>
-                <Button
-                  style={{ color: "white" }}
-                  onClick={() => {
-                    openAdminLoginModal();
-                  }}
-                >
-                  Admin Login
-                </Button>
-                <AdminModal
-                  open={modalOpen}
-                  onClose={handleCloseModal}
-                  onSubmit={handleAdminSubmission}
-                  isSignInRef={isSignInRef}
-                  onError={onError}
-                  handleResetError={handleResetError}
-                />
-              </div>
-              <div style={{ marginRight: 10 }}>
-                <Button
-                  variant={"contained"}
-                  onClick={() => {
-                    router.push("/user/signin");
-                  }}
-                >
-                  Sign In
-                </Button>
-              </div>
-              <div>
-                <Button
-                  variant={"contained"}
-                  onClick={() => {
-                    router.push("/user/signup");
-                  }}
-                >
-                  Sign Up
-                </Button>
-              </div>
-            </div>
+            <UnAuthenticatedAppBar />
           )}
         </div>
       </Toolbar>
     </AppBar>
   );
+  // <AppBar>
+  //   <Toolbar>
+  //     <div
+  //       style={{
+  //         display: "flex",
+  //         justifyContent: "space-between",
+  //         alignItems: "center",
+  //         flexGrow: 1,
+  //       }}
+  //     >
+  //       <div onClick={() => router.push("/")}>
+  //         <Typography variant={"h6"}>Coursera</Typography>
+  //       </div>
+  //       {adminAuthenticated && isMobile ? (
+  //         <div>
+  //           <IconButton
+  //             aria-label="account of current user"
+  //             aria-controls="menu-appbar"
+  //             aria-haspopup="true"
+  //             onClick={handleMenu}
+  //             color="inherit"
+  //           >
+  //             <MenuIcon />
+  //           </IconButton>
+  //           <Menu
+  //             id="menu-appbar"
+  //             anchorEl={anchorEl}
+  //             anchorOrigin={{
+  //               vertical: "top",
+  //               horizontal: "right",
+  //             }}
+  //             keepMounted
+  //             transformOrigin={{
+  //               vertical: "top",
+  //               horizontal: "right",
+  //             }}
+  //             open={open}
+  //             onClose={handleClose}
+  //           >
+  //             <MenuItem
+  //               onClick={() => {
+  //                 adminLogin()
+  //               }}
+  //             >
+  //               Dashboard
+  //             </MenuItem>
+  //             <MenuItem
+  //               onClick={() => {
+  //                 openAdminLoginModal();
+  //               }}
+  //             >
+  //               Add Course
+  //             </MenuItem>
+  //             <MenuItem
+  //               onClick={() => {
+  //                 router.push("/user/signin");
+  //               }}
+  //             >Log Out</MenuItem>
+  //           </Menu>
+  //         </div>
+  //       ) : adminAuthenticated && !isMobile ? (
+  //         <div style={{ display: "flex", marginLeft: "auto" }}>
+  //           <Button
+  //             style={{ color: "white", marginRight: 10 }}
+  //             onClick={() => {
+  //               // redirect to dashboard here
+  //             }}
+  //           >
+  //             Dashboard
+  //           </Button>
+  //           <Button
+  //             style={{ color: "white", marginRight: 10 }}
+  //             onClick={() => {
+  //               // redirect to add course here
+  //             }}
+  //           >
+  //             Add Course
+  //           </Button>
+  //           <Button variant="contained" onClick={adminLogout}>
+  //             Logout
+  //           </Button>
+  //         </div>
+  //       ) :
+  //       (
+  //         <div style={{ display: "flex" }}>
+  //           <div style={{ marginRight: 10 }}>
+  //             <Button
+  //               style={{ color: "white" }}
+  //               onClick={() => {
+  //                 openAppLoginModal();
+  //               }}
+  //             >
+  //               Login
+  //             </Button>
+  //             <CustomModal
+  //               open={loginModalOpen}
+  //               onClose={handleCloseModal}
+  //               heading="Login and start learning"
+  //               subHeading="Start your journey"
+  //               primaryButtonText="Login as Admin"
+  //               secondaryButtonText="Login As User"
+  //               primaryButtonSubmit={() => adminLogin()}
+  //               secondaryButtonSubmit={() => userLogin()}
+  //             />
+  //           </div>
+  //           <div style={{ marginRight: 10 }}>
+  //             <Button
+  //               style={{ color: "white" }}
+  //               onClick={() => {
+  //                 openAdminLoginModal();
+  //               }}
+  //             >
+  //               Admin Login
+  //             </Button>
+  //             <AdminModal
+  //               open={modalOpen}
+  //               onClose={handleCloseModal}
+  //               onSubmit={handleAdminSubmission}
+  //               isSignInRef={isSignInRef}
+  //               onError={onError}
+  //               handleResetError={handleResetError}
+  //             />
+  //           </div>
+  //           <div style={{ marginRight: 10 }}>
+  //             <Button
+  //               variant={"contained"}
+  //               onClick={() => {
+  //                 router.push("/user/signin");
+  //               }}
+  //             >
+  //               Sign In
+  //             </Button>
+  //           </div>
+  //           <div>
+  //             <Button
+  //               variant={"contained"}
+  //               onClick={() => {
+  //                 router.push("/user/signup");
+  //               }}
+  //             >
+  //               Sign Up
+  //             </Button>
+  //           </div>
+  //         </div>
+  //       )
+
+  //       }
+  //       {/* {isMobile ? (
+  //         // !admin !user
+  //         <UnAuthenticatedMobileAppBar />
+  //         // <div>
+  //         //   <IconButton
+  //         //     aria-label="account of current user"
+  //         //     aria-controls="menu-appbar"
+  //         //     aria-haspopup="true"
+  //         //     onClick={handleMenu}
+  //         //     color="inherit"
+  //         //   >
+  //         //     <MenuIcon />
+  //         //   </IconButton>
+  //         //   <Menu
+  //         //     id="menu-appbar"
+  //         //     anchorEl={anchorEl}
+  //         //     anchorOrigin={{
+  //         //       vertical: "top",
+  //         //       horizontal: "right",
+  //         //     }}
+  //         //     keepMounted
+  //         //     transformOrigin={{
+  //         //       vertical: "top",
+  //         //       horizontal: "right",
+  //         //     }}
+  //         //     open={open}
+  //         //     onClose={handleClose}
+  //         //   >
+  //         //     <MenuItem
+  //         //       onClick={() => {
+  //         //         adminLogin()
+  //         //       }}
+  //         //     >
+  //         //       Login
+  //         //     </MenuItem>
+  //         //     <MenuItem
+  //         //       onClick={() => {
+  //         //         openAdminLoginModal();
+  //         //       }}
+  //         //     >
+  //         //       Admin Login
+  //         //     </MenuItem>
+  //         //     <MenuItem
+  //         //       onClick={() => {
+  //         //         router.push("/user/signin");
+  //         //       }}
+  //         //     >Sign In</MenuItem>
+  //         //     <MenuItem
+  //         //       onClick={() => {
+  //         //         router.push("/user/signup");
+  //         //       }}
+  //         //     >Sign up</MenuItem>
+  //         //   </Menu>
+  //         // </div>
+  //         //if admin authenticated
+  //         // if user authenticated
+
+  //       ) : adminAuthenticated ? (
+  //         // if admin authenticated
+  //         // <AdminAppBar />
+  //         <div style={{ display: "flex", marginLeft: "auto" }}>
+  //           <Button
+  //             style={{ color: "white", marginRight: 10 }}
+  //             onClick={() => {
+  //               // redirect to dashboard here
+  //             }}
+  //           >
+  //             Dashboard
+  //           </Button>
+  //           <Button
+  //             style={{ color: "white", marginRight: 10 }}
+  //             onClick={() => {
+  //               // redirect to add course here
+  //             }}
+  //           >
+  //             Add Course
+  //           </Button>
+  //           <Button variant="contained" onClick={adminLogout}>
+  //             Logout
+  //           </Button>
+  //         </div>
+  //       ) : (
+  //         // if admin and user not authenticated
+  //         <div style={{ display: "flex" }}>
+  //           <div style={{ marginRight: 10 }}>
+  //             <Button
+  //               style={{ color: "white" }}
+  //               onClick={() => {
+  //                 openAppLoginModal();
+  //               }}
+  //             >
+  //               Login
+  //             </Button>
+  //             <CustomModal
+  //               open={loginModalOpen}
+  //               onClose={handleCloseModal}
+  //               heading="Login and start learning"
+  //               subHeading="Start your journey"
+  //               primaryButtonText="Login as Admin"
+  //               secondaryButtonText="Login As User"
+  //               primaryButtonSubmit={() => adminLogin()}
+  //               secondaryButtonSubmit={() => userLogin()}
+  //             />
+  //           </div>
+  //           <div style={{ marginRight: 10 }}>
+  //             <Button
+  //               style={{ color: "white" }}
+  //               onClick={() => {
+  //                 openAdminLoginModal();
+  //               }}
+  //             >
+  //               Admin Login
+  //             </Button>
+  //             <AdminModal
+  //               open={modalOpen}
+  //               onClose={handleCloseModal}
+  //               onSubmit={handleAdminSubmission}
+  //               isSignInRef={isSignInRef}
+  //               onError={onError}
+  //               handleResetError={handleResetError}
+  //             />
+  //           </div>
+  //           <div style={{ marginRight: 10 }}>
+  //             <Button
+  //               variant={"contained"}
+  //               onClick={() => {
+  //                 router.push("/user/signin");
+  //               }}
+  //             >
+  //               Sign In
+  //             </Button>
+  //           </div>
+  //           <div>
+  //             <Button
+  //               variant={"contained"}
+  //               onClick={() => {
+  //                 router.push("/user/signup");
+  //               }}
+  //             >
+  //               Sign Up
+  //             </Button>
+  //           </div>
+  //         </div>
+  //       )} */}
+  //     </div>
+  //   </Toolbar>
+  // </AppBar>
+  // );
 }
 
 export default Appbar;

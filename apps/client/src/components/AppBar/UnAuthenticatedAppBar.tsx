@@ -1,8 +1,5 @@
 import React, { useState, useRef } from "react";
 import {
-  AppBar,
-  Toolbar,
-  Typography,
   Button,
   IconButton,
   Menu,
