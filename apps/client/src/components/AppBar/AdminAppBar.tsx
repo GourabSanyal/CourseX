@@ -36,90 +36,76 @@ const AdminAppBar = () => {
   };
 
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexGrow: 1,
-          }}
-        >
-          <div onClick={() => router.push("/")}>
-            <Typography variant={"h6"}>Coursera</Typography>
-          </div>
-          {isMobile ? (
-            <div>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={open}
-                onClose={handleClose}
-              >
-                <MenuItem
-                  onClick={() => {
-                    handleClose();
-                    adminLogout();
-                  }}
-                >
-                  Dashboard
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    handleClose();
-                    router.push("/user/signin");
-                  }}
-                >
-                  Add Course
-                </MenuItem>
-                <MenuItem onClick={adminLogout}>Log Out</MenuItem>
-              </Menu>
-            </div>
-          ) : (
-            <div style={{ display: "flex", marginLeft: "auto" }}>
-              <Button
-                style={{ color: "white", marginRight: 10 }}
-                onClick={() => {
-                  // redirect to dashboard here
-                }}
-              >
-                Dashboard
-              </Button>
-              <Button
-                style={{ color: "white", marginRight: 10 }}
-                onClick={() => {
-                  // redirect to add course here
-                }}
-              >
-                Add Course
-              </Button>
-              <Button variant="contained" onClick={adminLogout}>
-                Logout
-              </Button>
-            </div>
-          )}
+    <>
+      {isMobile ? (
+        <div>
+          <IconButton
+            aria-label="account of current user"
+            aria-controls="menu-appbar"
+            aria-haspopup="true"
+            onClick={handleMenu}
+            color="inherit"
+          >
+            <MenuIcon />
+          </IconButton>
+          <Menu
+            id="menu-appbar"
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            open={open}
+            onClose={handleClose}
+          >
+            <MenuItem
+              onClick={() => {
+                handleClose();
+                adminLogout();
+              }}
+            >
+              Dashboard
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleClose();
+                router.push("/user/signin");
+              }}
+            >
+              Add Course
+            </MenuItem>
+            <MenuItem onClick={adminLogout}>Log Out</MenuItem>
+          </Menu>
         </div>
-      </Toolbar>
-    </AppBar>
+      ) : (
+        <div style={{ display: "flex", marginLeft: "auto" }}>
+          <Button
+            style={{ color: "white", marginRight: 10 }}
+            onClick={() => {
+              // redirect to dashboard here
+            }}
+          >
+            Dashboard
+          </Button>
+          <Button
+            style={{ color: "white", marginRight: 10 }}
+            onClick={() => {
+              // redirect to add course here
+            }}
+          >
+            Add Course
+          </Button>
+          <Button variant="contained" onClick={adminLogout}>
+            Logout
+          </Button>
+        </div>
+      )}
+    </>
   );
 };
 
