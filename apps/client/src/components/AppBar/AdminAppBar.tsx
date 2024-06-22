@@ -6,7 +6,7 @@ import {
   MenuItem,
   useMediaQuery,
   useTheme,
-} from "@material-ui/core";
+} from "@mui/material";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import MenuIcon from "@mui/icons-material/Menu"; // Ensure you have this import

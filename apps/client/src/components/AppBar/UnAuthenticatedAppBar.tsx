@@ -6,7 +6,7 @@ import {
   MenuItem,
   useMediaQuery,
   useTheme,
-} from "@material-ui/core";
+} from "@mui/material";
 import { CustomModal } from "ui";
 import { signOut, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
