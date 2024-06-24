@@ -88,6 +88,10 @@ const UnAuthenticatedAppBar = () => {
     }
   };
 
+  const handleLogin = async(role : "admin" | "user") => {
+    await signIn("google", {role, callbackUrl:"http://localhost:3000/admin/dashboard"})
+  }
+
   const adminSignIn = async (email: string, password: string) => {
     try {
       const response = await axios.post("api/auth/admin/signin", {
@@ -195,9 +199,9 @@ const UnAuthenticatedAppBar = () => {
               heading="Login and start learning"
               subHeading="Start your journey"
               primaryButtonText="Login as Admin"
+              primaryButtonSubmit={() => handleLogin("admin")}
               secondaryButtonText="Login As User"
-              primaryButtonSubmit={() => adminLogin()}
-              secondaryButtonSubmit={() => userLogin()}
+              secondaryButtonSubmit={() => handleLogin("user")}
             />
           </div>
           <div style={{ marginRight: 10 }}>
