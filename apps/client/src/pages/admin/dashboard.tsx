@@ -2,11 +2,17 @@ import { Box, CircularProgress, Grid, Tab, Typography } from "@mui/material";
 import { Tabs } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
-import { adminEmailState, adminState } from "store";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { adminEmailState, adminState, adminUserName } from "store";
 import { Course } from "../courses";
-import {CustomModal} from "ui"
+import { CustomModal } from "ui";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
+// import { getServerSideProps } from "next/dist/build/templates/pages";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]";
+import { redirect } from "next/navigation";
+import { GetServerSidePropsContext, GetServerSideProps } from "next";
 
 type Course = {
   _id: string;
@@ -18,6 +24,8 @@ type Course = {
 };
 2;
 const dashboard = () => {
+  const session = useSession();
+  const setAdmin = useSetRecoilState(adminState);
   const router = useRouter();
   const adminUsername = useRecoilValue(adminState).username;
   const [activeTab, setActiveTab] = useState(0);
@@ -28,36 +36,46 @@ const dashboard = () => {
   const [loadingAllCourses, setLoadingAllCourses] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
-  const [handleModalOpen, setHandleModalOpen] = useState<boolean>(false)
+  const [handleModalOpen, setHandleModalOpen] = useState<boolean>(false);
   const email = useRecoilValue(adminEmailState);
 
   const editCourse = (courseId: string) => {
-    router.push(`/admin/${courseId}`)
-  }
+    router.push(`/admin/${courseId}`);
+  };
 
   // const viewCourseDetails = () => {
   //   handleModalOpen(true)
   // }
 
+  // useEffect(() => {
+  //   const getUserRole = async () => {
+  //     const response = await axios.get("/api/auth/me", {
+  //       headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+  //     });
+  //     let role = response.data.role;
+  //     setRole(role);
+  //   };
+
+  //   const fetchUserId = async () => {
+  //     const response = await axios.get("/api/common/get-user-id", {
+  //       data: { email, role },
+  //     });
+  //     setUserId(response.data._id);
+  //   };
+
+  //   getUserRole();
+  //   fetchUserId();
+  // }, []);
+
   useEffect(() => {
-    const getUserRole = async () => {
-      const response = await axios.get("/api/auth/me", {
-        headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+    if (session) {
+      setAdmin({
+        isLoading: false,
+        userEmail: session.data?.user?.email,
+        username: session.data?.user?.name,
       });
-      let role = response.data.role;
-      setRole(role);
-    };
-
-    const fetchUserId = async () => {
-      const response = await axios.get("/api/common/get-user-id", {
-        data: { email, role },
-      });
-      setUserId(response.data._id);
-    };
-
-    getUserRole();
-    fetchUserId();
-  }, []);
+    }
+  }, [session, setAdmin]);
 
   const fetchCourses = async () => {
     setLoadingYourCourses(true);
@@ -112,7 +130,7 @@ const dashboard = () => {
           direction="column"
         >
           <Typography variant="h4" align="center" gutterBottom>
-            Welcome {adminUsername}
+            Welcome {adminUsername?.split(" ")[0]}
           </Typography>
           <div style={{ justifyContent: "center", alignItems: "center" }}>
             <Tabs
@@ -206,3 +224,23 @@ const dashboard = () => {
 };
 
 export default dashboard;
+
+export const getServerSideProps: GetServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const session = await getServerSession(context.req, context.res, authOptions);
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/shared/unauthorize",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      session,
+    },
+  };
+};
