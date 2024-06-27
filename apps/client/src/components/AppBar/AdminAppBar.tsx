@@ -28,8 +28,8 @@ const AdminAppBar = () => {
   };
 
   const adminLogout = () => {
-    console.log("admin logout");
     signOut();
+    router.push('/')
   };
 
   return (
