@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import {
   Button,
   IconButton,
@@ -30,16 +30,19 @@ const UnAuthenticatedAppBar = () => {
   const open = Boolean(anchorEl);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+  // const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+  //   setAnchorEl(event.currentTarget);
+  // };
+  const handleMenu = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
+  }, []);
+  // const handleClose = () => {
+  //   setAnchorEl(null);
+  // };
+  const handleClose = useCallback(() => {
     setAnchorEl(null);
-  };
+  }, []);
 
-  const openAppLoginModal = () => {
-    setLoginModalOpen(true); // NEW - opens oAuth login modal
-  };
   const handleCloseModal = () => {
     setModalOpen(false); // closes admin modal
     setLoginModalOpen(false); // closes users modal
@@ -88,9 +91,21 @@ const UnAuthenticatedAppBar = () => {
     }
   };
 
-  const handleLogin = async(role : "admin" | "user") => {
-    await signIn("google", {role, callbackUrl:"http://localhost:3000/admin/dashboard"})
-  }
+  const openAppLoginModal = () => {
+    setLoginModalOpen(true); // NEW - opens oAuth login modal
+  };
+
+  const handleLogin = async (role: "admin" | "user") => {
+    if (role === "admin") {
+      openAdminLoginModal();
+    } else {
+      document.cookie = "role=admin; path=/";
+      await signIn("google", {
+        role: role as string,
+        callbackUrl: `http://localhost:3000/`,
+      });
+    }
+  };
 
   const adminSignIn = async (email: string, password: string) => {
     try {
@@ -143,6 +158,7 @@ const UnAuthenticatedAppBar = () => {
           >
             <MenuIcon />
           </IconButton>
+          {anchorEl && (
           <Menu
             id="menu-appbar"
             anchorEl={anchorEl}
@@ -181,6 +197,8 @@ const UnAuthenticatedAppBar = () => {
               SignUp
             </MenuItem>
           </Menu>
+
+          )}
         </div>
       ) : (
         <div style={{ display: "flex" }}>
@@ -193,16 +211,6 @@ const UnAuthenticatedAppBar = () => {
             >
               Login
             </Button>
-            <CustomModal
-              open={loginModalOpen}
-              onClose={handleCloseModal}
-              heading="Login and start learning"
-              subHeading="Start your journey"
-              primaryButtonText="Login as Admin"
-              primaryButtonSubmit={() => handleLogin("admin")}
-              secondaryButtonText="Login As User"
-              secondaryButtonSubmit={() => handleLogin("user")}
-            />
           </div>
           <div style={{ marginRight: 10 }}>
             <Button
@@ -213,14 +221,6 @@ const UnAuthenticatedAppBar = () => {
             >
               Admin Login
             </Button>
-            <AdminModal
-              open={modalOpen}
-              onClose={handleCloseModal}
-              onSubmit={handleAdminSubmission}
-              isSignInRef={isSignInRef}
-              onError={onError}
-              handleResetError={handleResetError}
-            />
           </div>
           <div style={{ marginRight: 10 }}>
             <Button
@@ -244,6 +244,24 @@ const UnAuthenticatedAppBar = () => {
           </div>
         </div>
       )}
+      <CustomModal
+        open={loginModalOpen}
+        onClose={handleCloseModal}
+        heading="Login and start learning"
+        subHeading="Start your journey"
+        primaryButtonText="Login as Admin"
+        primaryButtonSubmit={() => handleLogin("admin")}
+        secondaryButtonText="Login As User"
+        secondaryButtonSubmit={() => handleLogin("user")}
+      />
+      <AdminModal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        onSubmit={handleAdminSubmission}
+        isSignInRef={isSignInRef}
+        onError={onError}
+        handleResetError={handleResetError}
+      />
     </>
   );
 };
