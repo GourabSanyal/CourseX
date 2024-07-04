@@ -200,13 +200,3 @@ export function AdminModal({
     </Dialog>
   );
 }
-
-// {onError ? (
-//   <Typography
-//     variant="body2"
-//     align="center"
-//     style={{ marginTop: 10, color: "red" }}
-//   >
-//     {onError}
-//   </Typography>
-// ) : null}
