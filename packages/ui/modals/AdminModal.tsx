@@ -23,6 +23,8 @@ import {
   Link,
   IconButton,
   InputAdornment,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -57,6 +59,8 @@ export function AdminModal({
   const { errors } = formState;
   const [showPassword, setShowPassword] = useState(false);
   const [rerenderFlag, setRerenderFlag] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleToggleForm = useCallback(() => {
     reset();
@@ -77,7 +81,7 @@ export function AdminModal({
         await onSubmit(null, data.email, data.password);
       } else {
         console.log("from child -->", data);
-        
+
         await onSubmit(data.username, data.email, data.password);
       }
     } catch (error) {
@@ -88,7 +92,17 @@ export function AdminModal({
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth={isMobile}
+      maxWidth={isMobile ? "xs" : "sm"}
+      PaperProps={{
+        style: {
+          padding: isMobile ? "10px" : "20px",
+        },
+      }}
+    >
       <DialogTitle>
         <Button
           onClick={onClose}
@@ -99,7 +113,7 @@ export function AdminModal({
       </DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit(handleFormSubmit)}>
-          {!isSignInRef.current ? (
+          {!isSignInRef.current && (
             <TextField
               label="Username"
               fullWidth
@@ -114,7 +128,7 @@ export function AdminModal({
               error={!!errors.username}
               helperText={errors.username?.message}
             />
-          ) : null}
+          )}
           <TextField
             label="Email"
             fullWidth
@@ -187,14 +201,12 @@ export function AdminModal({
   );
 }
 
-// interface CustomModalProps {
-//   open: boolean;
-//   handleClose: () => void;
-//   heading: string;
-//   primaryText: string;
-//   secondaryText?: string;
-//   primaryButtonText?: string;
-//   secondaryButtonText?: string;
-//   handlePrimaryButtonClick?: () => void;
-//   handleSecondaryButtonClick?: () => void;
-// }
+// {onError ? (
+//   <Typography
+//     variant="body2"
+//     align="center"
+//     style={{ marginTop: 10, color: "red" }}
+//   >
+//     {onError}
+//   </Typography>
+// ) : null}
