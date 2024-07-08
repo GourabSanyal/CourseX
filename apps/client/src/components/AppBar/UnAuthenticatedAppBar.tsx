@@ -15,6 +15,7 @@ import { AdminModal } from "ui";
 import axios from "axios";
 import { useSetRecoilState } from "recoil";
 import { adminState } from "store";
+import { ensureDbConnected } from "@/lib/dbConnect";
 
 const UnAuthenticatedAppBar = () => {
   //admin state
@@ -99,8 +100,7 @@ const UnAuthenticatedAppBar = () => {
     if (role === "admin") {
       openAdminLoginModal();
     } else {
-      document.cookie = "role=admin; path=/";
-      await signIn("google", {
+      await signIn("admin-signin", {
         role: role as string,
         callbackUrl: `http://localhost:3000/`,
       });
@@ -109,17 +109,24 @@ const UnAuthenticatedAppBar = () => {
 
   const adminSignIn = async (email: string, password: string) => {
     try {
-      const response = await axios.post("api/auth/admin/signin", {
-        email,
-        password,
-      });
-      localStorage.setItem("token", response.data.token);
+      // const response = await axios.post("api/auth/admin/signin", {
+      //   email,
+      //   password,
+      // });
+      // localStorage.setItem("token", response.data.token);
 
-      handleCloseModal();
-      router.push("/admin/dashboard");
-      let username = response.data.username;
-      setAdmin({ isLoading: false, userEmail: email, username: username });
+      // handleCloseModal();
+      // router.push("/admin/dashboard");
+      // let username = response.data.username;
+      // setAdmin({ isLoading: false, userEmail: email, username: username });
+      // console.log("cred email", email , password);
+      // ensureDbConnected()
+      const results=  await signIn("admin-signin", { email, password, redirect: false})
+      if (results?.error === "CredentialsSignin"){
+        setOnError("No admin found with this given email")
+      }
     } catch (error) {
+        setOnError(error as string);
       if (axios.isAxiosError(error) && error.response?.status === 403) {
         let errorRes = error.response.data.message;
         setOnError(errorRes);
@@ -137,6 +144,8 @@ const UnAuthenticatedAppBar = () => {
     try {
       if (isSignInRef.current) {
         adminSignIn(email, password);
+        // console.log("cred", email, password);
+        
       } else {
         adminSignUp(username, email, password);
       }
