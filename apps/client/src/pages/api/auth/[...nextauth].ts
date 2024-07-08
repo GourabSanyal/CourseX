@@ -25,44 +25,64 @@ export const authOptions: NextAuthOptions = {
       },
     }),
     CredentialsProvider({
-      id:'admin-signin',
-      name: 'Credentials',
+      id: "admin-signup",
+      name: "Credentials",
+      credentials: {
+        username: { label: "Email", type: "text" },
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials, req) {
+        const username = credentials?.username;
+        const email = credentials?.email;
+        const password = credentials?.password;
+
+        if (!email || !password || !username) {
+          throw new Error("Email and password are required");
+        }
+        ensureDbConnected();
+        const dbUser = await Admin.findOne({ email});
+
+        if (dbUser) {
+          throw new Error("Admin Laready exixts, please login to continue");
+        } else {
+          const obj = { username, email, password };
+          const newAdmin = new Admin(obj);
+          return newAdmin;
+        }
+      },
+    }),
+    CredentialsProvider({
+      id: "admin-signin",
+      name: "Credentials",
       credentials: {
         email: { label: "Email", type: "text", placeholder: "Email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
         const email = credentials?.email;
         const password = credentials?.password;
-        let error = false
 
         if (!email || !password) {
-          error = true 
           throw new Error("Email and password are required");
         }
-        ensureDbConnected()
-        const dbUser = await Admin.findOne({email})
+        ensureDbConnected();
+        const dbUser = await Admin.findOne({ email, password });
         try {
-          if (!dbUser){
-            throw new Error("No admin found with this given email")
+          if (!dbUser) {
+            throw new Error("No admin found with this given email");
           }
-          if (password !== dbUser.password){
-            throw new Error('Incorrect email or password')
+          if (password !== dbUser.get("password")) {
+            throw new Error("Incorrect email or password");
           }
 
-          return{
-            id: dbUser._id.toString(),
-            name : dbUser.username,
-            email: dbUser.email,
-            role : 'admin'
-          }
+          return dbUser;
         } catch (error) {
-          
           console.log("auth error", error as string);
-          return null
+          return null;
         }
-      }
-    })
+      },
+    }),
   ] as Provider[],
   secret: process.env.NEXTAUTH_SECRET,
   session: {
@@ -75,11 +95,10 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
       try {
-        await ensureDbConnected()
-        
-        return true; 
+        await ensureDbConnected();
+        return true;
       } catch (error) {
-        return false; 
+        return false;
       }
     },
     async jwt({
@@ -95,9 +114,8 @@ export const authOptions: NextAuthOptions = {
       profile?: any;
       trigger?: "signIn" | "signUp" | "update";
     }) {
-      console.log("jwt user",{user, profile, token, trigger, account } )
+      console.log("jwt user", { user, profile, token, trigger, account });
       if (account?.provider === "google" && profile) {
-        
         token.name = profile.name;
         token.picture = profile.picture;
         token.role = account.role as string;
@@ -122,7 +140,7 @@ export const authOptions: NextAuthOptions = {
       user: User;
     }) {
       // console.log("signIn call back data",{ session, token, user } )
-      console.log("session user",{user, session, token })
+      console.log("session user", { user, session, token });
       session.user = {
         ...session.user,
         id: token.id as string,
@@ -157,5 +175,3 @@ declare module "next-auth" {
     role?: string;
   }
 }
-
-
