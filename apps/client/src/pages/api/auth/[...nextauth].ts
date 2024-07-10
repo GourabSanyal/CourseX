@@ -2,7 +2,6 @@ import NextAuth from "next-auth/next";
 import {
   Session,
   User,
-  SessionStrategy,
   DefaultSession,
   NextAuthOptions,
 } from "next-auth";
@@ -33,22 +32,34 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
+        ensureDbConnected()
         const username = credentials?.username;
         const email = credentials?.email;
         const password = credentials?.password;
+        console.log("creds", username, email, password);
+        
 
         if (!email || !password || !username) {
           throw new Error("Email and password are required");
         }
-        ensureDbConnected();
-        const dbUser = await Admin.findOne({ email});
+        const dbUser = await Admin.findOne({ email });
 
-        if (dbUser) {
-          throw new Error("Admin Laready exixts, please login to continue");
-        } else {
-          const obj = { username, email, password };
-          const newAdmin = new Admin(obj);
-          return newAdmin;
+        try {
+          if (!dbUser) {
+            const obj = { username, email, password, role: "admin" };
+            console.log("password before saving", password);
+            const newAdmin = await new Admin(obj);
+            newAdmin.save();
+            console.log("new admin", newAdmin);
+            return newAdmin;
+          }
+          else {
+            throw new Error("Admin Laready exists, please login to continue");
+          }
+          return dbUser;
+        } catch (error) {
+          console.log("auth error", error as string);
+          return null;
         }
       },
     }),
@@ -114,7 +125,7 @@ export const authOptions: NextAuthOptions = {
       profile?: any;
       trigger?: "signIn" | "signUp" | "update";
     }) {
-      console.log("jwt user", { user, profile, token, trigger, account });
+      // console.log("jwt user", { user, profile, token, trigger, account });
       if (account?.provider === "google" && profile) {
         token.name = profile.name;
         token.picture = profile.picture;
@@ -140,7 +151,7 @@ export const authOptions: NextAuthOptions = {
       user: User;
     }) {
       // console.log("signIn call back data",{ session, token, user } )
-      console.log("session user", { user, session, token });
+      // console.log("session user", { user, session, token });
       session.user = {
         ...session.user,
         id: token.id as string,

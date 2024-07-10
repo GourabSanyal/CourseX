@@ -73,15 +73,24 @@ const UnAuthenticatedAppBar = () => {
     password: string
   ) => {
     try {
-      const response = await axios.post("api/auth/admin/signup", {
+      // const response = await axios.post("api/auth/admin/signup", {
+      //   username,
+      //   email,
+      //   password,
+      // });
+      // localStorage.setItem("token", response.data.token);
+      // router.push("/admin/dashboard");
+      // setAdmin({ isLoading: false, userEmail: email, username: username });
+      // handleCloseModal();
+      const results = await signIn("admin-signup", {
         username,
         email,
         password,
-      });
-      localStorage.setItem("token", response.data.token);
-      router.push("/admin/dashboard");
-      setAdmin({ isLoading: false, userEmail: email, username: username });
-      handleCloseModal();
+        redirect: false
+      })
+      if (results?.error){
+        setOnError("Admin already exists, please login to continue")
+      }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 409) {
         let errorRes = error.response.data.message;
@@ -122,9 +131,10 @@ const UnAuthenticatedAppBar = () => {
       // console.log("cred email", email , password);
       // ensureDbConnected()
       const results=  await signIn("admin-signin", { email, password, redirect: false})
-      if (results?.error === "CredentialsSignin"){
-        setOnError("No admin found with this given email")
+      if (results?.error){
+        setOnError("Admin not registered or wrong credentials")
       }
+  
     } catch (error) {
         setOnError(error as string);
       if (axios.isAxiosError(error) && error.response?.status === 403) {
