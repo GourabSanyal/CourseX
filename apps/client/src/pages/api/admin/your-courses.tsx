@@ -34,28 +34,33 @@ export default async function handler(
 ) {
   try {
     await ensureDbConnected();
+    console.log("secret", secret);
     const session = await getSession({ req });
-      if (!session) {
+    const token = await getToken({ req, secret });
+    console.log("JSON Web Token", token);
+    if (!session && !token || session?.user.role !=="admin" && token?.role !== "admin" ) {
+      res.json({
+        message: "Session expired, please relogin to continue",
+        statusCode: 403,
+      });
+    } else {
+      console.log("session presenst");
+      const email= token?.email;
+      const role= token?.role;
+
+      let admin = await Admin.findOne({ email, role });
+      let courses: Course[] = await Course.find({
+        _id: { $in: admin.createdCourses },
+      });
+      if (!courses.length) {
         res.json({
-          message: "Session expired, please relogin to continue",
-          statusCode: 403,
+          message: "You have not created any course yet!",
+          statusCode: 200,
         });
       } else {
-        console.log("session presenst");
-        const { email, role } = session.user;
-        let admin = await Admin.findOne({ email, role });
-        let courses: Course[] = await Course.find({
-          _id: { $in: admin.createdCourses },
-        });
-        if (!courses.length) {
-          res.json({
-            message: "You have not created any course yet!",
-            statusCode: 200,
-          });
-        } else {
-          res.json({ message: "This is all your courses", data: courses });
-        }
+        res.json({ message: "This is all your courses", data: courses });
       }
+    }
   } catch (error) {
     res.json({
       message: "Error from api admin/your-courses",
