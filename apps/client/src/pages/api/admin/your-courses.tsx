@@ -36,7 +36,7 @@ export default async function handler(
     await ensureDbConnected();
     const session = await getSession({ req });
     const token = await getToken({ req, secret });
-    console.log("JSON Web Token", token);
+    // console.log("JSON Web Token", token);
     if (!session && !token || session?.user.role !=="admin" && token?.role !== "admin" ) {
       res.json({
         message: "Session expired, please relogin to continue",
