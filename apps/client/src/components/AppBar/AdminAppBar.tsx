@@ -28,8 +28,7 @@ const AdminAppBar = () => {
   };
 
   const adminLogout = () => {
-    signOut();
-    router.push('/')
+    signOut({ callbackUrl: '/'});
   };
 
   return (
@@ -63,7 +62,7 @@ const AdminAppBar = () => {
             <MenuItem
               onClick={() => {
                 handleClose();
-                adminLogout();
+                router.push("/admin/dashboard")
               }}
             >
               Dashboard
@@ -71,7 +70,7 @@ const AdminAppBar = () => {
             <MenuItem
               onClick={() => {
                 handleClose();
-                router.push("/user/signin");
+                router.push("/admin/addCourse");
               }}
             >
               Add Course
@@ -84,7 +83,7 @@ const AdminAppBar = () => {
           <Button
             style={{ color: "white", marginRight: 10 }}
             onClick={() => {
-              // redirect to dashboard here
+              router.push("/admin/dashboard")
             }}
           >
             Dashboard
@@ -92,7 +91,7 @@ const AdminAppBar = () => {
           <Button
             style={{ color: "white", marginRight: 10 }}
             onClick={() => {
-              // redirect to add course here
+              router.push("/admin/addCourse")
             }}
           >
             Add Course
