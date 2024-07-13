@@ -2,21 +2,16 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { CustomModal } from "ui";
 import { useState, useRef, useEffect } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isUserLoading, userEmailState, userState } from "store";
 import { adminState, adminEmailState, isAdminLoading } from "store";
 import { useRouter } from "next/navigation";
-import { AdminModal } from "ui";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { MenuItem, Menu, IconButton } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
 import UnAuthenticatedAppBar from "./AppBar/UnAuthenticatedAppBar";
 import AdminAppBar from "./AppBar/AdminAppBar";
 
@@ -178,7 +173,7 @@ function Appbar() {
           }}
         >
           <div onClick={() => router.push("/")}>
-            <Typography variant={"h6"}>Coursera</Typography>
+            <Typography variant={"h6"}>CourseX</Typography>
           </div>
           {adminAuthenticated ? (
             <AdminAppBar />
