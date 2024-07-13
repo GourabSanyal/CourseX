@@ -34,7 +34,6 @@ export default async function handler(
 ) {
   try {
     await ensureDbConnected();
-    console.log("secret", secret);
     const session = await getSession({ req });
     const token = await getToken({ req, secret });
     console.log("JSON Web Token", token);
