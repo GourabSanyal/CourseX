@@ -8,7 +8,6 @@ import { Course } from "../courses";
 import { CustomModal } from "ui";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-// import { getServerSideProps } from "next/dist/build/templates/pages";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
 import { redirect } from "next/navigation";
@@ -22,12 +21,14 @@ type Course = {
   imageLink: string;
   published: boolean;
 };
-2;
+
 const dashboard = () => {
-  const session = useSession();
-  const setAdmin = useSetRecoilState(adminState);
+  const {data : session} = useSession();
+  console.log("session in dashboard", session);
+
+  // const setAdmin = useSetRecoilState(adminState);
   const router = useRouter();
-  const adminUsername = useRecoilValue(adminState).username;
+  // const adminUsername = useRecoilValue(adminState).username;
   const [activeTab, setActiveTab] = useState(0);
   const [courses, setCourses] = useState<Course[]>();
   const [allCourses, setAllCourses] = useState<Course[]>();
@@ -67,15 +68,15 @@ const dashboard = () => {
   //   fetchUserId();
   // }, []);
 
-  useEffect(() => {
-    if (session) {
-      setAdmin({
-        isLoading: false,
-        userEmail: session.data?.user?.email,
-        username: session.data?.user?.name,
-      });
-    }
-  }, [session, setAdmin]);
+  // useEffect(() => {
+  //   if (session) {
+  //     setAdmin({
+  //       isLoading: false,
+  //       // userEmail: session.data?.user?.email,
+  //       username: session.data?.user?.name,
+  //     });
+  //   }
+  // }, [session, setAdmin]);
 
   const fetchCourses = async () => {
     setLoadingYourCourses(true);
@@ -93,16 +94,16 @@ const dashboard = () => {
 
   const fetchAllCourses = async () => {
     setLoadingAllCourses(true);
-    const response = await axios.get("/api/common/all-courses", {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    });
+    // const response = await axios.get("/api/common/all-courses", {
+    //   headers: {
+    //     Authorization: "Bearer " + localStorage.getItem("token"),
+    //   },
+    // });
 
-    setAllCourses(response.data);
-    if (!response.data.length) {
-      setError(response.data.message);
-    }
+    // setAllCourses(response.data);
+    // if (!response.data.length) {
+    //   setError(response.data.message);
+    // }
     setLoadingAllCourses(false);
   };
 
@@ -130,7 +131,7 @@ const dashboard = () => {
           direction="column"
         >
           <Typography variant="h4" align="center" gutterBottom>
-            Welcome {adminUsername?.split(" ")[0]}
+            Welcome Admin
           </Typography>
           <div style={{ justifyContent: "center", alignItems: "center" }}>
             <Tabs
@@ -229,7 +230,8 @@ export const getServerSideProps: GetServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
   const session = await getServerSession(context.req, context.res, authOptions);
-  if (!session) {
+
+  if (!session || session.user.role !== "admin") {
     return {
       redirect: {
         destination: "/shared/unauthorize",
@@ -240,7 +242,13 @@ export const getServerSideProps: GetServerSideProps = async (
 
   return {
     props: {
-      session,
+      user: {
+        id: session.user.id,
+        name: session.user.name,
+        email: session.user.email,
+        role: session.user.role,
+        // Don't include image here
+      },
     },
   };
 };
