@@ -3,6 +3,9 @@ import { ensureDbConnected } from "@/lib/dbConnect";
 import { verifyTokenAndGetUser } from "@/lib/verifyTokenAndGetUser";
 import { Admin, Course } from "db";
 import { JwtPayload } from "jsonwebtoken";
+import { getSession } from "next-auth/react";
+import { getToken } from "next-auth/jwt";
+import jwt from "next-auth/jwt";
 
 type Course = {
   _id: string;
@@ -23,6 +26,7 @@ type ResponseData =
       data: Course[] | null;
     }
   | ErrorObj;
+const secret = process.env.NEXTAUTH_SECRET;
 
 export default async function handler(
   req: NextApiRequest,
@@ -30,42 +34,31 @@ export default async function handler(
 ) {
   try {
     await ensureDbConnected();
-    const authHeader = req.headers.authorization;
-    if (authHeader) {
-      const token = authHeader.split(" ")[1];
-      verifyTokenAndGetUser(token, async (user: JwtPayload | boolean) => {
-        let email = (user as JwtPayload).email;
-        let admin = await Admin.findOne({ email });
+    const session = await getSession({ req });
+      if (!session) {
+        res.json({
+          message: "Session expired, please relogin to continue",
+          statusCode: 403,
+        });
+      } else {
+        console.log("session presenst");
+        const { email, role } = session.user;
+        let admin = await Admin.findOne({ email, role });
         let courses: Course[] = await Course.find({
           _id: { $in: admin.createdCourses },
         });
-        if (!user) {
+        if (!courses.length) {
           res.json({
-            message: "Auth token expired, please relogin to continue",
-            statusCode: 403,
+            message: "You have not created any course yet!",
+            statusCode: 200,
           });
         } else {
-          if (!courses.length) {
-            res.json({
-              message: "You have not created any course yet!",
-              statusCode: 200,
-            });
-          } else {
-            res.json({ message: "This is all your courses", data: courses });
-          }
+          res.json({ message: "This is all your courses", data: courses });
         }
-      });
-    } else {
-      res
-        .status(400)
-        .json({
-          message: "No auth token available, login to continue",
-          statusCode: 400,
-        });
-    }
+      }
   } catch (error) {
     res.json({
-      message: "Error from api admin/your-coourses",
+      message: "Error from api admin/your-courses",
       statusCode: 401,
     });
   }
