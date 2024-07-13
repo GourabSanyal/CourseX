@@ -24,11 +24,12 @@ type Course = {
 
 const dashboard = () => {
   const {data : session} = useSession();
-  console.log("session in dashboard", session);
+  // console.log("session in dashboard", session);
 
-  // const setAdmin = useSetRecoilState(adminState);
+  const setAdmin = useSetRecoilState(adminState);
+  console.log("Admin state", setAdmin)
   const router = useRouter();
-  // const adminUsername = useRecoilValue(adminState).username;
+  const adminUsername = useRecoilValue(adminState).username;
   const [activeTab, setActiveTab] = useState(0);
   const [courses, setCourses] = useState<Course[]>();
   const [allCourses, setAllCourses] = useState<Course[]>();
@@ -39,52 +40,40 @@ const dashboard = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [handleModalOpen, setHandleModalOpen] = useState<boolean>(false);
   const email = useRecoilValue(adminEmailState);
+  // const adminUsername = useRecoilValue(adminUserName);
 
   const editCourse = (courseId: string) => {
     router.push(`/admin/${courseId}`);
   };
 
-  // const viewCourseDetails = () => {
-  //   handleModalOpen(true)
-  // }
 
-  // useEffect(() => {
-  //   const getUserRole = async () => {
-  //     const response = await axios.get("/api/auth/me", {
-  //       headers: { Authorization: "Bearer " + localStorage.getItem("token") },
-  //     });
-  //     let role = response.data.role;
-  //     setRole(role);
-  //   };
+  useEffect(() => {
 
-  //   const fetchUserId = async () => {
-  //     const response = await axios.get("/api/common/get-user-id", {
-  //       data: { email, role },
-  //     });
-  //     setUserId(response.data._id);
-  //   };
-
-  //   getUserRole();
-  //   fetchUserId();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (session) {
-  //     setAdmin({
-  //       isLoading: false,
-  //       // userEmail: session.data?.user?.email,
-  //       username: session.data?.user?.name,
-  //     });
-  //   }
-  // }, [session, setAdmin]);
+    if (session?.user.role){
+      setRole(session?.user.role)
+    }
+  
+    if (session?.user.id){
+      setUserId(session?.user.id)
+    }
+    if (session?.user.role === "admin") {
+      setAdmin({
+        isLoading: false,
+        userEmail: session?.user?.email,
+        username: session.user?.name,
+      });
+    }
+  }, [session, setAdmin]);
 
   const fetchCourses = async () => {
     setLoadingYourCourses(true);
-    const response = await axios.get("/api/admin/your-courses", {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    });
+    const response = await axios.get("/api/admin/your-courses"
+      // , {
+      // headers: {
+      //   Authorization: "Bearer " + localStorage.getItem("token"),
+      // },
+    // }
+  );
     setCourses(response.data.data);
     if (!response.data.length) {
       setError(response.data.message);
@@ -94,16 +83,20 @@ const dashboard = () => {
 
   const fetchAllCourses = async () => {
     setLoadingAllCourses(true);
-    // const response = await axios.get("/api/common/all-courses", {
+    const response = await axios.get("/api/common/all-courses"
+    //   , {
     //   headers: {
     //     Authorization: "Bearer " + localStorage.getItem("token"),
     //   },
-    // });
-
-    // setAllCourses(response.data);
-    // if (!response.data.length) {
-    //   setError(response.data.message);
     // }
+  );
+
+    setAllCourses(response.data.data);
+    console.log("all course", response.data.data);
+    
+    if (!response.data.length) {
+      setError(response.data.message);
+    }
     setLoadingAllCourses(false);
   };
 
@@ -131,7 +124,7 @@ const dashboard = () => {
           direction="column"
         >
           <Typography variant="h4" align="center" gutterBottom>
-            Welcome Admin
+            Welcome `${adminUsername}`
           </Typography>
           <div style={{ justifyContent: "center", alignItems: "center" }}>
             <Tabs
@@ -207,7 +200,7 @@ const dashboard = () => {
                 userRole={role}
                 userId={userId}
                 createdCourses={role === "admin" ? courses : []}
-                // purchasedCourses={role === "user" ? allCourses : []}
+                purchasedCourses={role === "user" ? allCourses : []}
                 onEdit={() => editCourse(course._id)}
                 // onview={() => viewCourseDetails(course._id)}
               />
