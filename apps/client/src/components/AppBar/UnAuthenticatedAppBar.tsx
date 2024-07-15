@@ -73,20 +73,11 @@ const UnAuthenticatedAppBar = () => {
     password: string
   ) => {
     try {
-      // const response = await axios.post("api/auth/admin/signup", {
-      //   username,
-      //   email,
-      //   password,
-      // });
-      // localStorage.setItem("token", response.data.token);
-      // router.push("/admin/dashboard");
-      // setAdmin({ isLoading: false, userEmail: email, username: username });
-      // handleCloseModal();
       const results = await signIn("admin-signup", {
         username,
         email,
         password,
-        redirect: false
+        callbackUrl: "/admin/dashboard"
       })
       if (results?.error){
         setOnError("Admin already exists, please login to continue")
@@ -109,28 +100,13 @@ const UnAuthenticatedAppBar = () => {
     if (role === "admin") {
       openAdminLoginModal();
     } else {
-      await signIn("admin-signin", {
-        role: role as string,
-        callbackUrl: `http://localhost:3000/`,
-      });
+      await signIn("google", {callbackUrl: "/"}); // user signs in from here
     }
   };
 
   const adminSignIn = async (email: string, password: string) => {
     try {
-      // const response = await axios.post("api/auth/admin/signin", {
-      //   email,
-      //   password,
-      // });
-      // localStorage.setItem("token", response.data.token);
-
-      // handleCloseModal();
-      // router.push("/admin/dashboard");
-      // let username = response.data.username;
-      // setAdmin({ isLoading: false, userEmail: email, username: username });
-      // console.log("cred email", email , password);
-      // ensureDbConnected()
-      const results=  await signIn("admin-signin", { email, password, redirect: false})
+      const results=  await signIn("admin-signin", { email, password, callbackUrl : "/admin/dashboard"})
       if (results?.error){
         setOnError("Admin not registered or wrong credentials")
       }
@@ -153,9 +129,7 @@ const UnAuthenticatedAppBar = () => {
   ): Promise<void> => {
     try {
       if (isSignInRef.current) {
-        adminSignIn(email, password);
-        // console.log("cred", email, password);
-        
+        adminSignIn(email, password)
       } else {
         adminSignUp(username, email, password);
       }
