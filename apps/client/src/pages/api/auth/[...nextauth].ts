@@ -22,7 +22,8 @@ export const authOptions: NextAuthOptions = {
           scope: "openid email profile",
         },
       },
-    }),
+    },
+  ),
     CredentialsProvider({
       id: "admin-signup",
       name: "Credentials",
@@ -51,12 +52,16 @@ export const authOptions: NextAuthOptions = {
             const newAdmin = await new Admin(obj);
             newAdmin.save();
             console.log("new admin", newAdmin);
-            return newAdmin;
+            return {
+              id: newAdmin._id.toString(),
+              name: newAdmin.username,
+              email: newAdmin.email,
+              role: newAdmin.role
+            };;
           }
           else {
             throw new Error("Admin Laready exists, please login to continue");
           }
-          return dbUser;
         } catch (error) {
           console.log("auth error", error as string);
           return null;
@@ -87,7 +92,12 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Incorrect email or password");
           }
 
-          return dbUser;
+          return {
+            id: dbUser._id.toString(),
+            name: dbUser.username,
+            email: dbUser.email,
+            role: dbUser.role
+          };
         } catch (error) {
           console.log("auth error", error as string);
           return null;
@@ -107,6 +117,21 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile, email, credentials }) {
       try {
         await ensureDbConnected();
+        if(account?.provider === "google") {
+          const existingUser =  await UserDb.findOne({email : profile?.email})
+          console.log("existing user", existingUser);
+          
+          if(!existingUser){
+            const newUser = new UserDb({
+              email: profile?.email,
+              username : profile?.name,
+              role : "user"
+            })
+            
+            await newUser.save()
+            console.log("new user", newUser);
+          }
+        }
         return true;
       } catch (error) {
         return false;
@@ -117,20 +142,16 @@ export const authOptions: NextAuthOptions = {
       user,
       account,
       profile,
-      trigger,
     }: {
       token: JWT;
       user?: User;
       account?: any;
       profile?: any;
-      trigger?: "signIn" | "signUp" | "update";
     }) {
-      // console.log("jwt user", { user, profile, token, trigger, account });
       if (account?.provider === "google" && profile) {
         token.name = profile.name;
         token.picture = profile.picture;
         token.role = account.role as string;
-        // console.log("setting role in jwt", token.role);
       }
       if (user) {
         token.id = user.id;
@@ -138,7 +159,6 @@ export const authOptions: NextAuthOptions = {
         token.name = user.name;
         token.role = user.role;
       }
-      // console.log("final token", token)
       return token;
     },
     async session({
@@ -150,17 +170,13 @@ export const authOptions: NextAuthOptions = {
       token: JWT;
       user: User;
     }) {
-      // console.log("signIn call back data",{ session, token, user } )
-      // console.log("session user", { user, session, token });
       session.user = {
         ...session.user,
         id: token.id as string,
         name: token.name as string | null,
         email: token.email as string | null,
-        image: token.picture as string | null,
         role: token.role as string | undefined,
       };
-      // console.log("final session in session callback", session.user);
       return session;
     },
   },
@@ -178,7 +194,7 @@ declare module "next-auth" {
       id: string;
       name: string | null;
       email: string | null;
-      image: string | null;
+      // image: string | null;
       role?: string;
     } & DefaultSession["user"];
   }
