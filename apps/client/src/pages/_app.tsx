@@ -1,18 +1,7 @@
 import "@/styles/globals.css";
-import axios from "axios";
 import type { AppProps } from "next/app";
-import { RecoilRoot, useSetRecoilState, useRecoilValue } from "recoil";
-import {
-  adminState,
-  isAdminLoading,
-  isUserLoading,
-  userEmailState,
-  userState,
-} from "store";
-import { useEffect, useState } from "react";
-import Appbar from "@/components/AppBar";
-import AdminAppBar from "@/components/AdminAppBar/AdminAppBar";
-import UserAppBar from "@/components/UserAppBar/UserAppBar";
+import { RecoilRoot } from "recoil";
+import Appbar from "@/components/appbar/common/AppBar";
 import { SessionProvider, useSession } from "next-auth/react";
 import { Session } from "next-auth";
 
