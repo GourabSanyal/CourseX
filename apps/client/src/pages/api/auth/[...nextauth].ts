@@ -1,10 +1,5 @@
 import NextAuth from "next-auth/next";
-import {
-  Session,
-  User,
-  DefaultSession,
-  NextAuthOptions,
-} from "next-auth";
+import { Session, User, DefaultSession, NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { Provider } from "next-auth/providers";
 import { ensureDbConnected } from "@/lib/dbConnect";
@@ -22,8 +17,7 @@ export const authOptions: NextAuthOptions = {
           scope: "openid email profile",
         },
       },
-    },
-  ),
+    }),
     CredentialsProvider({
       id: "admin-signup",
       name: "Credentials",
@@ -33,12 +27,11 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        ensureDbConnected()
+        ensureDbConnected();
         const username = credentials?.username;
         const email = credentials?.email;
         const password = credentials?.password;
         console.log("creds", username, email, password);
-        
 
         if (!email || !password || !username) {
           throw new Error("Email and password are required");
@@ -56,10 +49,9 @@ export const authOptions: NextAuthOptions = {
               id: newAdmin._id.toString(),
               name: newAdmin.username,
               email: newAdmin.email,
-              role: newAdmin.role
-            };;
-          }
-          else {
+              role: newAdmin.role,
+            };
+          } else {
             throw new Error("Admin Laready exists, please login to continue");
           }
         } catch (error) {
@@ -96,7 +88,7 @@ export const authOptions: NextAuthOptions = {
             id: dbUser._id.toString(),
             name: dbUser.username,
             email: dbUser.email,
-            role: dbUser.role
+            role: dbUser.role,
           };
         } catch (error) {
           console.log("auth error", error as string);
@@ -117,20 +109,19 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile, email, credentials }) {
       try {
         await ensureDbConnected();
-        if(account?.provider === "google") {
-          const existingUser =  await UserDb.findOne({email : profile?.email})
-          console.log("existing user", existingUser);
-          
-          if(!existingUser){
-            const newUser = new UserDb({
+        if (account?.provider === "google") {
+          const dbUser = await UserDb.findOne({ email: profile?.email });
+
+          if (!dbUser) {
+            const user = new UserDb({
               email: profile?.email,
-              username : profile?.name,
-              role : "user"
-            })
-            
-            await newUser.save()
-            console.log("new user", newUser);
+              username: profile?.name,
+              role: "user",
+            });
+
+            await dbUser.save();
           }
+          account.dbUserRole = dbUser.role;
         }
         return true;
       } catch (error) {
@@ -151,7 +142,7 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === "google" && profile) {
         token.name = profile.name;
         token.picture = profile.picture;
-        token.role = account.role as string;
+        token.role = account.dbUserRole;
       }
       if (user) {
         token.id = user.id;
