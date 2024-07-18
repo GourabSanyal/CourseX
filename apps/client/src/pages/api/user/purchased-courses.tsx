@@ -3,6 +3,8 @@ import { ensureDbConnected } from "@/lib/dbConnect";
 import { verifyTokenAndGetUser } from "@/lib/verifyTokenAndGetUser";
 import { Admin, Course, User } from "db";
 import { JwtPayload } from "jsonwebtoken";
+import { getSession } from "next-auth/react";
+import { getToken } from "next-auth/jwt";
 
 type Course = {
   _id: string;
@@ -24,37 +26,39 @@ type ResponseData =
     }
   | ErrorObj;
 
+  const secret = process.env.NEXTAUTH_SECRET;
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
   try {
     await ensureDbConnected();
-    const authHeader = req.headers.authorization;
-    if (authHeader) {
-      const token = authHeader.split(" ")[1];
-      verifyTokenAndGetUser(token, async (user: JwtPayload | boolean) => {
-        let email = (user as JwtPayload).email;
-        let loggeduser = await User.findOne({ email }).populate(
-          "purchasedCourses"
-        );
+    const session = await getSession({req})
+    const token = await getToken({ req, secret})
 
-        const courses  = loggeduser.purchasedCourses;
-
-        if (!courses.length) {
-          res.json({
-            message: "You have not bought any course yet!",
-            statusCode: 200,
-          });
-        } else {
-          res.json({ message: "This is all your courses", data: courses });
-        }
-      });
+    if(!session || !token){
+      console.log("no  role for user");
+      res.json({
+        message: "Session expired, please relogin to continue",
+        statusCode : 403
+      })
     } else {
-      res.status(400).json({
-        message: "No auth token available, login to continue",
-        statusCode: 400,
-      });
+      const email = token?.email
+      let loggedUser = await User.findOne({ email}).populate("purchasedCourses")
+      const courses : Course[] = loggedUser.purchasedCourses
+
+      if (!courses.length){
+        res.json({
+          message: "You have not bought any courses yet",
+          statusCode : 200
+        }) 
+      } else {
+        res.json({
+          message: "These are all your courses",
+          data : courses
+        })
+      }
     }
   } catch (error) {
     res.json({
