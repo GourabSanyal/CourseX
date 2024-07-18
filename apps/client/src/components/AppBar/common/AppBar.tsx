@@ -46,10 +46,10 @@ function Appbar() {
   // admin and user authentication
   useEffect(() => {
     if (session.status === "authenticated") {
-      if (session.data.user.role === "admin"){
+      if (session.data.user.role === "admin") {
         setAdminAuthenticated(true);
       }
-      setUserAuthenticated(true)
+      setUserAuthenticated(true);
     }
   }, [session.status]);
 
@@ -181,7 +181,9 @@ function Appbar() {
           </div>
           {adminAuthenticated ? (
             <AdminAppBar />
-          ) : userAuthenticated ? (<UserAppBar/>) :(
+          ) : userAuthenticated ? (
+            <UserAppBar />
+          ) : (
             <UnAuthenticatedAppBar />
           )}
         </div>
@@ -189,3 +191,5 @@ function Appbar() {
     </AppBar>
   );
 }
+
+export default Appbar;
