@@ -119,9 +119,10 @@ export const authOptions: NextAuthOptions = {
               role: "user",
             });
 
-            await dbUser.save();
+            await user.save();
           }
-          account.dbUserRole = dbUser.role;
+          account.role = dbUser.role;
+          // console.log("account before", account);
         }
         return true;
       } catch (error) {
@@ -142,14 +143,17 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === "google" && profile) {
         token.name = profile.name;
         token.picture = profile.picture;
-        token.role = account.dbUserRole;
+        token.role = "user";
+        // console.log("Google sign-in: token after", JSON.stringify(token, null, 2));
       }
       if (user) {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
         token.role = user.role;
+        // console.log("User sign-in: token after", JSON.stringify(token, null, 2));
       }
+      // console.log("Final token in jwt callback:", JSON.stringify(token, null, 2));
       return token;
     },
     async session({
@@ -161,13 +165,16 @@ export const authOptions: NextAuthOptions = {
       token: JWT;
       user: User;
     }) {
+      // console.log("Token in session callback:", JSON.stringify(token, null, 2));
       session.user = {
         ...session.user,
         id: token.id as string,
         name: token.name as string | null,
         email: token.email as string | null,
-        role: token.role as string | undefined,
+        role: token.role as string,
       };
+      // console.log("Final session in session callback:", JSON.stringify(session, null, 2));
+
       return session;
     },
   },
@@ -186,7 +193,7 @@ declare module "next-auth" {
       name: string | null;
       email: string | null;
       // image: string | null;
-      role?: string;
+      role: string;
     } & DefaultSession["user"];
   }
   interface JWT {
