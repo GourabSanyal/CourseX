@@ -2,9 +2,10 @@ import { Box, CircularProgress, Grid, Tab, Typography } from "@mui/material";
 import { Tabs } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { adminEmailState, adminState, userState } from "store";
 import { Course } from "../courses";
+import { useSession } from "next-auth/react";
 
 type Course = {
   _id: string;
@@ -16,7 +17,11 @@ type Course = {
 };
 
 const home = () => {
-  const username = useRecoilValue(userState).username;
+  const { data: session } = useSession();
+
+  const setUser = useSetRecoilState(userState);
+  const userUsername = useRecoilValue(userState).username;
+  // const username = useRecoilValue(userState).username;
   const [activeTab, setActiveTab] = useState(0);
   const [courses, setCourses] = useState<Course[]>();
   const [allCourses, setAllCourses] = useState<Course[]>();
@@ -28,35 +33,26 @@ const home = () => {
   const email = useRecoilValue(adminEmailState);
 
   useEffect(() => {
-    const getUserRole = async () => {
-      const response = await axios.get("/api/auth/me", {
-        headers: { Authorization: "Bearer " + localStorage.getItem("token") },
-      });
-      setRole(response.data.role);
-      console.log("user role -->", role);
-    };
+    if (!session?.user.role) {
+      setRole("user");
+    }
+    if (session?.user.id) {
+      setUserId(session?.user.id);
+    }
 
-    const fetchUserId = async () => {
-      console.log("user email role -->", email, role);
-      const response = await axios.get("/api/common/get-user-id", {
-        data: { email, role },
+    if (session?.user.role !== "admin") {
+      setUser({
+        isLoading: false,
+        username: session?.user.name,
+        userEmail: session?.user.email,
       });
-      setUserId(response.data._id);
-    };
-
-    getUserRole();
-    fetchUserId();
-  }, []);
+    }
+  }, [session, setUser]);
 
   const fetchCourses = async () => {
     setLoadingYourCourses(true);
-    const response = await axios.get("/api/user/purchased-courses", {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    });
+    const response = await axios.get("/api/user/purchased-courses");
     setCourses(response.data.data);
-    // console.log("courses", courses);
     if (!response.data.length) {
       setError(response.data.message);
     }
@@ -65,17 +61,19 @@ const home = () => {
 
   const fetchAllCourses = async () => {
     setLoadingAllCourses(true);
-    const response = await axios.get("/api/common/all-courses", {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    });
+    const response = await axios.get(
+      "/api/common/all-courses"
+      //   , {
+      //   headers: {
+      //     Authorization: "Bearer " + localStorage.getItem("token"),
+      //   },
+      // }
+    );
 
-    setAllCourses(response.data);
+    setAllCourses(response.data.data);
     if (!response.data.length) {
       setError(response.data.message);
     }
-    // console.log("res", response);
     setLoadingAllCourses(false);
   };
 
@@ -103,7 +101,7 @@ const home = () => {
           direction="column"
         >
           <Typography variant="h4" align="center" gutterBottom>
-            Welcome {username}
+            Welcome {userUsername?.split(" ")[0]}
           </Typography>
           <div style={{ justifyContent: "center", alignItems: "center" }}>
             <Tabs
@@ -136,10 +134,10 @@ const home = () => {
                 justifyContent: "center",
               }}
             >
-              {courses.map((course : Course) => (
+              {courses.map((course: Course) => (
                 <Course
                   key={course._id}
-                  course = {course}
+                  course={course}
                   userRole={role}
                   userId={userId}
                   // createdCourses={role === "admin" ? courses : []}
@@ -173,13 +171,13 @@ const home = () => {
           >
             {allCourses.map((course: Course) => (
               <Course
-              key={course._id}
-              course = {course}
-              userRole={role}
-              userId={userId}
-              // createdCourses={role === "admin" ? courses : []}
-              purchasedCourses={role === "user" ? courses : []}
-            />
+                key={course._id}
+                course={course}
+                userRole={role}
+                userId={userId}
+                // createdCourses={role === "admin" ? courses : []}
+                purchasedCourses={role !== "admin" ? courses : []}
+              />
             ))}
           </div>
         ) : (
