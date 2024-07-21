@@ -21,7 +21,6 @@ const home = () => {
 
   const setUser = useSetRecoilState(userState);
   const userUsername = useRecoilValue(userState).username;
-  // const username = useRecoilValue(userState).username;
   const [activeTab, setActiveTab] = useState(0);
   const [courses, setCourses] = useState<Course[]>();
   const [allCourses, setAllCourses] = useState<Course[]>();
@@ -63,11 +62,6 @@ const home = () => {
     setLoadingAllCourses(true);
     const response = await axios.get(
       "/api/common/all-courses"
-      //   , {
-      //   headers: {
-      //     Authorization: "Bearer " + localStorage.getItem("token"),
-      //   },
-      // }
     );
 
     setAllCourses(response.data.data);
