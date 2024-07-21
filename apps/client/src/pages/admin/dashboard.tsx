@@ -24,7 +24,6 @@ type Course = {
 
 const dashboard = () => {
   const {data : session} = useSession();
-  // console.log("session in dashboard", session);
 
   const setAdmin = useSetRecoilState(adminState);
   console.log("Admin state", setAdmin)
@@ -124,7 +123,7 @@ const dashboard = () => {
           direction="column"
         >
           <Typography variant="h4" align="center" gutterBottom>
-            Welcome `${adminUsername}`
+            Welcome {adminUsername?.split(" ")[0]}
           </Typography>
           <div style={{ justifyContent: "center", alignItems: "center" }}>
             <Tabs
