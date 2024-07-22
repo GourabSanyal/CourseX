@@ -16,7 +16,7 @@ import UnAuthenticatedAppBar from "./UnAuthenticatedAppBar";
 import AdminAppBar from "../admin/AdminAppBar";
 import UserAppBar from "../user/UserAppBar";
 
- const AppBar = () => {
+ const AppBar : React.FC = () => {
   // admin state
   // const adminLoading = useRecoilValue(isAdminLoading);
   // const adminEmail = useRecoilValue(adminEmailState);
