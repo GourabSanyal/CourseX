@@ -1,5 +1,5 @@
 import {
-  AppBar,
+  AppBar as Appbar,
   Toolbar,
   Typography,
   // useMediaQuery,
@@ -166,7 +166,7 @@ import UserAppBar from "../user/UserAppBar";
   // };
 
   return (
-    <AppBar>
+    <Appbar>
       <Toolbar>
         <div
           style={{
@@ -188,7 +188,7 @@ import UserAppBar from "../user/UserAppBar";
           )}
         </div>
       </Toolbar>
-    </AppBar>
+    </Appbar>
   );
 }
 
