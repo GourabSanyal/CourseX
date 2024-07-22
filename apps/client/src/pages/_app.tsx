@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { RecoilRoot } from "recoil";
-import Appbar from "@/components/appbar/common/AppBar";
+import Appbar from '../components/appbar/common/AppBar';
 import { SessionProvider, useSession } from "next-auth/react";
 import { Session } from "next-auth";
 
