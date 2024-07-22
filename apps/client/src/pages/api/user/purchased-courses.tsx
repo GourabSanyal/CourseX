@@ -38,7 +38,6 @@ export default async function handler(
     const token = await getToken({ req, secret})
 
     if(!session || !token){
-      console.log("no  role for user");
       res.json({
         message: "Session expired, please relogin to continue",
         statusCode : 403
