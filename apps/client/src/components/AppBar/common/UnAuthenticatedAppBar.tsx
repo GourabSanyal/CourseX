@@ -13,13 +13,13 @@ import { useRouter } from "next/router";
 import MenuIcon from "@mui/icons-material/Menu"; // Ensure you have this import
 import { AdminModal } from "ui";
 import axios from "axios";
-import { useSetRecoilState } from "recoil";
-import { adminState } from "store";
-import { ensureDbConnected } from "@/lib/dbConnect";
+// import { useSetRecoilState } from "recoil";
+// import { adminState } from "store";
+// import { ensureDbConnected } from "@/lib/dbConnect";
 
 const UnAuthenticatedAppBar = () => {
   //admin state
-  const setAdmin = useSetRecoilState(adminState);
+  // const setAdmin = useSetRecoilState(adminState);
   const [loginModalOpen, setLoginModalOpen] = useState<boolean>(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [onError, setOnError] = useState<string | null>(null);
@@ -49,17 +49,17 @@ const UnAuthenticatedAppBar = () => {
     setLoginModalOpen(false); // closes users modal
   };
 
-  const adminLogin = () => {
-    console.log("admin login");
-    signIn("credentials", { role: "admin" });
-  };
+  // const adminLogin = () => {
+  //   console.log("admin login");
+  //   signIn("credentials", { role: "admin" });
+  // };
   const adminLogout = () => {
     console.log("admin logout");
     signOut();
   };
-  const userLogin = () => {
-    console.log("user login");
-  };
+  // const userLogin = () => {
+  //   console.log("user login");
+  // };
   const openAdminLoginModal = () => {
     setModalOpen(true); // OLD - for admin login
   };
@@ -100,7 +100,7 @@ const UnAuthenticatedAppBar = () => {
     if (role === "admin") {
       openAdminLoginModal();
     } else {
-      await signIn("google", {callbackUrl: "/"}); // user signs in from here
+      await signIn("google", {callbackUrl: "/user/home"}); // user signs in from here
     }
   };
 
@@ -174,7 +174,7 @@ const UnAuthenticatedAppBar = () => {
             >
               Login
             </MenuItem>
-            <MenuItem
+            {/* <MenuItem
               onClick={() => {
                 openAdminLoginModal();
               }}
@@ -188,7 +188,7 @@ const UnAuthenticatedAppBar = () => {
               }}
             >
               SignUp
-            </MenuItem>
+            </MenuItem> */}
           </Menu>
 
           )}
@@ -205,7 +205,7 @@ const UnAuthenticatedAppBar = () => {
               Login
             </Button>
           </div>
-          <div style={{ marginRight: 10 }}>
+          {/* <div style={{ marginRight: 10 }}>
             <Button
               style={{ color: "white" }}
               onClick={() => {
@@ -234,7 +234,7 @@ const UnAuthenticatedAppBar = () => {
             >
               Sign Up
             </Button>
-          </div>
+          </div> */}
         </div>
       )}
       <CustomModal
