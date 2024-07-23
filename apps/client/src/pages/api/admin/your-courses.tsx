@@ -1,11 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ensureDbConnected } from "@/lib/dbConnect";
-import { verifyTokenAndGetUser } from "@/lib/verifyTokenAndGetUser";
+// import { verifyTokenAndGetUser } from "@/lib/verifyTokenAndGetUser";
 import { Admin, Course } from "db";
-import { JwtPayload } from "jsonwebtoken";
+// import { JwtPayload } from "jsonwebtoken";
 import { getSession } from "next-auth/react";
 import { getToken } from "next-auth/jwt";
-import jwt from "next-auth/jwt";
+// import jwt from "next-auth/jwt";
 
 type Course = {
   _id: string;
@@ -42,7 +42,6 @@ export default async function handler(
         statusCode: 403,
       });
     } else {
-      console.log("session presenst");
       const email= token?.email;
       const role= token?.role;
 

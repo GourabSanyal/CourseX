@@ -3,7 +3,7 @@ import { Tabs } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { adminEmailState, adminState, userState } from "store";
+import {userState } from "store";
 import { Course } from "../courses";
 import { useSession } from "next-auth/react";
 
@@ -29,7 +29,6 @@ const home = () => {
   const [loadingAllCourses, setLoadingAllCourses] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
-  const email = useRecoilValue(adminEmailState);
 
   useEffect(() => {
     if (!session?.user.role) {

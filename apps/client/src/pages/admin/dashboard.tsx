@@ -3,14 +3,13 @@ import { Tabs } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { adminEmailState, adminState, adminUserName } from "store";
+import { adminEmailState, adminState } from "store";
 import { Course } from "../courses";
 import { CustomModal } from "ui";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
-import { redirect } from "next/navigation";
 import { GetServerSidePropsContext, GetServerSideProps } from "next";
 
 type Course = {
@@ -24,9 +23,7 @@ type Course = {
 
 const dashboard = () => {
   const {data : session} = useSession();
-
   const setAdmin = useSetRecoilState(adminState);
-  console.log("Admin state", setAdmin)
   const router = useRouter();
   const adminUsername = useRecoilValue(adminState).username;
   const [activeTab, setActiveTab] = useState(0);
@@ -39,19 +36,15 @@ const dashboard = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [handleModalOpen, setHandleModalOpen] = useState<boolean>(false);
   const email = useRecoilValue(adminEmailState);
-  // const adminUsername = useRecoilValue(adminUserName);
 
   const editCourse = (courseId: string) => {
     router.push(`/admin/${courseId}`);
   };
 
-
   useEffect(() => {
-
     if (session?.user.role){
       setRole(session?.user.role)
     }
-  
     if (session?.user.id){
       setUserId(session?.user.id)
     }
@@ -67,11 +60,6 @@ const dashboard = () => {
   const fetchCourses = async () => {
     setLoadingYourCourses(true);
     const response = await axios.get("/api/admin/your-courses"
-      // , {
-      // headers: {
-      //   Authorization: "Bearer " + localStorage.getItem("token"),
-      // },
-    // }
   );
     setCourses(response.data.data);
     if (!response.data.length) {
@@ -83,11 +71,6 @@ const dashboard = () => {
   const fetchAllCourses = async () => {
     setLoadingAllCourses(true);
     const response = await axios.get("/api/common/all-courses"
-    //   , {
-    //   headers: {
-    //     Authorization: "Bearer " + localStorage.getItem("token"),
-    //   },
-    // }
   );
 
     setAllCourses(response.data.data);
