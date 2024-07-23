@@ -1,0 +1,6 @@
+[build]
+command = "yarn build"
+output = "apps/client/.next"
+
+[build.environment]
+NODE_VERSION = "20.11.0"
