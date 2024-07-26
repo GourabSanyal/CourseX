@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
   password: String,
   role : String,
   purchasedCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
+  cart : [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }]
 });
 
 const adminSchema = new mongoose.Schema({
