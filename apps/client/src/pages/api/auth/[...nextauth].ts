@@ -120,12 +120,21 @@ export const authOptions: NextAuthOptions = {
             });
 
             await user.save();
+            console.log("user created successfully");
+            
           }
-          account.role = dbUser.role;
+
+          if (dbUser){
+            account.role = dbUser.role;
+          } else {
+            account.role = "user"
+          }
           // console.log("account before", account);
         }
         return true;
-      } catch (error) {
+      } catch (error : any) {
+        console.log("error in sign in callback", error);
+        
         return false;
       }
     },
