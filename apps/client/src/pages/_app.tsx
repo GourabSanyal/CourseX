@@ -4,6 +4,7 @@ import { RecoilRoot } from "recoil";
 import {AppBar} from '@/components/appbar/common/AppBar';
 import { SessionProvider, useSession } from "next-auth/react";
 import { Session } from "next-auth";
+import { Toaster } from "sonner";
 
 export default function App({
   Component,
@@ -39,6 +40,7 @@ function AppWrapper({
     <div>
       <AppBar />
       <Component {...pageProps} />
+      <Toaster />
     </div>
   );
 }
