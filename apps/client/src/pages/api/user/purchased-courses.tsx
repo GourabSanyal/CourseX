@@ -37,6 +37,10 @@ export default async function handler(
     const session = await getSession({req})
     const token = await getToken({ req, secret})
 
+    // console.log("session - purchased courses", session);
+    // console.log("token - purchased courses", token);
+    
+
     if(!session || !token){
       res.json({
         message: "Session expired, please relogin to continue",
@@ -61,7 +65,7 @@ export default async function handler(
     }
   } catch (error) {
     res.json({
-      message: "Error from api admin/your-coourses",
+      message: "Error from api user/purchased-courses",
       statusCode: 401,
     });
   }
