@@ -1,7 +1,9 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, Typography, Button } from "@mui/material";
+import { Card, Typography, Button, IconButton, CircularProgress } from "@mui/material";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { toast } from "sonner";
 
 type Course = {
   _id: string; // You can adjust this type as needed
@@ -23,7 +25,6 @@ type CourseProps = {
   onEdit?: () => void;
   onBuy?: () => void;
   onview?: () => void;
-
 };
 
 export default function CoursesPage() {
@@ -68,6 +69,31 @@ export function Course({
   purchasedCourses,
 }: CourseProps) {
   const router = useRouter();
+  const [isInCart, setIsInCart] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handleAddToCart = async () => {
+    console.log("course selected",course._id)
+    setLoading(true)
+    try {
+      const response = await axios.post("/api/user/addToCart", { courseId: course._id });
+      if (response.data.success) {
+        if (response.data.inCart){
+          setIsInCart(true);
+        } else {
+          setIsInCart(false)
+        }
+        toast.success(response.data.message || "Added to cart");
+      } else {
+        toast.error(response.data.message || "Failed to add to cart");
+      }
+    } catch (error : any) {
+      console.error("Error adding to cart:", error);
+    toast.error(error.response?.data?.message || "Failed to add to cart");
+    } finally{
+      setLoading(false)
+    }
+  };
 
   if (createdCourses) {
     var isCretedByAdmin = createdCourses.some((c) => c._id === course._id);
@@ -99,21 +125,33 @@ export function Course({
                 onEdit && onEdit();
               }}
             >
+              View admin
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => {
+                // router.push("/admin/" + courseId);
+                onEdit && onEdit();
+              }}
+            >
               Edit Admin
             </Button>
           </>
         );
       } else {
         return (
-          <Button
-            variant="contained"
-            size="small"
-            onClick={() => {
-              // onView()
-            }}
-          >
-            View admin
-          </Button>
+          <>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => {
+                // onView()
+              }}
+            >
+              View admin
+            </Button>
+          </>
         );
       }
     } else if (userRole === "user") {
@@ -124,35 +162,34 @@ export function Course({
             <Button
               variant="contained"
               size="small"
-              color="error"
-              onClick={onDelete}
-              style={{ marginRight: 8 }}
-            >
-              Delete user
-            </Button>
-            <Button
-              variant="contained"
-              size="small"
               onClick={() => {
-                // router.push("/admin/" + courseId);
-                onEdit && onEdit();
+                // router.push("/user/view/" + courseId);
               }}
             >
-              Edit user
+              View Purchased
             </Button>
           </>
         );
       } else {
         return (
-          <Button
-            variant="contained"
-            size="small"
-            onClick={() => {
-              // router.push("/user/view/" + courseId);
-            }}
-          >
-            View user
-          </Button> 
+          <>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => {
+                // router.push("/user/view/" + courseId);
+              }}
+            >
+              View user
+            </Button>
+            <IconButton
+              onClick={handleAddToCart}
+              color={isInCart ? "error" : "default"}
+              disabled={loading}
+            >
+             {loading ? <CircularProgress size={24} /> : <ShoppingCartIcon />}
+            </IconButton>
+          </>
         );
       }
     }
