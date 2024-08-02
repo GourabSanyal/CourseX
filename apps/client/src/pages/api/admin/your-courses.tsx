@@ -5,6 +5,8 @@ import { Admin, Course } from "db";
 // import { JwtPayload } from "jsonwebtoken";
 import { getSession } from "next-auth/react";
 import { getToken } from "next-auth/jwt";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]";
 // import jwt from "next-auth/jwt";
 
 type Course = {
@@ -34,7 +36,7 @@ export default async function handler(
 ) {
   try {
     await ensureDbConnected();
-    const session = await getSession({ req });
+    const session = await getServerSession( req, res, authOptions );
     const token = await getToken({ req, secret });
     if (!session && !token || session?.user.role !=="admin" && token?.role !== "admin" ) {
       res.json({
