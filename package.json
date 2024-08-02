@@ -13,9 +13,14 @@
     "turbo": "^1.12.3"
   },
   "name": "week-11-myset",
-  "packageManager": "npm@9.5.1",
+  "packageManager": "yarn@1.22.19",
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:GourabSanyal/CourseX.git",
+  "author": "Gourab Sanyal <sanyal.gourab@gmail.com>",
+  "license": "MIT"
 }
