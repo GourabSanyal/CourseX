@@ -1,85 +1,100 @@
-/* eslint-disable unicorn/filename-case */
+/* eslint-disable no-implicit-coercion */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/await-thenable */
+/* eslint-disable @typescript-eslint/no-confusing-void-expression */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/jsx-sort-props */
+/* eslint-disable import/no-extraneous-dependencies */
+
 import React from "react";
-import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import CloseIcon from "@mui/icons-material/Close";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Typography,
+  Button,
+  Box,
+  Grid,
+} from "@mui/material";
 
 interface CustomModalProps {
   open: boolean;
-  onClose: () => void;
-  handleClose: () => void;
+  onClose?: () => void;
+  onError?: string | null | undefined;
   heading: string;
-  primaryText: string;
-  secondaryText?: string;
-  primaryButtonText?: string;
-  secondaryButtonText?: string;
-  handlePrimaryButtonClick?: () => void;
-  handleSecondaryButtonClick?: () => void;
+  subHeading: string;
+  primaryButtonText?: string
+  primaryButtonSubmit? : () => void | Promise<void>
+  secondaryButtonText?: string
+  secondaryButtonSubmit ?: () => void | Promise<void>
 }
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
 
 export function CustomModal({
   open,
   onClose,
-  handleClose,
+  onError,
   heading,
-  primaryText,
-  secondaryText,
+  subHeading,
   primaryButtonText,
+  primaryButtonSubmit,
   secondaryButtonText,
-  handlePrimaryButtonClick,
-  handleSecondaryButtonClick,
+  secondaryButtonSubmit
 }: CustomModalProps): JSX.Element {
   return (
-    <Modal
-      aria-describedby="modal-modal-description"
-      aria-labelledby="modal-modal-title"
-      onClose={handleClose}
-      open={open}
-    >
-      <Box sx={style}>
+    <Dialog open={open} onClose={onClose} maxWidth='xs' fullWidth>
+      <DialogTitle>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography component="h2" id="modal-modal-title" variant="h6">
-            {heading}
+          <Box>
+            <Typography variant="h6" component="h2">
+              {heading}
+            </Typography>
+            <Typography variant="subtitle1" component="h3" gutterBottom>
+              {subHeading}
+            </Typography>
+          </Box>
+          <Button onClick={onClose} style={{ marginLeft: "auto" }}>
+            X
+          </Button>
+        </Box>
+      </DialogTitle>
+      <DialogContent>
+        <Box
+          justifyContent="space-around"
+          display="flex"
+          flexWrap="wrap"
+          margin="0.5rem"
+        >
+          <Grid container spacing={2} justifyContent="center">
+            <Grid item xs={12} sm='auto'>
+              <Button fullWidth type="submit" variant="contained" color="primary" onClick={primaryButtonSubmit}>
+                {primaryButtonText}
+              </Button>
+            </Grid>
+            <Grid item xs={12}  sm='auto' >
+              <Button fullWidth type="submit" variant="contained" color="primary" onClick={secondaryButtonSubmit}>
+                {secondaryButtonText}
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+
+        {onError ? (
+          <Typography
+            variant="body2"
+            align="center"
+            style={{ marginTop: 10, color: "red" }}
+          >
+            {onError}
           </Typography>
-          <CloseIcon onClick={handleClose} style={{ cursor: "pointer" }} />
-        </Box>
-        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-          {primaryText}
-        </Typography>
-        {secondaryText ? (
-          <Typography sx={{ mt: 1 }}>{secondaryText}</Typography>
         ) : null}
-        <Box display="flex" justifyContent="flex-end" mt={2}>
-          {primaryButtonText ? (
-            <Button
-              onClick={handlePrimaryButtonClick}
-              sx={{ mr: 1 }}
-              variant="contained"
-            >
-              {primaryButtonText}
-            </Button>
-          ) : null}
-          {secondaryButtonText ? (
-            <Button onClick={handleSecondaryButtonClick} variant="outlined">
-              {secondaryButtonText}
-            </Button>
-          ) : null}
-        </Box>
-      </Box>
-    </Modal>
+        {/* Other content can go here */}
+      </DialogContent>
+    </Dialog>
   );
 }

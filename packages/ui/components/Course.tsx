@@ -15,12 +15,6 @@ interface IndividualCourse {
     imageLink: string;
     published: boolean;
   };
-
-// interface CourseCardProps {
-//     course : IndividualCourse;
-//     navigate: ReturnType<typeof useRouter>
-// }
-
 export function Signup(props: {
     onClick: (
     _id: string

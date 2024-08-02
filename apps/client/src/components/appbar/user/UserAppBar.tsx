@@ -9,11 +9,12 @@ import {
   Button,
   useMediaQuery,
   useTheme,
-} from "@material-ui/core";
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useRouter } from "next/navigation";
 import { userState } from "store";
 import { useSetRecoilState, useRecoilValue } from "recoil";
+import { signOut } from "next-auth/react";
 
 function UserAppBar() {
   const router = useRouter();
@@ -32,10 +33,10 @@ function UserAppBar() {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setUser({ isLoading: false, userEmail: null, username: null });
+  const handleLogout = async () => {
+    await signOut();
     router.push("/");
+    setUser({ isLoading: false, userEmail: null, username: null });
   };
 
   return (
@@ -81,11 +82,26 @@ function UserAppBar() {
               >
                 <MenuItem
                   onClick={() => {
-                    router.push("/");
                     handleClose();
+                    router.push("/user/home");
                   }}
                 >
-                  Add Course
+                  Dashboard
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    // router.push("/cart");
+                  }}
+                >
+                  Cart
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    handleClose();
+                    signOut({callbackUrl : "/"})
+                  }}
+                >
+                  Logout
                 </MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
@@ -101,10 +117,18 @@ function UserAppBar() {
               <Button
                 style={{ color: "white" }}
                 onClick={() => {
-                  router.push("/");
+                  router.push("/user/home");
                 }}
               >
-                Add Course
+                Dashboard
+              </Button>
+              <Button
+                style={{ color: "white" }}
+                onClick={() => {
+                  // router.push("/");
+                }}
+              >
+                Cart
               </Button>
               <Button variant="contained" onClick={handleLogout}>
                 Logout
