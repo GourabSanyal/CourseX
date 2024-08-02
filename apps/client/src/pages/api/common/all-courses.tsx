@@ -32,7 +32,7 @@ const secret = process.env.NEXTAUTH_SECRET;
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<ResponseData>nexta
 ) {
   try {
     await ensureDbConnected();
