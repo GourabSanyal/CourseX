@@ -53,36 +53,6 @@ export default function Home() {
           <div style={{ textAlign: "center" }}>
             <Typography variant="h2">CourseX</Typography>
             <Typography variant="h5">Learn, earn and grow</Typography>
-            {!session && (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  marginTop: 20,
-                }}
-              >
-                <div style={{ marginRight: 10 }}>
-                  <Button
-                    color="primary"
-                    size="large"
-                    variant="contained"
-                    onClick={() => router.push("/user/signup")}
-                  >
-                    Signup
-                  </Button>
-                </div>
-                <div>
-                  <Button
-                    color="primary"
-                    size="large"
-                    variant="contained"
-                    onClick={() => router.push("/user/signin")}
-                  >
-                    Signin
-                  </Button>
-                </div>
-              </div>
-            )}
           </div>
         </Grid>
         <Grid
