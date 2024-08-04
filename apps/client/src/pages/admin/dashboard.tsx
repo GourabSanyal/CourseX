@@ -206,7 +206,7 @@ export const getServerSideProps: GetServerSideProps = async (
 ) => {
   const session = await getServerSession(context.req, context.res, authOptions);
 
-  if (!session || session.user.role !== "admin") {
+  if (!session) {
     return {
       redirect: {
         destination: "/shared/unauthorize",
@@ -215,15 +215,12 @@ export const getServerSideProps: GetServerSideProps = async (
     };
   }
 
+  const serializedSession = JSON.parse(JSON.stringify(session));
+
   return {
     props: {
-      user: {
-        id: session.user.id,
-        name: session.user.name,
-        email: session.user.email,
-        role: session.user.role,
-        // Don't include image here
-      },
+      session: serializedSession
     },
   };
 };
+
