@@ -63,7 +63,7 @@ export const getServerSideProps: GetServerSideProps = async (
 ) => {
   const session = await getServerSession(context.req, context.res, authOptions);
 
-  if (!session) {
+  if (!session || session.user.role === "user") {
     return {
       redirect: {
         destination: "/shared/unauthorize",

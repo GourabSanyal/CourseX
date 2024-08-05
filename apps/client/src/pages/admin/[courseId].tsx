@@ -6,6 +6,9 @@ import GrayTopper from "@/components/ui/GrayTopper";
 import { Grid } from "@mui/material";
 import UpdateCard from "@/components/cards/UpdateCard";
 import CourseCard from "@/components/cards/CourseCard";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]";
 
 type Course = {
   _id: string; 
@@ -63,3 +66,27 @@ function singleCoursePage() {
 }
 
 export default singleCoursePage;
+
+
+export const getServerSideProps: GetServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const session = await getServerSession(context.req, context.res, authOptions);
+
+  if (!session || session.user.role === "user") {
+    return {
+      redirect: {
+        destination: "/shared/unauthorize",
+        permanent: false,
+      },
+    };
+  }
+
+  const serializedSession = JSON.parse(JSON.stringify(session));
+
+  return {
+    props: {
+      session: serializedSession
+    },
+  };
+};
