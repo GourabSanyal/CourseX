@@ -49,7 +49,7 @@ export const authOptions: NextAuthOptions = {
               name: newAdmin.username,
               email: newAdmin.email,
               role: newAdmin.role,
-            }
+            };
           } else {
             throw new Error("Admin Laready exists, please login to continue");
           }
@@ -120,20 +120,19 @@ export const authOptions: NextAuthOptions = {
 
             await user.save();
             // console.log("user created successfully");
-            
           }
 
-          if (dbUser){
+          if (dbUser) {
             account.role = dbUser.role;
           } else {
-            account.role = "user"
+            account.role = "user";
           }
           // console.log("account before", account);
         }
         return true;
-      } catch (error : any) {
+      } catch (error: any) {
         console.log("error in sign in callback", error);
-        
+
         return false;
       }
     },
@@ -151,18 +150,27 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === "google" && profile) {
         token.name = profile.name;
         token.picture = profile.picture;
-        token.role =  user?.role || "user";
+        token.role = user?.role || "user";
         token.id = user?.id || null;
-        console.log("Google sign-in: token after", JSON.stringify(token, null, 2));
-      } else if (user){
-        // console.log("user in else if -- > ", user);  
-        token.id = user.id;      
+        console.log(
+          "Google sign-in: token after",
+          JSON.stringify(token, null, 2)
+        );
+      } else if (user) {
+        // console.log("user in else if -- > ", user);
+        token.id = user.id;
         token.email = user?.email;
         token.name = user?.name;
-        token.role = user?.role ||  'admin';
-        console.log("User sign-in: token after", JSON.stringify(token, null, 2));
+        token.role = user?.role || "admin";
+        console.log(
+          "User sign-in: token after",
+          JSON.stringify(token, null, 2)
+        );
       }
-      console.log("Final token in jwt callback:", JSON.stringify(token, null, 2));
+      console.log(
+        "Final token in jwt callback:",
+        JSON.stringify(token, null, 2)
+      );
       return token;
     },
     async session({
