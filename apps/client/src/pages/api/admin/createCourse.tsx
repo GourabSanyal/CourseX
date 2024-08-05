@@ -30,13 +30,8 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
   try {
-    await ensureDbConnected();
-    // console.log("data recieved in api -->", req.body);
-    
+    await ensureDbConnected();    
     const authHeader = req.headers.authorization;
-    // console.log("auth token", authHeader?.split(" ")[1]);
-    // console.log("req in api", req.headers);
-    
     if (authHeader) {
       const token = authHeader.split(" ")[1];
       verifyTokenAndGetUser(token, async (user: JwtPayload | boolean) => {
