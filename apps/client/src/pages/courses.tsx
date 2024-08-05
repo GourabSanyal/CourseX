@@ -1,7 +1,13 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, Typography, Button, IconButton, CircularProgress } from "@mui/material";
+import {
+  Card,
+  Typography,
+  Button,
+  IconButton,
+  CircularProgress,
+} from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { toast } from "sonner";
 
@@ -73,25 +79,27 @@ export function Course({
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleAddToCart = async () => {
-    console.log("course selected",course._id)
-    setLoading(true)
+    console.log("course selected", course._id);
+    setLoading(true);
     try {
-      const response = await axios.post("/api/user/addToCart", { courseId: course._id });
+      const response = await axios.post("/api/user/addToCart", {
+        courseId: course._id,
+      });
       if (response.data.success) {
-        if (response.data.inCart){
+        if (response.data.inCart) {
           setIsInCart(true);
         } else {
-          setIsInCart(false)
+          setIsInCart(false);
         }
         toast.success(response.data.message || "Added to cart");
       } else {
         toast.error(response.data.message || "Failed to add to cart");
       }
-    } catch (error : any) {
+    } catch (error: any) {
       console.error("Error adding to cart:", error);
-    toast.error(error.response?.data?.message || "Failed to add to cart");
-    } finally{
-      setLoading(false)
+      toast.error(error.response?.data?.message || "Failed to add to cart");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -187,7 +195,7 @@ export function Course({
               color={isInCart ? "error" : "default"}
               disabled={loading}
             >
-             {loading ? <CircularProgress size={24} /> : <ShoppingCartIcon />}
+              {loading ? <CircularProgress size={24} /> : <ShoppingCartIcon />}
             </IconButton>
           </>
         );
