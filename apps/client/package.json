@@ -23,7 +23,8 @@
     "recoil": "^0.7.7",
     "store": "*",
     "typescript": "^5.5.2",
-    "ui": "*"
+    "ui": "*",
+    "shared-types":"*"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.4.1",
