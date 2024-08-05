@@ -1,22 +1,6 @@
-import { Inter } from "next/font/google";
-import { useRouter } from "next/router";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import {
-  adminEmailState,
-  adminUserName,
-  isAdminLoading,
-  isUserLoading,
-  userEmailState,
-} from "store";
-import { Grid, Typography, Button } from "@mui/material";
-import { useSession } from "next-auth/react";
-
-const inter = Inter({ subsets: ["latin"] });
+import { Grid, Typography } from "@mui/material";
 
 export default function Home() {
-  const router = useRouter();
-  const { data: session, status } = useSession();
-
   return (
     <div
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
