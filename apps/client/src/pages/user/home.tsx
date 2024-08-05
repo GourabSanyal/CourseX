@@ -3,9 +3,12 @@ import { Tabs } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import {userState } from "store";
+import { userState } from "store";
 import { Course } from "../courses";
 import { useSession } from "next-auth/react";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]";
 
 type Course = {
   _id: string;
@@ -18,7 +21,6 @@ type Course = {
 
 const home = () => {
   const { data: session } = useSession();
-
   const setUser = useSetRecoilState(userState);
   const userUsername = useRecoilValue(userState).username;
   const [activeTab, setActiveTab] = useState(0);
@@ -59,9 +61,7 @@ const home = () => {
 
   const fetchAllCourses = async () => {
     setLoadingAllCourses(true);
-    const response = await axios.get(
-      "/api/common/all-courses"
-    );
+    const response = await axios.get("/api/common/all-courses");
 
     setAllCourses(response.data.data);
     if (!response.data.length) {
@@ -174,9 +174,7 @@ const home = () => {
             ))}
           </div>
         ) : (
-          <Typography variant="body1" align="center" mt={10}>
-            {/* {"haha" + " " } */}
-          </Typography>
+          <Typography variant="body1" align="center" mt={10}></Typography>
         )}
       </div>
     </div>
@@ -184,3 +182,26 @@ const home = () => {
 };
 
 export default home;
+
+export const getServerSideProps: GetServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const session = await getServerSession(context.req, context.res, authOptions);
+
+  if (!session || session.user.role === "admin") {
+    return {
+      redirect: {
+        destination: "/shared/unauthorize",
+        permanent: false,
+      },
+    };
+  }
+
+  const serializedSession = JSON.parse(JSON.stringify(session));
+
+  return {
+    props: {
+      session: serializedSession,
+    },
+  };
+};
