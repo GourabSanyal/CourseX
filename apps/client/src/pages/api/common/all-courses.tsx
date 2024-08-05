@@ -38,10 +38,9 @@ export default async function handler(
 ) {
   try {
     await ensureDbConnected();
-    const session = await getServerSession(req , res, authOptions);
+    const session = await getServerSession(req, res, authOptions);
     const token = await getToken({ req, secret });
-    // console.log("JSON Web Token", token);
-    if (!session && !token ) {
+    if (!session && !token) {
       res.json({
         message: "Session expired, please relogin to continue",
         statusCode: 403,
@@ -59,7 +58,6 @@ export default async function handler(
     }
   } catch (error) {
     console.log("error from api -> ", error);
-
     res.status(500).json({ message: "message", statusCode: 500 });
   }
 }
