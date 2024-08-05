@@ -3,7 +3,7 @@ import { Tabs } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { adminEmailState, adminState } from "store";
+import { adminState } from "store";
 import { Course } from "../courses";
 import { CustomModal } from "ui";
 import { useRouter } from "next/router";
