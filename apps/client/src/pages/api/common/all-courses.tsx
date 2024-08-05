@@ -1,10 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ensureDbConnected } from "@/lib/dbConnect";
-// import { verifyTokenAndGetUser } from "@/lib/verifyTokenAndGetUser";
 import { Course } from "db";
-// import { JwtPayload } from "jsonwebtoken";
-import { getSession } from "next-auth/react";
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
