@@ -31,7 +31,6 @@ export const authOptions: NextAuthOptions = {
         const username = credentials?.username;
         const email = credentials?.email;
         const password = credentials?.password;
-        console.log("creds", username, email, password);
 
         if (!email || !password || !username) {
           throw new Error("Email and password are required");
@@ -44,13 +43,13 @@ export const authOptions: NextAuthOptions = {
             console.log("password before saving", password);
             const newAdmin = await new Admin(obj);
             newAdmin.save();
-            console.log("new admin", newAdmin);
+            // console.log("new admin in cred provider  --> ", newAdmin);
             return {
               id: newAdmin._id.toString(),
               name: newAdmin.username,
               email: newAdmin.email,
               role: newAdmin.role,
-            };
+            }
           } else {
             throw new Error("Admin Laready exists, please login to continue");
           }
@@ -120,7 +119,7 @@ export const authOptions: NextAuthOptions = {
             });
 
             await user.save();
-            console.log("user created successfully");
+            // console.log("user created successfully");
             
           }
 
@@ -152,17 +151,18 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === "google" && profile) {
         token.name = profile.name;
         token.picture = profile.picture;
-        token.role = "user";
-        // console.log("Google sign-in: token after", JSON.stringify(token, null, 2));
+        token.role =  user?.role || "user";
+        token.id = user?.id || null;
+        console.log("Google sign-in: token after", JSON.stringify(token, null, 2));
+      } else if (user){
+        // console.log("user in else if -- > ", user);  
+        token.id = user.id;      
+        token.email = user?.email;
+        token.name = user?.name;
+        token.role = user?.role ||  'admin';
+        console.log("User sign-in: token after", JSON.stringify(token, null, 2));
       }
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.name = user.name;
-        token.role = user.role;
-        // console.log("User sign-in: token after", JSON.stringify(token, null, 2));
-      }
-      // console.log("Final token in jwt callback:", JSON.stringify(token, null, 2));
+      console.log("Final token in jwt callback:", JSON.stringify(token, null, 2));
       return token;
     },
     async session({
@@ -202,7 +202,7 @@ declare module "next-auth" {
       name: string | null;
       email: string | null;
       // image: string | null;
-      role: string;
+      role: string | null;
     } & DefaultSession["user"];
   }
   interface JWT {
