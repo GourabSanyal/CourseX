@@ -35,7 +35,6 @@ const dashboard = () => {
   const [role, setRole] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
   const [handleModalOpen, setHandleModalOpen] = useState<boolean>(false);
-  const email = useRecoilValue(adminEmailState);
 
   const editCourse = (courseId: string) => {
     router.push(`/admin/${courseId}`);

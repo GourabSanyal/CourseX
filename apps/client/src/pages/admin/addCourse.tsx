@@ -2,8 +2,6 @@ import axios from "axios";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { getServerSession } from "next-auth";
 import React, { useState } from "react";
-import { useRecoilValue } from "recoil";
-import { adminState } from "store";
 import { NewCourseCard } from "ui";
 import {CustomModal} from "ui/modals/CustomModal";
 import { authOptions } from "../api/auth/[...nextauth]";
