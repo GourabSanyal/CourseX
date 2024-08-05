@@ -31,18 +31,18 @@ const home = () => {
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!session?.user.role) {
-      setRole("user");
+    if (session?.user.role) {
+      setRole(session?.user.role);
     }
     if (session?.user.id) {
       setUserId(session?.user.id);
     }
 
-    if (session?.user.role !== "admin") {
+    if (session?.user.role === "user") {
       setUser({
         isLoading: false,
-        username: session?.user.name,
-        userEmail: session?.user.email,
+        username: session?.user?.name,
+        userEmail: session?.user?.email,
       });
     }
   }, [session, setUser]);
