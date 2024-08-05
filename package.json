@@ -23,5 +23,10 @@
   "main": "index.js",
   "repository": "git@github.com:GourabSanyal/CourseX.git",
   "author": "Gourab Sanyal <sanyal.gourab@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "braces": "^3.0.3",
+    "follow-redirects": "^1.15.6",
+    "jose": "^4.15.5"
+  }
 }
