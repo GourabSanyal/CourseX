@@ -1,7 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import { ensureDbConnected } from "@/lib/dbConnect";
-import { verifyTokenAndGetUser } from "@/lib/verifyTokenAndGetUser";
 import { Course } from "db";
 
 type CourseData = {
@@ -32,12 +30,10 @@ export default async function handler(
     );
     // const authHeader = req.headers.authorization;
     if (!course) {
-      res
-        .status(400)
-        .json({
-          message: "Was not able to update course, please try again",
-          statusCode: 401,
-        });
+      res.status(400).json({
+        message: "Was not able to update course, please try again",
+        statusCode: 401,
+      });
     } else {
       res.status(200).json(course);
     }

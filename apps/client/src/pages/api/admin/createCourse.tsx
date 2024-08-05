@@ -5,7 +5,7 @@ import { Admin, Course } from "db";
 import { JwtPayload } from "jsonwebtoken";
 
 type Course = {
-  _id: string; // You can adjust this type as needed
+  _id: string;
   title: string;
   description: string;
   price: number;
@@ -30,7 +30,7 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
   try {
-    await ensureDbConnected();    
+    await ensureDbConnected();
     const authHeader = req.headers.authorization;
     if (authHeader) {
       const token = authHeader.split(" ")[1];
@@ -44,29 +44,35 @@ export default async function handler(
         } else {
           const course = new Course(req.body);
           console.log("user", user);
-          
-          await course.save()
+
+          await course.save();
 
           // get admin email from user object
-          let adminEmail = (user as JwtPayload).email
+          let adminEmail = (user as JwtPayload).email;
 
           //update admins created course array
-          await Admin.findOneAndUpdate({ email : adminEmail }, { $push : {createdCourses : course._id}})
+          await Admin.findOneAndUpdate(
+            { email: adminEmail },
+            { $push: { createdCourses: course._id } }
+          );
           res
             .status(201)
             .json({ message: "Course created successfully", data: course });
         }
       });
     } else {
-      res.status(400).json({ message: "No auth token available, login to continue", statusCode: 400 });
+      res
+        .status(400)
+        .json({
+          message: "No auth token available, login to continue",
+          statusCode: 400,
+        });
     }
   } catch (error) {
     console.error("Error creating course:", error);
-    res
-      .status(500)
-      .json({
-        message: "Failed to add course, please try again",
-        statusCode: 500,
-      });
+    res.status(500).json({
+      message: "Failed to add course, please try again",
+      statusCode: 500,
+    });
   }
 }

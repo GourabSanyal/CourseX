@@ -32,16 +32,19 @@ export default async function handler(
 ) {
   try {
     await ensureDbConnected();
-    const session = await getServerSession( req, res, authOptions );
+    const session = await getServerSession(req, res, authOptions);
     const token = await getToken({ req, secret });
-    if (!session && !token || session?.user.role !=="admin" && token?.role !== "admin" ) {
+    if (
+      (!session && !token) ||
+      (session?.user.role !== "admin" && token?.role !== "admin")
+    ) {
       res.json({
         message: "Session expired, please relogin to continue",
         statusCode: 403,
       });
     } else {
-      const email= token?.email;
-      const role= token?.role;
+      const email = token?.email;
+      const role = token?.role;
 
       let admin = await Admin.findOne({ email, role });
       let courses: Course[] = await Course.find({
