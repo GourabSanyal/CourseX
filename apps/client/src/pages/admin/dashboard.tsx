@@ -11,24 +11,16 @@ import { useSession } from "next-auth/react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
 import { GetServerSidePropsContext, GetServerSideProps } from "next";
-
-type Course = {
-  _id: string;
-  title: string;
-  description: string;
-  price: number;
-  imageLink: string;
-  published: boolean;
-};
+import { Course as CourseTypes } from "shared-types";
 
 const dashboard = () => {
-  const {data : session} = useSession();
+  const { data: session } = useSession();
   const setAdmin = useSetRecoilState(adminState);
   const router = useRouter();
   const adminUsername = useRecoilValue(adminState).username;
   const [activeTab, setActiveTab] = useState(0);
-  const [courses, setCourses] = useState<Course[]>();
-  const [allCourses, setAllCourses] = useState<Course[]>();
+  const [courses, setCourses] = useState<CourseTypes[]>();
+  const [allCourses, setAllCourses] = useState<CourseTypes[]>();
   const [error, setError] = useState<string>("");
   const [loadingYourCourses, setLoadingYourCourses] = useState<boolean>(false);
   const [loadingAllCourses, setLoadingAllCourses] = useState<boolean>(false);
@@ -41,11 +33,11 @@ const dashboard = () => {
   };
 
   useEffect(() => {
-    if (session?.user.role){
-      setRole(session?.user.role)
+    if (session?.user.role) {
+      setRole(session?.user.role);
     }
-    if (session?.user.id){
-      setUserId(session?.user.id)
+    if (session?.user.id) {
+      setUserId(session?.user.id);
     }
     if (session?.user.role === "admin") {
       setAdmin({
@@ -58,8 +50,7 @@ const dashboard = () => {
 
   const fetchCourses = async () => {
     setLoadingYourCourses(true);
-    const response = await axios.get("/api/admin/your-courses"
-  );
+    const response = await axios.get("/api/admin/your-courses");
     setCourses(response.data.data);
     if (!response.data.length) {
       setError(response.data.message);
@@ -69,12 +60,11 @@ const dashboard = () => {
 
   const fetchAllCourses = async () => {
     setLoadingAllCourses(true);
-    const response = await axios.get("/api/common/all-courses"
-  );
+    const response = await axios.get("/api/common/all-courses");
 
     setAllCourses(response.data.data);
     console.log("all course", response.data.data);
-    
+
     if (!response.data.length) {
       setError(response.data.message);
     }
@@ -138,7 +128,7 @@ const dashboard = () => {
                 justifyContent: "center",
               }}
             >
-              {courses.map((course: Course) => (
+              {courses.map((course: CourseTypes) => (
                 <Course
                   key={course._id}
                   course={course}
@@ -174,7 +164,7 @@ const dashboard = () => {
               justifyContent: "center",
             }}
           >
-            {allCourses.map((course: Course) => (
+            {allCourses.map((course: CourseTypes) => (
               <Course
                 key={course._id}
                 course={course}
@@ -218,8 +208,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   return {
     props: {
-      session: serializedSession
+      session: serializedSession,
     },
   };
 };
-
