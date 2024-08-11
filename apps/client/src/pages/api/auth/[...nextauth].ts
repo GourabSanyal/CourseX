@@ -152,10 +152,10 @@ export const authOptions: NextAuthOptions = {
         token.picture = profile.picture;
         token.role = user?.role || "user";
         token.id = user?.id || null;
-        console.log(
-          "Google sign-in: token after",
-          JSON.stringify(token, null, 2)
-        );
+        // console.log(
+        //   "Google sign-in: token after",
+        //   JSON.stringify(token, null, 2)
+        // );
       } else if (user) {
         // console.log("user in else if -- > ", user);
         token.id = user.id;
@@ -167,10 +167,10 @@ export const authOptions: NextAuthOptions = {
           JSON.stringify(token, null, 2)
         );
       }
-      console.log(
-        "Final token in jwt callback:",
-        JSON.stringify(token, null, 2)
-      );
+      // console.log(
+        // "Final token in jwt callback:",
+        // JSON.stringify(token, null, 2)
+      // );
       return token;
     },
     async session({
