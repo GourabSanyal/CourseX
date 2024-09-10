@@ -1,34 +1,33 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Course } from "db";
-
-type CourseData = {
-  _id: string;
-  title: string;
-  description: string;
-  price: number;
-  imageLink: string;
-  published: boolean;
-};
-
-type ErrorObj = {
-  message: string;
-  statusCode: number;
-};
+import { ensureDbConnected } from "@/lib/dbConnect";
+import { Course as CourseTypes } from "shared-types";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]";
+import { secret } from "@/lib/config/secrets";
+import { getToken } from "next-auth/jwt";
+import { ErrorObj } from "shared-types";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<CourseData[] | ErrorObj>
+  res: NextApiResponse<CourseTypes[] | ErrorObj>
 ) {
   try {
     // await ensureDbConnected();
+    const session = await getServerSession(req, res, authOptions);
+    const token = await getToken({ req, secret });
     const { courseId } = req.query;
-    const course: CourseData[] | null = await Course.findByIdAndUpdate(
-      courseId,
-      req.body,
-      { new: true }
-    );
-    // const authHeader = req.headers.authorization;
+    if (
+      (!session && !token) ||
+      (session?.user.role !== "admin" && token?.role !== "admin")
+    ) {
+      res.json({
+        message: "Session expired, please relogin to continue",
+        statusCode: 403,
+      });
+    }
+    const course: CourseTypes[] | null = await Course.findById(courseId);
     if (!course) {
       res.status(400).json({
         message: "Was not able to update course, please try again",
@@ -37,19 +36,7 @@ export default async function handler(
     } else {
       res.status(200).json(course);
     }
-
-    // if (authHeader) {
-
-    //   console.log("no auth header");
-    //   const courses: Course[] = await Course.find({});
-    //   console.log(courses);
-    //   res.status(200).json(courses);
-    // } else {
-    //   res.status(400).json({ message: "error", statusCode: 401 });
-    // }
   } catch (error) {
     console.log("error from updateCourse/[courseId] -> ", error);
-
-    // res.status(500).json({ message: "message", statusCode: 500 });
   }
 }
