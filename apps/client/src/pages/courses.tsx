@@ -129,8 +129,8 @@ export function Course({
               variant="contained"
               size="small"
               onClick={() => {
-                // router.push("/admin/" + courseId);
-                onEdit && onEdit();
+                router.push("/admin/" + course._id);
+                // onEdit && onEdit();
               }}
             >
               View admin
