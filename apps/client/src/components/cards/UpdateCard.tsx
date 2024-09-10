@@ -1,23 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { Card, TextField, Typography, Button } from "@mui/material";
 import axios from "axios";
-
-interface Course {
-  _id: string;
-  title: string;
-  description: string;
-  imageLink: string;
-  price: number;
-  published: boolean;
-}
-
+import { Course } from "shared-types";
+import { toast } from "sonner";
 interface UpdateCardProps {
   course: Course;
   setCourse: React.Dispatch<React.SetStateAction<Course | null>>;
 }
 
 export default function UpdateCard({ course, setCourse }: UpdateCardProps) {
-  // const cardTitle = course.title;
   const [title, setTitle] = useState(course.title);
   const [description, setDescription] = useState(course.description);
   const [image, setImage] = useState(course.imageLink);
@@ -26,76 +17,26 @@ export default function UpdateCard({ course, setCourse }: UpdateCardProps) {
   const handleUpdate = useCallback(() => {
     console.log("handle update called");
     axios
-      .put(
-        `http://localhost:3000/api/updateCourse/${course._id}`,
-        {
-          title,
-          description,
-          imageLink: image,
-          published: true,
-          price,
-        },
-        {
-          headers: {
-            // "Content-type": "application/json",
-            // Authorization: "Bearer " + localStorage.getItem("token"),
-          },
-        }
-      )
+      .put(`/api/admin/updateCourse`, {
+        _id: course._id,
+        title,
+        description,
+        imageLink: image,
+        published: true,
+        price: price,
+      })
       .then((response) => {
         console.log("response recieved", response);
 
-        let updatedCourse = response.data; // Assuming the server returns the updated course
+        let updatedCourse = response.data;
         setCourse(updatedCourse);
+        toast.success("Course updated successfully");
       })
       .catch((error) => {
         console.error("Error updating course:", error);
-        // Handle error state or display an error message to the user
+        toast.error("Error updating course");
       });
   }, [course._id, title, description, image, price, setCourse]);
-
-  // useEffect(() => {
-  //   handleUpdate();
-  // }, [handleUpdate]);
-
-  // useEffect(() => {
-  //   // Update the state when the course prop changes
-  //   setTitle(course.title);
-  //   setDescription(course.description);
-  //   setImage(course.imageLink);
-  //   setPrice(course.price);
-  // }, [course]);
-
-  // const handleUpdate = () => {
-  //   console.log("handle update called");
-  //   axios
-  //     .put(
-  //       `http://localhost:3000/api/updateCourse/${course._id}`,
-  //       {
-  //         title,
-  //         description,
-  //         imageLink: image,
-  //         published: true,
-  //         price,
-  //       },
-  //       {
-  //         headers: {
-  //           // "Content-type": "application/json",
-  //           // Authorization: "Bearer " + localStorage.getItem("token"),
-  //         },
-  //       }
-  //     )
-  //     .then((response) => {
-  //       console.log("response recieved", response);
-
-  //       let updatedCourse = response.data; // Assuming the server returns the updated course
-  //       setCourse(updatedCourse);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error updating course:", error);
-  //       // Handle error state or display an error message to the user
-  //     });
-  // };
 
   return (
     <div style={{ display: "flex", justifyContent: "center", paddingTop: 10 }}>
