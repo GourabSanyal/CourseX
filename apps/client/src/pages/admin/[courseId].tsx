@@ -11,33 +11,24 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
 import { Course } from "shared-types";
 
-// type Course = {
-//   _id: string;
-//   title: string;
-//   description: string;
-//   price: number;
-//   imageLink: string;
-//   published: boolean;
-// };
-
 function singleCoursePage() {
   const [course, setCourse] = useState<Course | null>(null);
+
   const routerQuery = useRouter();
   const { courseId } = routerQuery.query;
-  console.log("course id in page", courseId);
 
   const getSingleCourse = async () => {
     if (courseId) {
       const res = await axios.get(`/api/admin/${courseId}`);
       const data = res.data;
       setCourse(data);
-      console.log("res data in page", data);
     }
   };
 
   useEffect(() => {
     getSingleCourse();
   }, [courseId]);
+
 
   if (!course) {
     return (
