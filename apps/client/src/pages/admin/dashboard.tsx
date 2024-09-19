@@ -171,7 +171,7 @@ const dashboard = () => {
                 userRole={role}
                 userId={userId}
                 createdCourses={role === "admin" ? courses : []}
-                purchasedCourses={role === "user" ? allCourses : []}
+                // purchasedCourses={role === "user" ? allCourses : []}
                 onEdit={() => editCourse(course._id)}
                 // onview={() => viewCourseDetails(course._id)}
               />
