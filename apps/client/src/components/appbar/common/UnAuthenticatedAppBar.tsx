@@ -13,13 +13,8 @@ import { useRouter } from "next/router";
 import MenuIcon from "@mui/icons-material/Menu"; // Ensure you have this import
 import { AdminModal } from "ui";
 import axios from "axios";
-// import { useSetRecoilState } from "recoil";
-// import { adminState } from "store";
-// import { ensureDbConnected } from "@/lib/dbConnect";
 
 const UnAuthenticatedAppBar = () => {
-  //admin state
-  // const setAdmin = useSetRecoilState(adminState);
   const [loginModalOpen, setLoginModalOpen] = useState<boolean>(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [onError, setOnError] = useState<string | null>(null);
@@ -31,15 +26,9 @@ const UnAuthenticatedAppBar = () => {
   const open = Boolean(anchorEl);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  // const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-  //   setAnchorEl(event.currentTarget);
-  // };
   const handleMenu = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   }, []);
-  // const handleClose = () => {
-  //   setAnchorEl(null);
-  // };
   const handleClose = useCallback(() => {
     setAnchorEl(null);
   }, []);
@@ -49,17 +38,10 @@ const UnAuthenticatedAppBar = () => {
     setLoginModalOpen(false); // closes users modal
   };
 
-  // const adminLogin = () => {
-  //   console.log("admin login");
-  //   signIn("credentials", { role: "admin" });
-  // };
   const adminLogout = () => {
     console.log("admin logout");
     signOut();
   };
-  // const userLogin = () => {
-  //   console.log("user login");
-  // };
   const openAdminLoginModal = () => {
     setModalOpen(true); // OLD - for admin login
   };
@@ -77,10 +59,10 @@ const UnAuthenticatedAppBar = () => {
         username,
         email,
         password,
-        callbackUrl: "/admin/dashboard"
-      })
-      if (results?.error){
-        setOnError("Admin already exists, please login to continue")
+        callbackUrl: "/admin/dashboard",
+      });
+      if (results?.error) {
+        setOnError("Admin already exists, please login to continue");
       }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 409) {
@@ -100,19 +82,36 @@ const UnAuthenticatedAppBar = () => {
     if (role === "admin") {
       openAdminLoginModal();
     } else {
-      await signIn("google", {callbackUrl: "/user/home"}); // user signs in from here
+      await signIn("google", { callbackUrl: "/user/home" }); // user signs in from here
     }
   };
 
   const adminSignIn = async (email: string, password: string) => {
     try {
-      const results=  await signIn("admin-signin", { email, password, callbackUrl : "/admin/dashboard"})
-      if (results?.error){
-        setOnError("Admin not registered or wrong credentials")
+      const results = await signIn("admin-signin", {
+        email,
+        password,
+        redirect: false,
+      });
+      if (results?.error === "CredentialsSignin") {
+        // shows a generic credential sign-in error
+        // determine the specific error based on our own logic
+        const checkUserExists = await fetch("/api/user/check-user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        });
+        const data = await checkUserExists.json();
+        console.log("data recieved in clinet ", data);
+
+        if (data) {
+          setOnError(data.message);
+        }
       }
-  
     } catch (error) {
-        setOnError(error as string);
+      setOnError(error as string);
       if (axios.isAxiosError(error) && error.response?.status === 403) {
         let errorRes = error.response.data.message;
         setOnError(errorRes);
@@ -129,7 +128,7 @@ const UnAuthenticatedAppBar = () => {
   ): Promise<void> => {
     try {
       if (isSignInRef.current) {
-        adminSignIn(email, password)
+        adminSignIn(email, password);
       } else {
         adminSignUp(username, email, password);
       }
@@ -152,45 +151,29 @@ const UnAuthenticatedAppBar = () => {
             <MenuIcon />
           </IconButton>
           {anchorEl && (
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            open={open}
-            onClose={handleClose}
-          >
-            <MenuItem
-              onClick={() => {
-                openAppLoginModal();
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
               }}
-            >
-              Login
-            </MenuItem>
-            {/* <MenuItem
-              onClick={() => {
-                openAdminLoginModal();
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
               }}
+              open={open}
+              onClose={handleClose}
             >
-              Admin Login
-            </MenuItem>
-            <MenuItem onClick={adminLogout}>SignIn</MenuItem>
-            <MenuItem
-              onClick={() => {
-                router.push("/user/signin");
-              }}
-            >
-              SignUp
-            </MenuItem> */}
-          </Menu>
-
+              <MenuItem
+                onClick={() => {
+                  openAppLoginModal();
+                }}
+              >
+                Login
+              </MenuItem>
+            </Menu>
           )}
         </div>
       ) : (
@@ -205,36 +188,6 @@ const UnAuthenticatedAppBar = () => {
               Login
             </Button>
           </div>
-          {/* <div style={{ marginRight: 10 }}>
-            <Button
-              style={{ color: "white" }}
-              onClick={() => {
-                openAdminLoginModal();
-              }}
-            >
-              Admin Login
-            </Button>
-          </div>
-          <div style={{ marginRight: 10 }}>
-            <Button
-              variant={"contained"}
-              onClick={() => {
-                router.push("/user/signin");
-              }}
-            >
-              Sign In
-            </Button>
-          </div>
-          <div>
-            <Button
-              variant={"contained"}
-              onClick={() => {
-                router.push("/user/signup");
-              }}
-            >
-              Sign Up
-            </Button>
-          </div> */}
         </div>
       )}
       <CustomModal
