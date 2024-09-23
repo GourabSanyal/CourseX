@@ -21,10 +21,10 @@
     "next-auth": "^4.24.6",
     "react-toastify": "^9.1.3",
     "recoil": "^0.7.7",
+    "shared-types": "*",
     "store": "*",
     "typescript": "^5.5.2",
-    "ui": "*",
-    "shared-types":"*"
+    "ui": "*"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.4.1",
@@ -37,6 +37,7 @@
     "next": "^14.2.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sonner": "^1.5.0"
+    "sonner": "^1.5.0",
+    "zod": "^3.23.8"
   }
 }
