@@ -77,10 +77,12 @@ export const authOptions: NextAuthOptions = {
         const dbUser = await Admin.findOne({ email, password });
         try {
           if (!dbUser) {
-            throw new Error("No admin found with this given email");
+            // throw new Error("NoAdmin");
+            return null
           }
           if (password !== dbUser.get("password")) {
-            throw new Error("Incorrect email or password");
+            // throw new Error("WrongCredentials");
+            return null
           }
 
           return {
@@ -90,7 +92,7 @@ export const authOptions: NextAuthOptions = {
             role: dbUser.role,
           };
         } catch (error) {
-          console.log("auth error", error as string);
+          console.log("auth error", error);
           return null;
         }
       },

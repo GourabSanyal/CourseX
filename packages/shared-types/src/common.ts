@@ -6,3 +6,8 @@ export type Course = {
   imageLink: string;
   published: boolean;
 };
+
+export type ErrorObj = {
+  message: string;
+  statusCode: number;
+};

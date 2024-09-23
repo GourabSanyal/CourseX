@@ -9,25 +9,18 @@ import CourseCard from "@/components/cards/CourseCard";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
-
-type Course = {
-  _id: string; 
-  title: string;
-  description: string;
-  price: number;
-  imageLink: string;
-  published: boolean;
-};
+import { Course } from "shared-types";
 
 function singleCoursePage() {
-  const [course, setCourse] = useState<Course | null >(null);
+  const [course, setCourse] = useState<Course | null>(null);
+
   const routerQuery = useRouter();
   const { courseId } = routerQuery.query;
 
   const getSingleCourse = async () => {
-    if (courseId){
-      const res = await axios.get(`/api/updateCourse/${courseId}`, {});
-      const data = res.data
+    if (courseId) {
+      const res = await axios.get(`/api/admin/${courseId}`);
+      const data = res.data;
       setCourse(data);
     }
   };
@@ -35,6 +28,7 @@ function singleCoursePage() {
   useEffect(() => {
     getSingleCourse();
   }, [courseId]);
+
 
   if (!course) {
     return (
@@ -67,7 +61,6 @@ function singleCoursePage() {
 
 export default singleCoursePage;
 
-
 export const getServerSideProps: GetServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
@@ -86,7 +79,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   return {
     props: {
-      session: serializedSession
+      session: serializedSession,
     },
   };
 };
