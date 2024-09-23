@@ -80,8 +80,6 @@ export function AdminModal({
       if (isSignInRef.current) {
         await onSubmit(null, data.email, data.password);
       } else {
-        console.log("from child -->", data);
-
         await onSubmit(data.username, data.email, data.password);
       }
     } catch (error) {
