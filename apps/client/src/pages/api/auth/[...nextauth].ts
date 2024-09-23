@@ -51,7 +51,8 @@ export const authOptions: NextAuthOptions = {
               role: newAdmin.role,
             };
           } else {
-            throw new Error("Admin Laready exists, please login to continue");
+            // throw new Error("Admin Laready exists, please login to continue");
+            return null
           }
         } catch (error) {
           console.log("auth error", error as string);
