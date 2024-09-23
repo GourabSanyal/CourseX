@@ -10,7 +10,7 @@ import {
 import { CustomModal } from "ui";
 import { signOut, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
-import MenuIcon from "@mui/icons-material/Menu"; // Ensure you have this import
+import MenuIcon from "@mui/icons-material/Menu";
 import { AdminModal } from "ui";
 import axios from "axios";
 
@@ -34,16 +34,15 @@ const UnAuthenticatedAppBar = () => {
   }, []);
 
   const handleCloseModal = () => {
-    setModalOpen(false); // closes admin modal
-    setLoginModalOpen(false); // closes users modal
+    setModalOpen(false); 
+    setLoginModalOpen(false); 
   };
 
   const adminLogout = () => {
-    console.log("admin logout");
     signOut();
   };
   const openAdminLoginModal = () => {
-    setModalOpen(true); // OLD - for admin login
+    setModalOpen(true);
   };
   const handleResetError = () => {
     setOnError(null);
@@ -59,30 +58,37 @@ const UnAuthenticatedAppBar = () => {
         username,
         email,
         password,
-        callbackUrl: "/admin/dashboard",
+        redirect: false,
       });
-      if (results?.error) {
-        setOnError("Admin already exists, please login to continue");
+
+      if (results?.error === "CredentialsSignin") {
+        const checkUserExists = await fetch("/api/user/check-user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        });
+        const data = await checkUserExists.json();
+
+        if (data) {
+          setOnError("Admin already exist, please login to continue");
+        }
       }
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 409) {
-        let errorRes = error.response.data.message;
-        setOnError(errorRes);
-      } else {
-        console.log("An error occurred: ", error);
-      }
+    } catch (error: any) {
+      setOnError(error);
     }
   };
 
   const openAppLoginModal = () => {
-    setLoginModalOpen(true); // NEW - opens oAuth login modal
+    setLoginModalOpen(true);
   };
 
   const handleLogin = async (role: "admin" | "user") => {
     if (role === "admin") {
       openAdminLoginModal();
     } else {
-      await signIn("google", { callbackUrl: "/user/home" }); // user signs in from here
+      await signIn("google", { callbackUrl: "/user/home" });
     }
   };
 
@@ -94,8 +100,6 @@ const UnAuthenticatedAppBar = () => {
         redirect: false,
       });
       if (results?.error === "CredentialsSignin") {
-        // shows a generic credential sign-in error
-        // determine the specific error based on our own logic
         const checkUserExists = await fetch("/api/user/check-user", {
           method: "POST",
           headers: {
@@ -104,20 +108,13 @@ const UnAuthenticatedAppBar = () => {
           body: JSON.stringify({ email }),
         });
         const data = await checkUserExists.json();
-        console.log("data recieved in clinet ", data);
 
         if (data) {
           setOnError(data.message);
         }
       }
-    } catch (error) {
-      setOnError(error as string);
-      if (axios.isAxiosError(error) && error.response?.status === 403) {
-        let errorRes = error.response.data.message;
-        setOnError(errorRes);
-      } else {
-        console.log("An error occurred: ", error);
-      }
+    } catch (error: any) {
+      setOnError(error)
     }
   };
 
