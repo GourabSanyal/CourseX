@@ -36,9 +36,6 @@ export default async function handler(
     const session = await getServerSession(req, res, authOptions);
     const token = await getToken({ req, secret });
 
-    console.log("session - purchased courses", session);
-    console.log("token - purchased courses", token);
-
     if (!session || !token) {
       res.json({
         message: "Session expired, please relogin to continue",

@@ -46,19 +46,13 @@ export default async function handler(
         success: false,
       });
     } else {
-      console.log("req.body", req.body);
-      console.log("email", token?.email);
-
       const userEmail = token?.email;
       const courseId = req.body.courseId;
 
       // Find the user by email and update the cart with the new courseId
       const user = await User.findOneAndUpdate(
         { email: userEmail }
-        // { $push: { cart: courseId } },
-        // { new: true, runValidators: true } // `new: true` to return the updated document
       );
-
       const isInCart = user.cart.includes(courseId);
 
       if (isInCart) {
