@@ -10,6 +10,8 @@ import {
 } from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { toast } from "sonner";
+import { cartState } from "store";
+import { useRecoilState } from "recoil";
 
 type Course = {
   _id: string; // You can adjust this type as needed
@@ -75,32 +77,40 @@ export function Course({
   purchasedCourses,
 }: CourseProps) {
   const router = useRouter();
-  const [isInCart, setIsInCart] = useState(false);
+  const [isInCart, setIsInCart] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [cart, setCart] = useRecoilState<{ [key: string]: any }>(cartState); // Adjust 'any' to the appropriate type if known
+
+  useEffect(() => {
+    const courseInCart = Object.values(cart).includes(course._id);
+    setIsInCart(courseInCart); // Set the initial state from the server cart data
+  }, [cart, course._id]);
 
   const handleAddToCart = async () => {
-    console.log("course selected", course._id);
     setLoading(true);
-    try {
-      const response = await axios.post("/api/user/addToCart", {
-        courseId: course._id,
-      });
-      if (response.data.success) {
-        if (response.data.inCart) {
-          setIsInCart(true);
-        } else {
-          setIsInCart(false);
-        }
-        toast.success(response.data.message || "Added to cart");
+    //use local recoil state to update cart
+    setCart((prevCart) => {
+      const updatedCart = { ...prevCart };
+      const courseInCart = Object.values(updatedCart).includes(course._id);
+      if (courseInCart) {
+        const keyToRemove = Object.keys(updatedCart).find(
+          (key) => updatedCart[key] === course._id
+        );
+        if (keyToRemove) {
+          delete updatedCart[keyToRemove];
+        } // Remove item if exists
+        setIsInCart(false);
+        toast.success("Item removed from cart");
       } else {
-        toast.error(response.data.message || "Failed to add to cart");
+        const nextIndex = Object.keys(updatedCart).length; // Add item with default quantity
+        updatedCart[nextIndex] = course._id;
+        setIsInCart(true);
+        toast.success("Item added to cart");
       }
-    } catch (error: any) {
-      console.error("Error adding to cart:", error);
-      toast.error(error.response?.data?.message || "Failed to add to cart");
-    } finally {
-      setLoading(false);
-    }
+      return updatedCart;
+    });
+
+    setLoading(false);
   };
 
   if (createdCourses) {
