@@ -7,6 +7,7 @@ export * from "./atoms/user"
 export * from "./selectors/userEmail"
 export * from "./selectors/isUserLoading"
 export * from "./selectors/userName"
+export * from './atoms/cart/cart'
 
 // admin
 export * from "./atoms/admin/admin"
