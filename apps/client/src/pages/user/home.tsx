@@ -2,8 +2,8 @@ import { Box, CircularProgress, Grid, Tab, Typography } from "@mui/material";
 import { Tabs } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { userState } from "store";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { cartState, userState } from "store";
 import { Course } from "../courses";
 import { useSession } from "next-auth/react";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
@@ -31,6 +31,7 @@ const home = () => {
   const [loadingAllCourses, setLoadingAllCourses] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
+  const [cart, setCart] = useRecoilState(cartState);
 
   useEffect(() => {
     if (session?.user.role) {
@@ -62,13 +63,28 @@ const home = () => {
   const fetchAllCourses = async () => {
     setLoadingAllCourses(true);
     const response = await axios.get("/api/common/all-courses");
-
     setAllCourses(response.data.data);
+
+    const serverCart = response.data.inCart.reduce(
+      (acc: any, courseId: string, index: number) => {
+        acc[index] = courseId;
+        return acc;
+      },
+      {}
+    );
+
+    setCart(serverCart);
+    console.log("cart after -> ", cart);
+
     if (!response.data.length) {
       setError(response.data.message);
     }
     setLoadingAllCourses(false);
   };
+
+  useEffect(() => {
+    console.log("Updated cart state --> ", cart);
+  }, [cart]);
 
   useEffect(() => {
     if (activeTab === 0) {
