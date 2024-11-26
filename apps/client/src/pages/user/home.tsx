@@ -3,7 +3,7 @@ import { Tabs } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { cartState, userState } from "store";
+import { cartState, userState, saveCartToLocalStorage } from "store";
 import { Course } from "../courses";
 import { useSession } from "next-auth/react";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
@@ -62,26 +62,44 @@ const home = () => {
 
   const fetchAllCourses = async () => {
     setLoadingAllCourses(true);
-    const response = await axios.get("/api/common/all-courses");
-    setAllCourses(response.data.data);
-
-    const serverCart = response.data.inCart.reduce(
-      (acc: any, courseId: string, index: number) => {
-        acc[index] = courseId;
-        return acc;
-      },
-      {}
-    );
-
-    setCart(serverCart);
-    console.log("cart after -> ", cart);
-
-    if (!response.data.length) {
-      setError(response.data.message);
+    try {
+      const response = await axios.get("/api/common/all-courses");
+      setAllCourses(response.data.data);
+      const savedCart = localStorage.getItem("cartState"); // check for crt items in local state
+      if (!savedCart) { // if no cart id in local storage, use server data
+        if (response.data.inCart) {
+          const serverCart = response.data.inCart.reduce(
+            (acc: any, courseId: string, index: number) => {
+              acc[index] = courseId;
+              return acc;
+            },
+            {}
+          );
+          // Save server cart to both Recoil and local storage
+          setCart(serverCart);
+          saveCartToLocalStorage(serverCart);
+        }
+      } else {
+        // if local storage exists,use that to populate recoil state
+        const localCart = JSON.parse(savedCart);
+        setCart(localCart);
+      }
+    } catch (error :  any) {
+      console.error("Error fetching courses:", error);
+      setError(error.message);
+    } finally {
+      setLoadingAllCourses(false);
     }
-    setLoadingAllCourses(false);
   };
 
+  useEffect(() => {
+    const savedCart = localStorage.getItem("cartState");
+    if (savedCart) {
+      const parsedCart = JSON.parse(savedCart);
+      setCart(parsedCart);
+    }
+  }, []);
+  
   useEffect(() => {
     console.log("Updated cart state --> ", cart);
   }, [cart]);

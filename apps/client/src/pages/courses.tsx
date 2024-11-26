@@ -10,11 +10,11 @@ import {
 } from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { toast } from "sonner";
-import { cartState } from "store";
+import { cartState, saveCartToLocalStorage } from "store";
 import { useRecoilState } from "recoil";
 
 type Course = {
-  _id: string; // You can adjust this type as needed
+  _id: string;
   title: string;
   description: string;
   price: number;
@@ -81,14 +81,16 @@ export function Course({
   const [loading, setLoading] = useState<boolean>(false);
   const [cart, setCart] = useRecoilState<{ [key: string]: any }>(cartState); // Adjust 'any' to the appropriate type if known
 
+  console.log("local storage", localStorage.getItem("cartState"))
+
   useEffect(() => {
     const courseInCart = Object.values(cart).includes(course._id);
-    setIsInCart(courseInCart); // Set the initial state from the server cart data
+    setIsInCart(courseInCart); 
   }, [cart, course._id]);
 
   const handleAddToCart = async () => {
     setLoading(true);
-    //use local recoil state to update cart
+    // updating cart using recoil
     setCart((prevCart) => {
       const updatedCart = { ...prevCart };
       const courseInCart = Object.values(updatedCart).includes(course._id);
@@ -102,11 +104,12 @@ export function Course({
         setIsInCart(false);
         toast.success("Item removed from cart");
       } else {
-        const nextIndex = Object.keys(updatedCart).length; // Add item with default quantity
+        const nextIndex = Object.keys(updatedCart).length;
         updatedCart[nextIndex] = course._id;
         setIsInCart(true);
         toast.success("Item added to cart");
       }
+      saveCartToLocalStorage(updatedCart);
       return updatedCart;
     });
 
