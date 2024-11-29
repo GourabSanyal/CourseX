@@ -12,6 +12,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { toast } from "sonner";
 import { cartState, saveCartToLocalStorage } from "store";
 import { useRecoilState } from "recoil";
+import { useCart } from "../hooks/useCart";
 
 type Course = {
   _id: string;
@@ -80,12 +81,11 @@ export function Course({
   const [isInCart, setIsInCart] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [cart, setCart] = useRecoilState<{ [key: string]: any }>(cartState); // Adjust 'any' to the appropriate type if known
-
-  console.log("local storage", localStorage.getItem("cartState"))
+  const { startDebouncedSync } = useCart();
 
   useEffect(() => {
     const courseInCart = Object.values(cart).includes(course._id);
-    setIsInCart(courseInCart); 
+    setIsInCart(courseInCart);
   }, [cart, course._id]);
 
   const handleAddToCart = async () => {
@@ -100,13 +100,17 @@ export function Course({
         );
         if (keyToRemove) {
           delete updatedCart[keyToRemove];
-        } // Remove item if exists
+        }
         setIsInCart(false);
+        startDebouncedSync();
         toast.success("Item removed from cart");
       } else {
-        const nextIndex = Object.keys(updatedCart).length;
+        const nextIndex = String(
+          Math.max(0, ...Object.keys(updatedCart).map(Number)) + 1
+        );
         updatedCart[nextIndex] = course._id;
         setIsInCart(true);
+        startDebouncedSync();
         toast.success("Item added to cart");
       }
       saveCartToLocalStorage(updatedCart);
