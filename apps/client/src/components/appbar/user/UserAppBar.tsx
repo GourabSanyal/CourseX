@@ -34,8 +34,7 @@ function UserAppBar() {
   };
 
   const handleLogout = async () => {
-    await signOut();
-    router.push("/");
+    await signOut({callbackUrl : "/"});
     setUser({ isLoading: false, userEmail: null, username: null });
   };
 
