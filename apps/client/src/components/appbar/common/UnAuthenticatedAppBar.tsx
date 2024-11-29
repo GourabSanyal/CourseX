@@ -97,7 +97,7 @@ const UnAuthenticatedAppBar = () => {
       const results = await signIn("admin-signin", {
         email,
         password,
-        redirect: false,
+        callbackUrl : "/admin/dashboard",
       });
       if (results?.error === "CredentialsSignin") {
         const checkUserExists = await fetch("/api/user/check-user", {
