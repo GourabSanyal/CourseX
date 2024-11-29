@@ -14,6 +14,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useRouter } from "next/navigation";
 import { adminState } from "store";
 import { useRecoilValue, useSetRecoilState } from "recoil";
+import { signOut } from "next-auth/react";
 
 function AdminAppBar() {
   const router = useRouter();
@@ -31,10 +32,10 @@ function AdminAppBar() {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.removeItem("token");
     setAdmin({ isLoading: false, userEmail: null, username: null });
-    router.push("/");
+    await signOut({callbackUrl  : "/"})
   };
 
   return (
