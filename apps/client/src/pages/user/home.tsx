@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
+import { useCart } from "@/hooks/useCart";
 
 type Course = {
   _id: string;
@@ -32,6 +33,8 @@ const home = () => {
   const [role, setRole] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
   const [cart, setCart] = useRecoilState(cartState);
+  const { forceSync } = useCart()
+
 
   useEffect(() => {
     if (session?.user.role) {
@@ -60,13 +63,25 @@ const home = () => {
     setLoadingYourCourses(false);
   };
 
+  useEffect(() => {
+    const handleRouteChange = () => {
+      forceSync()
+  }
+
+  window.addEventListener('popstate', handleRouteChange)
+  return (()=> {
+    window.addEventListener('popstate', handleRouteChange)
+
+  })
+  }, [cart])
+
   const fetchAllCourses = async () => {
     setLoadingAllCourses(true);
     try {
       const response = await axios.get("/api/common/all-courses");
       setAllCourses(response.data.data);
-      const savedCart = localStorage.getItem("cartState"); // check for crt items in local state
-      if (!savedCart) { // if no cart id in local storage, use server data
+      const savedCart = localStorage.getItem("cartState"); 
+      if (!savedCart) {
         if (response.data.inCart) {
           const serverCart = response.data.inCart.reduce(
             (acc: any, courseId: string, index: number) => {
@@ -75,7 +90,7 @@ const home = () => {
             },
             {}
           );
-          // Save server cart to both Recoil and local storage
+          // save server cart to both Recoil and local storage
           setCart(serverCart);
           saveCartToLocalStorage(serverCart);
         }
@@ -101,7 +116,7 @@ const home = () => {
   }, []);
   
   useEffect(() => {
-    console.log("Updated cart state --> ", cart);
+    // console.log("Updated cart state --> ", cart);
   }, [cart]);
 
   useEffect(() => {
