@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ensureDbConnected } from "@/lib/dbConnect";
-import { Course, User } from "db";
+import { Course, Admin } from "db";
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
@@ -46,7 +46,7 @@ export default async function handler(
     } else {
       let courses: Course[] = await Course.find({});
       const email = token?.email
-      let loggedUser = await User.findOne({email})
+      let loggedUser = await Admin.findOne({email})
       
       let inCart =  null
 
