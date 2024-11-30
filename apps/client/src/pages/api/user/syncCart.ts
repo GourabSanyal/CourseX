@@ -56,22 +56,14 @@ export default async function handler(
           success: true,
         });
       } else {
-        const existingCartSet = new Set(
+        const incomingCartSet = new Set(
           incomingCart.map((id: any) => id.toString())
         );
-        const incomingCartSet = new Set(
-          user.cart.map((id: any) => id.toString())
-        );
-
-        const mergedCart = new Set([
-          ...Array.from(existingCartSet),
-          ...Array.from(incomingCartSet),
-        ]);
-        user.cart = Array.from(mergedCart).map(
+        user.cart = Array.from(incomingCartSet).map(
           (id: any) => new mongoose.Types.ObjectId(id)
         );
+
         await user.save();
-        console.log("cart adter update ->", await user.cart);
 
         res.json({
           message: "Cart data updated",

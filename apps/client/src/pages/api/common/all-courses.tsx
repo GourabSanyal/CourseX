@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ensureDbConnected } from "@/lib/dbConnect";
-import { Course, Admin } from "db";
+import { Course, Admin, User } from "db";
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
@@ -24,7 +24,7 @@ type ResponseData =
   | {
       message: string;
       data: Course[] | null;
-      inCart: Course[] | null
+      inCart?: Course[] | null;
     }
   | ErrorObj;
 
@@ -45,23 +45,25 @@ export default async function handler(
       });
     } else {
       let courses: Course[] = await Course.find({});
-      const email = token?.email
-      let loggedUser = await Admin.findOne({email})
-      
-      let inCart =  null
+      const email = token?.email;
+      // console.log("role -> ",token?.role);
 
-      // send empty cart if the logged in user is admin
-      if (loggedUser.role === "user"){
-        inCart = loggedUser.cart || null
-      }
+      let loggedUser;
 
-      if (!courses.length) {
+      if (token?.role === "admin") {
+        loggedUser = await Admin.findOne({ email });
         res.json({
-          message: "You have not created any course yet!",
-          statusCode: 200,
+          message: "add courses for admin",
+          data: courses,
         });
       } else {
-        res.json({ message: "This is all courses", data: courses, inCart : inCart  });
+        loggedUser = await User.findOne({ email });
+        let inCart = loggedUser.cart;
+        res.json({
+          message: "All courses for user",
+          data: courses,
+          inCart: inCart,
+        });
       }
     }
   } catch (error) {
