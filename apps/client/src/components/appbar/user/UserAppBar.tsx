@@ -15,12 +15,14 @@ import { useRouter } from "next/navigation";
 import { userState } from "store";
 import { useSetRecoilState, useRecoilValue } from "recoil";
 import { signOut } from "next-auth/react";
+import AppModal from "@/components/ui/AppModal";
 
 function UserAppBar() {
   const router = useRouter();
   const setUser = useSetRecoilState(userState);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [isCartModalOpen, setisCartModalOpen] = useState<boolean>(false);
   const open = Boolean(anchorEl);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // Adjust the breakpoint as needed
@@ -37,6 +39,14 @@ function UserAppBar() {
     await signOut({callbackUrl : "/"});
     setUser({ isLoading: false, userEmail: null, username: null });
   };
+
+  const handleCartModal = () => {
+    if (isCartModalOpen){
+      setisCartModalOpen(false)
+    } else {
+      setisCartModalOpen(true)
+    }
+  }
 
   return (
     <AppBar>
@@ -89,7 +99,7 @@ function UserAppBar() {
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
-                    // router.push("/cart");
+                    setisCartModalOpen(true)
                   }}
                 >
                   Cart
@@ -124,7 +134,7 @@ function UserAppBar() {
               <Button
                 style={{ color: "white" }}
                 onClick={() => {
-                  // router.push("/");
+                  setisCartModalOpen(true)
                 }}
               >
                 Cart
@@ -136,6 +146,12 @@ function UserAppBar() {
           )}
         </div>
       </Toolbar>
+      <AppModal
+        open={isCartModalOpen}
+        onClose={handleCartModal}
+        title="Cart items"
+        type="cart"
+      />
     </AppBar>
   );
 }
