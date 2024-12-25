@@ -57,12 +57,13 @@ export default async function handler(
           data: courses,
         });
       } else {
-        loggedUser = await User.findOne({ email });
-        let inCart = loggedUser.cart;
+        loggedUser = await User.findOne({ email }).populate("cart");
+        console.log("cart in api -> ", loggedUser.cart, Array.isArray(loggedUser.cart));
+        
         res.json({
           message: "All courses for user",
           data: courses,
-          inCart: inCart,
+          inCart: loggedUser.cart,
         });
       }
     }

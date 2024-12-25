@@ -33,8 +33,7 @@ const home = () => {
   const [role, setRole] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
   const [cart, setCart] = useRecoilState(cartState);
-  const { forceSync } = useCart()
-
+  const { forceSync } = useCart();
 
   useEffect(() => {
     if (session?.user.role) {
@@ -63,43 +62,43 @@ const home = () => {
     setLoadingYourCourses(false);
   };
 
-  useEffect(() => {
+  useEffect(() => {
     const handleRouteChange = () => {
-      forceSync()
-  }
+      forceSync();
+    };
 
-  window.addEventListener('popstate', handleRouteChange)
-  return (()=> {
-    window.addEventListener('popstate', handleRouteChange)
-
-  })
-  }, [cart])
+    window.addEventListener("popstate", handleRouteChange);
+    return () => {
+      window.addEventListener("popstate", handleRouteChange);
+    };
+  }, [cart]);
 
   const fetchAllCourses = async () => {
     setLoadingAllCourses(true);
     try {
       const response = await axios.get("/api/common/all-courses");
       setAllCourses(response.data.data);
-      const savedCart = localStorage.getItem("cartState"); 
+      console.log("recived cart in UI ->", response.data.inCart, Array.isArray(response.data.inCart));
+      const savedCart = localStorage.getItem("cartState");
       if (!savedCart) {
         if (response.data.inCart) {
-          const serverCart = response.data.inCart.reduce(
-            (acc: any, courseId: string, index: number) => {
-              acc[index] = courseId;
-              return acc;
-            },
-            {}
-          );
-          // save server cart to both Recoil and local storage
-          setCart(serverCart);
-          saveCartToLocalStorage(serverCart);
+          // const serverCart = response.data.inCart.reduce(
+          //   (acc: Course[], cartItem: Course, index: number) => {
+          //     acc[index] = cartItem;  
+          //     return acc;
+          //   },
+          //   {}
+          // );
+          // console.log("cart from server -> ", serverCart, Array.isArray(serverCart));
+          setCart(response.data.inCart);
+          console.log("Cart after recoil update ->", cart, (typeof cart));
+          saveCartToLocalStorage(cart);
         }
       } else {
-        // if local storage exists,use that to populate recoil state
         const localCart = JSON.parse(savedCart);
         setCart(localCart);
       }
-    } catch (error :  any) {
+    } catch (error: any) {
       console.error("Error fetching courses:", error);
       setError(error.message);
     } finally {
@@ -113,13 +112,16 @@ const home = () => {
       const parsedCart = JSON.parse(savedCart);
       setCart(parsedCart);
     }
+    console.log("cart in storage->", cart, (typeof cart));
   }, []);
-  
-  useEffect(() => {
-    // console.log("Updated cart state --> ", cart);
-  }, [cart]);
 
   useEffect(() => {
+    // console.log("Updated cart state --> ", cart);
+    // console.log("cart from server -> ", serverCart, (typeof serverCart));
+          console.log("recoil update useEffect->", cart, Array.isArray(cart));
+  }, [cart]);
+
+  useEffect(() => { 
     if (activeTab === 0) {
       fetchCourses();
     } else {

@@ -72,10 +72,10 @@ export default async function handler(
       }
     }
   } catch (error) {
-    console.log("error in add to cart API", error);
+    console.log("error in sync to cart API", error);
 
     res.status(500).json({
-      message: "Error from api user/purchased-courses",
+      message: "Error from api sync cart",
       success: false,
     });
   }

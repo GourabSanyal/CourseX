@@ -80,12 +80,14 @@ export function Course({
   const router = useRouter();
   const [isInCart, setIsInCart] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [cart, setCart] = useRecoilState<{ [key: string]: any }>(cartState); // Adjust 'any' to the appropriate type if known
+  const [cart, setCart] = useRecoilState(cartState);
   const { startDebouncedSync } = useCart();
 
   useEffect(() => {
-    const courseInCart = Object.values(cart).includes(course._id);
-    setIsInCart(courseInCart);
+    const courseInCart = Object.values(cart).some((cartItem : any) => cartItem._id === course);
+    // console.log("course in cart useEffect->", courseInCart);
+    
+    // setIsInCart(courseInCart);
   }, [cart, course._id]);
 
   const handleAddToCart = async () => {
@@ -93,14 +95,16 @@ export function Course({
     // updating cart using recoil
     setCart((prevCart) => {
       const updatedCart = { ...prevCart };
-      const courseInCart = Object.values(updatedCart).includes(course._id);
+      console.log("updated cart ->", updatedCart, (typeof updatedCart));
+      
+      const courseInCart = Object.values(updatedCart);
       if (courseInCart) {
-        const keyToRemove = Object.keys(updatedCart).find(
-          (key) => updatedCart[key] === course._id
-        );
-        if (keyToRemove) {
-          delete updatedCart[keyToRemove];
-        }
+        // const keyToRemove = Object.keys(updatedCart).find(
+        //   (key) => updatedCart[key] === course._id
+        // );
+        // if (keyToRemove) {
+        //   delete updatedCart[keyToRemove];
+        // }
         setIsInCart(false);
         startDebouncedSync();
         toast.success("Item removed from cart");
@@ -108,7 +112,7 @@ export function Course({
         const nextIndex = String(
           Math.max(0, ...Object.keys(updatedCart).map(Number)) + 1
         );
-        updatedCart[nextIndex] = course._id;
+        // updatedCart[nextIndex] = course._id;
         setIsInCart(true);
         startDebouncedSync();
         toast.success("Item added to cart");
