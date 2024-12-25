@@ -3,7 +3,7 @@ import { useRecoilState } from "recoil";
 import axios from "axios";
 import { cartState } from "store";
 
-const DEBOUNCE_DELAY = 10000;
+const DEBOUNCE_DELAY = 10;
 
 export const useCart = () => {
   const [cart, setCart] = useRecoilState(cartState);

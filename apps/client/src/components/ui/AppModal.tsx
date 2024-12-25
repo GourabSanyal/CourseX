@@ -67,6 +67,9 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const cart = useRecoilValue(cartState);
 
+    console.log("cart items", cart);
+    
+
     useEffect(() => {
 
       setIsLoading(false);
