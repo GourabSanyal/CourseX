@@ -46,7 +46,6 @@ export default async function handler(
     } else {
       let courses: Course[] = await Course.find({});
       const email = token?.email;
-      // console.log("role -> ",token?.role);
 
       let loggedUser;
 
@@ -58,8 +57,6 @@ export default async function handler(
         });
       } else {
         loggedUser = await User.findOne({ email }).populate("cart");
-        console.log("cart in api -> ", loggedUser.cart, Array.isArray(loggedUser.cart));
-        
         res.json({
           message: "All courses for user",
           data: courses,
@@ -69,6 +66,6 @@ export default async function handler(
     }
   } catch (error) {
     console.log("error from api -> ", error);
-    res.status(500).json({ message: "message", statusCode: 500 });
+    res.status(500).json({ message: "Error in Server, try again", statusCode: 500 });
   }
 }
