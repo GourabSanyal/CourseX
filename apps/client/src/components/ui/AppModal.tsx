@@ -8,15 +8,16 @@ import {
   ListItem,
   Skeleton,
   Box,
-  Button
+  Button,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useRecoilValue } from "recoil";
+import { useRecoilCallback, useRecoilState, useRecoilValue } from "recoil";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { cartState } from "store";
-import {  ArrowOutward } from "@mui/icons-material";
+import { ArrowOutward } from "@mui/icons-material";
+import { Course } from "shared-types";
 
 type ModalActions = {
   label: string;
@@ -38,17 +39,9 @@ interface AppModalProps {
   type: "success" | "alert" | "info" | "cart";
 }
 
-interface CartItem {
-  _id: string;
-  title: string;
-  description: string;
-  price: number;
-  imageLink: string;
-}
-
 const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
   const getTypes = (modalType: AppModalProps["type"]) => {
-    switch (type) {
+    switch (modalType) {
       case "success":
         return { titleColor: "green", borderColor: "green" };
       case "alert":
@@ -64,16 +57,26 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
 
   const ModalContent = () => {
     const [isLoading, setIsLoading] = useState(true);
-    const [cartItems, setCartItems] = useState<CartItem[]>([]);
+    const [cartItems, setCartItems] =
+      useRecoilState<Record<string, Course>>(cartState);
     const cart = useRecoilValue(cartState);
 
-    console.log("cart items", cart);
-    
-
     useEffect(() => {
-
       setIsLoading(false);
     }, [cart]);
+
+    const isCartEmpty = Object.keys(cartItems).length === 0;
+    const totalAmount = Object.values(cartItems)
+      .reduce((sum, item) => sum + item.price, 0)
+      .toFixed(2);
+
+    const removeFromCart = async (itemId: string) => {
+      setCartItems((prevCart) => {
+        const updatedCart: Record<string, Course> = { ...prevCart };
+        delete updatedCart[itemId];
+        return updatedCart;
+      });
+    };
 
     if (isLoading) {
       return (
@@ -82,8 +85,8 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
             <ListItem key={i} sx={{ mb: 20 }}>
               <Skeleton
                 variant="rectangular"
-                width={120}
-                height={80}
+                width={100}
+                height={400}
                 sx={{ mr: 2 }}
               />
               <Box sx={{ width: "100%" }}>
@@ -99,63 +102,85 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
     return (
       <>
         {type === "cart" && (
-          <List sx={{ width: "100%" }}>
-            {/* {cartItems.map((item) => ( */}
-            <ListItem
-              // key={item._id}
-              sx={{
-                mb: 2,
-                display: "flex",
-                alignItems: "flex-start",
-                pb: 2,
-              }}
-            >
-              <Box sx={{ position: "relative", width: 120, height: 80, mr: 2 }}>
-                {/* <Image
-                    src={item.imageLink}
-                    alt={item.title}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                  /> */}
-                <Typography> image box</Typography>
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    // mb: 1,
-                  }}
-                >
-                  <Typography variant="h6">
-                    {/* {item.title} */}
-                    Dummy title
-                  </Typography>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={() => {
-                      // Remove item handler here
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              maxheight: "400px",
+            }}
+          >
+            <Box sx={{ overflowY: "auto" }}>
+              <List sx={{ width: "100%" }}>
+                {Object.keys(cartItems).length === 0 ? (
+                  <Typography
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
-                    <Button>
+                    Your cart is empty
+                  </Typography>
+                ) : (
+                  Object.entries(cartItems).map(([key, item]) => (
+                    <ListItem key={key}>
+                      <Box
+                        sx={{
+                          position: "relative",
+                          width: 120,
+                          height: 80,
+                          mr: 2,
+                        }}
+                      >
+                        {/* Assuming item has an imageLink property */}
+                        <Image
+                          src={item.imageLink}
+                          alt={item.title}
+                          fill
+                          style={{ objectFit: "cover" }}
+                          sizes="(max-width: 120px) 100vw, 120px"
+                        />
+                      </Box>
+                      <Box sx={{ flex: 1 }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Typography variant="h6">{item.title}</Typography>
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() => removeFromCart(key)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Box>
+                        <Typography variant="body2" color="text.secondary">
+                          {item.description}
+                        </Typography>
+                        <Typography variant="subtitle1" sx={{ mt: 1 }}>
+                          ${item.price}
+                        </Typography>
+                      </Box>
+                    </ListItem>
+                  ))
+                )}
+              </List>
+            </Box>
 
-                    <DeleteIcon />
-                    </Button>
-                  </IconButton>
-                </Box>
-                <Typography variant="body2" color="text.secondary">
-                  {/* {item.description} */}
-                  dummy desc
-                </Typography>
-                <Typography variant="subtitle1" sx={{ mt: 1 }}>
-                  {/* ${item.price} */}
-                  Dummy privr
-                </Typography>
-              </Box>
-            </ListItem>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, mr: 3, mb : 2.5 }}>
+            <Box
+              sx={{
+                padding: "16px",
+                borderTop: "1px solid #eee",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <Typography>Total: ${totalAmount}</Typography>
               <Button
+                disabled={isCartEmpty}
                 variant="contained"
                 color="primary"
                 endIcon={<ArrowOutward />}
@@ -163,9 +188,7 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
                 Checkout
               </Button>
             </Box>
-            {/* )
-            )} */}
-          </List>
+          </Box>
         )}
       </>
     );
@@ -185,7 +208,7 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
     >
       <div
         style={{
-          padding: "20px",
+          padding: "12px",
         }}
       >
         <div
@@ -193,9 +216,8 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            borderBottom: "1px solid #eee",
+            borderBottom: "01px solid #eee",
             paddingBottom: "12px",
-            marginBottom: "20px",
           }}
         >
           <div>
