@@ -13,16 +13,7 @@ import { toast } from "sonner";
 import { cartState, saveCartToLocalStorage } from "store";
 import { useRecoilState } from "recoil";
 import { useCart } from "../hooks/useCart";
-
-type Course = {
-  _id: string;
-  title: string;
-  description: string;
-  price: number;
-  imageLink: string;
-  published: boolean;
-  // createdBy: string;
-};
+import type { Course } from "shared-types";
 
 type CourseProps = {
   course: Course;
@@ -78,48 +69,46 @@ export function Course({
   purchasedCourses,
 }: CourseProps) {
   const router = useRouter();
-  const [isInCart, setIsInCart] = useState<boolean>(false);
+  // const [isInCart, setIsInCart] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [cart, setCart] = useRecoilState(cartState);
   const { startDebouncedSync } = useCart();
 
-  useEffect(() => {
-    const courseInCart = Object.values(cart).some((cartItem : any) => cartItem._id === course);
-    // console.log("course in cart useEffect->", courseInCart);
-    
-    // setIsInCart(courseInCart);
-  }, [cart, course._id]);
+  // useEffect(() => {
+  //   setIsInCart(!!cart[course._id]);
+  // }, [cart, course._id]);
+
+  const isInCart = Object.values(cart).some((item) => item._id === course._id);
 
   const handleAddToCart = async () => {
     setLoading(true);
-    // updating cart using recoil
+
+    let isItemRemoved = false;
+
     setCart((prevCart) => {
-      const updatedCart = { ...prevCart };
-      console.log("updated cart ->", updatedCart, (typeof updatedCart));
-      
-      const courseInCart = Object.values(updatedCart);
-      if (courseInCart) {
-        // const keyToRemove = Object.keys(updatedCart).find(
-        //   (key) => updatedCart[key] === course._id
-        // );
-        // if (keyToRemove) {
-        //   delete updatedCart[keyToRemove];
-        // }
-        setIsInCart(false);
-        startDebouncedSync();
-        toast.success("Item removed from cart");
+      const cartArray = Object.values(prevCart);
+      const itemIndex = cartArray.findIndex((item) => item._id === course._id);
+      const updatedCart: Record<string, Course> = {};
+
+      if (itemIndex !== -1) {
+        cartArray.splice(itemIndex, 1);
+        isItemRemoved = true;
       } else {
-        const nextIndex = String(
-          Math.max(0, ...Object.keys(updatedCart).map(Number)) + 1
-        );
-        // updatedCart[nextIndex] = course._id;
-        setIsInCart(true);
-        startDebouncedSync();
-        toast.success("Item added to cart");
+        cartArray.push(course);
       }
-      saveCartToLocalStorage(updatedCart);
+      cartArray.forEach((item, index) => {
+        updatedCart[String(index)] = item;
+      });
+
+      startDebouncedSync();
+      console.log("updated cart on state", updatedCart);
+
       return updatedCart;
     });
+    // setIsInCart(!isItemRemoved);
+    toast.success(
+      isItemRemoved ? "Item removed from cart" : "Item added to cart"
+    );
 
     setLoading(false);
   };
