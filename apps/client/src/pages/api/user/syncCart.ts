@@ -3,7 +3,7 @@ import { ensureDbConnected } from "@/lib/dbConnect";
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
-import { User } from "db";
+import { User, Course } from "db";
 import mongoose from "mongoose";
 
 type Course = {
@@ -56,13 +56,21 @@ export default async function handler(
           success: true,
         });
       } else {
+        const incomingcartIds = incomingCart.map((item: any) => item._id);
+        const courses = await Course.find({
+          _id: { $in: incomingcartIds },
+        });
+        if (courses.length !== incomingcartIds.length) {
+          return res.status(400).json({
+            message: "One or more courses not found",
+            success: false,
+          });
+        }
+
         const incomingCartSet = new Set(
           incomingCart.map((id: any) => id.toString())
         );
-        user.cart = Array.from(incomingCartSet).map(
-          (id: any) => new mongoose.Types.ObjectId(id)
-        );
-
+        user.cart = courses.map((course) => course._id);
         await user.save();
 
         res.json({
