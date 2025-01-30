@@ -107,7 +107,7 @@ function UserAppBar() {
                     setisCartModalOpen(true);
                   }}
                 >
-                  Cart {cartItems}
+                  Cart ₹ {cartItems}
                 </MenuItem>
                 <MenuItem
                   onClick={() => {

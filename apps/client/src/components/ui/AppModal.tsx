@@ -149,7 +149,7 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
                           {item.description}
                         </Typography>
                         <Typography variant="subtitle1" sx={{ mt: 1 }}>
-                          ${item.price}
+                        ₹ {item.price}
                         </Typography>
                       </Box>
                     </ListItem>
@@ -167,7 +167,7 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
               alignItems: 'center'
             }}>
               <Typography variant="h6">
-                Total: ${totalAmount}
+                Total: ₹ {totalAmount}
               </Typography>
               <Button 
                 disabled={isCartEmpty} 
