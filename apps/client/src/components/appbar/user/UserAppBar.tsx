@@ -12,10 +12,12 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useRouter } from "next/navigation";
-import { userState } from "store";
+import { cartState, userState } from "store";
 import { useSetRecoilState, useRecoilValue } from "recoil";
 import { signOut } from "next-auth/react";
 import AppModal from "@/components/ui/AppModal";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { Box, Badge } from "@mui/material";
 
 function UserAppBar() {
   const router = useRouter();
@@ -36,17 +38,20 @@ function UserAppBar() {
   };
 
   const handleLogout = async () => {
-    await signOut({callbackUrl : "/"});
+    await signOut({ callbackUrl: "/" });
     setUser({ isLoading: false, userEmail: null, username: null });
   };
 
   const handleCartModal = () => {
-    if (isCartModalOpen){
-      setisCartModalOpen(false)
+    if (isCartModalOpen) {
+      setisCartModalOpen(false);
     } else {
-      setisCartModalOpen(true)
+      setisCartModalOpen(true);
     }
-  }
+  };
+
+  const cart = useRecoilValue(cartState);
+  const cartItems = Object.values(cart).length;
 
   return (
     <AppBar>
@@ -99,7 +104,7 @@ function UserAppBar() {
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
-                    setisCartModalOpen(true)
+                    setisCartModalOpen(true);
                   }}
                 >
                   Cart
@@ -107,7 +112,7 @@ function UserAppBar() {
                 <MenuItem
                   onClick={() => {
                     handleClose();
-                    signOut({callbackUrl : "/"})
+                    signOut({ callbackUrl: "/" });
                   }}
                 >
                   Logout
@@ -134,10 +139,23 @@ function UserAppBar() {
               <Button
                 style={{ color: "white" }}
                 onClick={() => {
-                  setisCartModalOpen(true)
+                  setisCartModalOpen(true);
                 }}
               >
-                Cart
+                <Box sx={{ position: "relative" }}>
+                  <Badge
+                    badgeContent={cartItems}
+                    color="primary"
+                    invisible={cartItems === 0} // Hide badge if there are no items
+                    sx={{
+                      position: "absolute",
+                      top: -16,
+                      right: -14,
+                    }}
+                  >
+                    <ShoppingCartIcon sx={{ fontSize: 30 }} />
+                  </Badge>
+                </Box>
               </Button>
               <Button variant="contained" onClick={handleLogout}>
                 Logout
