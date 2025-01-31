@@ -16,7 +16,7 @@
     "recoil-persist": "^5.1.0"
   },
   "dependencies": {
-    "shared-types": "workspace:*",
-    "recoil": "^0.7.7"
+    "recoil": "^0.7.7",
+    "shared-types": "workspace:*"
   }
 }
