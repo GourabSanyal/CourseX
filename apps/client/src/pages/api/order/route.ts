@@ -4,6 +4,7 @@ import { Admin, Course } from "db";
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
+import Razorpay from "razorpay";
 
 type Course = {
   _id: string;
@@ -20,11 +21,18 @@ type ErrorObj = {
 
 type ResponseData =
   | {
-      message: string;
-      data: Course[] | null;
+      message?: string;
+      data?: Course[] | null;
+      orderID?: string;
+      statusCode?: number;
     }
   | ErrorObj;
 const secret = process.env.NEXTAUTH_SECRET;
+
+const razorpay = new Razorpay({
+    key_id: process.env.key_id!,
+    key_secret: process.env.key_secret,
+   });
 
 export default async function handler(
   req: NextApiRequest,
@@ -46,9 +54,14 @@ export default async function handler(
             currency : string
         };
 
-        const options = {
-
-        }
+        var options = {
+            amount: amount,
+            currency: currency,
+            receipt: 'rcp1',
+           };
+           const order = await razorpay.orders.create(options);
+           console.log(order);
+           return res.status(200).json({ orderID : order.id });
 
     }
   } catch (error) {
