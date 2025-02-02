@@ -8,7 +8,7 @@ import {
   ListItem,
   Skeleton,
   Box,
-  Button
+  Button,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -16,8 +16,9 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { cartState } from "store";
-import {  ArrowOutward } from "@mui/icons-material";
-import {Course} from 'shared-types'
+import { ArrowOutward } from "@mui/icons-material";
+import { Course } from "shared-types";
+import axios from "axios";
 
 type ModalActions = {
   label: string;
@@ -57,24 +58,31 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
 
   const ModalContent = () => {
     const [isLoading, setIsLoading] = useState(true);
-    const [cartItems, setCartItems] = useRecoilState<Record<string, Course>>(cartState);    
+    const [cartItems, setCartItems] =
+      useRecoilState<Record<string, Course>>(cartState);
     const cart = useRecoilValue(cartState);
+    const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
     useEffect(() => {
       setIsLoading(false);
     }, [cart]);
 
     const isCartEmpty = Object.keys(cartItems).length === 0;
-    const totalAmount = Object.values(cartItems).reduce((sum, item) => 
-      sum + item.price, 0
-    ).toFixed(2);
-    
+    const totalAmount = Object.values(cartItems)
+      .reduce((sum, item) => sum + item.price, 0)
+      .toFixed(2);
+
     const removeFromCart = async (itemId: string) => {
       setCartItems((prevCart) => {
         const updatedCart: Record<string, Course> = { ...prevCart };
         delete updatedCart[itemId];
         return updatedCart;
       });
+    };
+
+    const handlePayment = async (totalAmount: string) => {
+      const res = await axios.post("/api/order/route");
+      console.log("res ->", res);
     };
 
     if (isLoading) {
@@ -101,31 +109,43 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
     return (
       <>
         {type === "cart" && (
-          <Box sx={{ 
-            display: 'flex', 
-            flexDirection: 'column',
-            height: '400px',
-          }}>
-            <Box sx={{ 
-              flex: 1,
-              overflowY: 'auto',
-              p: 2,
-            }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              height: "400px",
+            }}
+          >
+            <Box
+              sx={{
+                flex: 1,
+                overflowY: "auto",
+                p: 2,
+              }}
+            >
               <List sx={{ width: "100%" }}>
-                {Object.keys(cartItems).length === 0 
-                  ? <Typography sx={{ textAlign: 'center' }}>
-                      Your cart is empty
-                    </Typography>
-                  : Object.entries(cartItems).map(([key, item]) => (
+                {Object.keys(cartItems).length === 0 ? (
+                  <Typography sx={{ textAlign: "center" }}>
+                    Your cart is empty
+                  </Typography>
+                ) : (
+                  Object.entries(cartItems).map(([key, item]) => (
                     <ListItem key={key}>
-                      <Box sx={{ position: "relative", width: 120, height: 80, mr: 2 }}>
+                      <Box
+                        sx={{
+                          position: "relative",
+                          width: 120,
+                          height: 80,
+                          mr: 2,
+                        }}
+                      >
                         <Image
                           src={item.imageLink}
                           alt={item.title}
                           fill
-                          style={{ objectFit: 'cover' }}
+                          style={{ objectFit: "cover" }}
                           sizes="(max-width: 120px) 100vw, 120px"
-                          />
+                        />
                       </Box>
                       <Box sx={{ flex: 1 }}>
                         <Box
@@ -134,9 +154,7 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
                             justifyContent: "space-between",
                           }}
                         >
-                          <Typography variant="h6">
-                            {item.title}
-                          </Typography>
+                          <Typography variant="h6">{item.title}</Typography>
                           <IconButton
                             size="small"
                             color="error"
@@ -149,31 +167,32 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
                           {item.description}
                         </Typography>
                         <Typography variant="subtitle1" sx={{ mt: 1 }}>
-                        ₹ {item.price}
+                          ₹ {item.price}
                         </Typography>
                       </Box>
                     </ListItem>
                   ))
-                }
+                )}
               </List>
             </Box>
             {/* footer */}
-            <Box sx={{ 
-              p: 2,
-              borderTop: '1px solid #eee',
-              bgcolor: 'background.paper',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
-              <Typography variant="h6">
-                Total: ₹ {totalAmount}
-              </Typography>
-              <Button 
-                disabled={isCartEmpty} 
-                variant="contained" 
-                color="primary" 
+            <Box
+              sx={{
+                p: 2,
+                borderTop: "1px solid #eee",
+                bgcolor: "background.paper",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography variant="h6">Total: ₹ {totalAmount}</Typography>
+              <Button
+                disabled={isCartEmpty}
+                variant="contained"
+                color="primary"
                 endIcon={<ArrowOutward />}
+                onClick={() => handlePayment(totalAmount)}
               >
                 Checkout
               </Button>
@@ -228,4 +247,3 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
 };
 
 export default AppModal;
-
