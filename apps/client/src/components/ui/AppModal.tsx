@@ -81,8 +81,30 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
     };
 
     const handlePayment = async (totalAmount: string) => {
-      const res = await axios.post("/api/order/route");
-      console.log("res ->", res);
+      try {
+        const response = await axios.post("/api/order/route", {
+          amount: totalAmount,
+          currency: "INR"
+        });
+
+        const options = {
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+          amount: parseFloat(totalAmount) * 100,
+          currency: "INR",
+          name: "Course Purchase",
+          description: "Course Payment",
+          order_id: response.data.orderID,
+          handler: async function (response: any) {
+            // Handle payment success
+            console.log(response);
+          }
+        };
+
+        const rzp = new (window as any).Razorpay(options);
+        rzp.open();
+      } catch (error) {
+        console.error("Payment error:", error);
+      }
     };
 
     if (isLoading) {
