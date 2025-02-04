@@ -19,6 +19,7 @@ import { cartState } from "store";
 import { ArrowOutward } from "@mui/icons-material";
 import { Course } from "shared-types";
 import axios from "axios";
+import { headers } from "next/headers";
 
 type ModalActions = {
   label: string;
@@ -82,26 +83,33 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
 
     const handlePayment = async (totalAmount: string) => {
       try {
-        const response = await axios.post("/api/order/route", {
-          amount: totalAmount,
-          currency: "INR"
-        });
+        const response = await axios.post("/api/order", 
+        //   {
+        //   amount: totalAmount,
+        //   currency: "INR"
+        // }, {
+        //   headers: {
+        //     'Content-Type': 'application/json'
+        //   }
+        // }
+      );
 
-        const options = {
-          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-          amount: parseFloat(totalAmount) * 100,
-          currency: "INR",
-          name: "Course Purchase",
-          description: "Course Payment",
-          order_id: response.data.orderID,
-          handler: async function (response: any) {
-            // Handle payment success
-            console.log(response);
-          }
-        };
+        // const options = {
+        //   key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        //   amount: parseFloat(totalAmount) * 100,
+        //   currency: "INR",
+        //   name: "Course Purchase",
+        //   description: "Course Payment",
+        //   order_id: response.data.orderID,
+        //   handler: async function (response: any) {
+        //     // Handle payment success
+        //     console.log(response);
+        //   }
+        // };
 
-        const rzp = new (window as any).Razorpay(options);
-        rzp.open();
+        // const rzp = new (window as any).Razorpay(options);
+        // rzp.open();
+        console.log(response);
       } catch (error) {
         console.error("Payment error:", error);
       }
