@@ -9,6 +9,7 @@ import {
   Skeleton,
   Box,
   Button,
+  CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -20,6 +21,7 @@ import { ArrowOutward } from "@mui/icons-material";
 import { Course } from "shared-types";
 import axios from "axios";
 import { headers } from "next/headers";
+import Razorpay from "razorpay";
 
 type ModalActions = {
   label: string;
@@ -33,6 +35,12 @@ type ModalActions = {
     | "warning"
     | undefined;
 };
+
+declare global {
+  interface Window {
+    Razorpay : any
+  }
+}
 
 interface AppModalProps {
   open: boolean;
@@ -63,15 +71,15 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
       useRecoilState<Record<string, Course>>(cartState);
     const cart = useRecoilValue(cartState);
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
-
+    const totalAmount = Object.values(cartItems)
+      .reduce((sum, item) => sum + item.price, 0)
+      .toFixed(2);
+    const AMOUNT = totalAmount;
     useEffect(() => {
       setIsLoading(false);
     }, [cart]);
 
     const isCartEmpty = Object.keys(cartItems).length === 0;
-    const totalAmount = Object.values(cartItems)
-      .reduce((sum, item) => sum + item.price, 0)
-      .toFixed(2);
 
     const removeFromCart = async (itemId: string) => {
       setCartItems((prevCart) => {
@@ -82,6 +90,7 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
     };
 
     const handlePayment = async (totalAmount: string) => {
+      setIsProcessing(true)
       try {
         const response = await axios.post("/api/order", 
         //   {
@@ -218,13 +227,13 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
             >
               <Typography variant="h6">Total: ₹ {totalAmount}</Typography>
               <Button
-                disabled={isCartEmpty}
+                disabled={isCartEmpty || isProcessing}
                 variant="contained"
                 color="primary"
-                endIcon={<ArrowOutward />}
+                endIcon={isProcessing ? <CircularProgress size={20} /> : <ArrowOutward />}
                 onClick={() => handlePayment(totalAmount)}
               >
-                Checkout
+                {isProcessing ? 'Processing...' : 'Checkout'}
               </Button>
             </Box>
           </Box>
