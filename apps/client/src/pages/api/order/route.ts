@@ -34,7 +34,7 @@ const razorpay = new Razorpay({
     key_secret: process.env.key_secret,
    });
 
-export default async function handler(
+export default async function POST(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
@@ -42,26 +42,28 @@ export default async function handler(
     await ensureDbConnected();
     const session = await getServerSession(req, res, authOptions);
     const token = await getToken({ req, secret });
+    console.log("api error -> ", req.body);
+    
     
     if (!session && !token) {
-        res.json({
-          message: "Session expired, please relogin to continue",
-          statusCode: 403,
-        });
+        // res.json({
+        //   message: "Session expired, please relogin to continue",
+        //   statusCode: 403,
+        // });
     } else {
-        const { amount, currency } = await req.body as {
-            amount : string,
-            currency : string
-        };
+        // const { amount, currency } = await req.body as {
+        //     amount : string,
+        //     currency : string
+        // };
 
-        var options = {
-            amount: amount,
-            currency: currency,
-            receipt: 'rcp1',
-           };
-           const order = await razorpay.orders.create(options);
-           console.log(order);
-           return res.status(200).json({ orderID : order.id });
+        // var options = {
+        //     amount: amount,
+        //     currency: currency,
+        //     receipt: 'rcp1',
+        //    };
+        //    const order = await razorpay.orders.create(options);
+        //    console.log(order);
+        //    return res.status(200).json({ orderID : order.id });
 
     }
   } catch (error) {
