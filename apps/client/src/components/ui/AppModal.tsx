@@ -19,9 +19,8 @@ import React, { useState, useEffect } from "react";
 import { cartState } from "store";
 import { ArrowOutward } from "@mui/icons-material";
 import { Course } from "shared-types";
-import axios from "axios";
-import { headers } from "next/headers";
-import Razorpay from "razorpay";
+import Script from "next/script";
+import userCartTotal from "@/utils/cart/userCartTotal";
 
 type ModalActions = {
   label: string;
@@ -38,7 +37,7 @@ type ModalActions = {
 
 declare global {
   interface Window {
-    Razorpay : any
+    Razorpay: any;
   }
 }
 
@@ -47,9 +46,18 @@ interface AppModalProps {
   onClose: () => void;
   title?: string;
   type: "success" | "alert" | "info" | "cart";
+  handlePayment: () => void;
+  paymentProcessing: boolean;
 }
 
-const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
+const AppModal: React.FC<AppModalProps> = ({
+  open,
+  onClose,
+  title,
+  type,
+  handlePayment,
+  paymentProcessing,
+}) => {
   const getTypes = (modalType: AppModalProps["type"]) => {
     switch (modalType) {
       case "success":
@@ -70,11 +78,8 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
     const [cartItems, setCartItems] =
       useRecoilState<Record<string, Course>>(cartState);
     const cart = useRecoilValue(cartState);
-    const [isProcessing, setIsProcessing] = useState<boolean>(false);
-    const totalAmount = Object.values(cartItems)
-      .reduce((sum, item) => sum + item.price, 0)
-      .toFixed(2);
-    const AMOUNT = totalAmount;
+    const totalAmount = userCartTotal();
+
     useEffect(() => {
       setIsLoading(false);
     }, [cart]);
@@ -87,41 +92,6 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
         delete updatedCart[itemId];
         return updatedCart;
       });
-    };
-
-    const handlePayment = async (totalAmount: string) => {
-      setIsProcessing(true)
-      try {
-        const response = await axios.post("/api/order", 
-        //   {
-        //   amount: totalAmount,
-        //   currency: "INR"
-        // }, {
-        //   headers: {
-        //     'Content-Type': 'application/json'
-        //   }
-        // }
-      );
-
-        // const options = {
-        //   key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        //   amount: parseFloat(totalAmount) * 100,
-        //   currency: "INR",
-        //   name: "Course Purchase",
-        //   description: "Course Payment",
-        //   order_id: response.data.orderID,
-        //   handler: async function (response: any) {
-        //     // Handle payment success
-        //     console.log(response);
-        //   }
-        // };
-
-        // const rzp = new (window as any).Razorpay(options);
-        // rzp.open();
-        console.log(response);
-      } catch (error) {
-        console.error("Payment error:", error);
-      }
     };
 
     if (isLoading) {
@@ -149,19 +119,10 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
       <>
         {type === "cart" && (
           <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              height: "400px",
-            }}
+            sx={{ display: "flex", flexDirection: "column", height: "400px" }}
           >
-            <Box
-              sx={{
-                flex: 1,
-                overflowY: "auto",
-                p: 2,
-              }}
-            >
+            <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+            <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>
               <List sx={{ width: "100%" }}>
                 {Object.keys(cartItems).length === 0 ? (
                   <Typography sx={{ textAlign: "center" }}>
@@ -227,13 +188,19 @@ const AppModal: React.FC<AppModalProps> = ({ open, onClose, title, type }) => {
             >
               <Typography variant="h6">Total: ₹ {totalAmount}</Typography>
               <Button
-                disabled={isCartEmpty || isProcessing}
+                disabled={isCartEmpty || paymentProcessing}
                 variant="contained"
                 color="primary"
-                endIcon={isProcessing ? <CircularProgress size={20} /> : <ArrowOutward />}
-                onClick={() => handlePayment(totalAmount)}
+                endIcon={
+                  paymentProcessing ? (
+                    <CircularProgress size={20} />
+                  ) : (
+                    <ArrowOutward />
+                  )
+                }
+                onClick={handlePayment}
               >
-                {isProcessing ? 'Processing...' : 'Checkout'}
+                {paymentProcessing ? "Processing..." : "Checkout"}
               </Button>
             </Box>
           </Box>

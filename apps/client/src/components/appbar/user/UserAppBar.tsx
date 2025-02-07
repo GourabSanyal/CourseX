@@ -18,16 +18,20 @@ import { signOut } from "next-auth/react";
 import AppModal from "@/components/ui/AppModal";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { Box, Badge } from "@mui/material";
+import { toast } from "sonner";
+import axios from "axios";
+import userCartTotal from "@/utils/cart/userCartTotal";
 
 function UserAppBar() {
   const router = useRouter();
   const setUser = useSetRecoilState(userState);
-
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isCartModalOpen, setisCartModalOpen] = useState<boolean>(false);
   const open = Boolean(anchorEl);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // Adjust the breakpoint as needed
+  const totalAmount = userCartTotal();
 
   const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -52,6 +56,86 @@ function UserAppBar() {
 
   const cart = useRecoilValue(cartState);
   const cartItems = Object.values(cart).length;
+
+
+  const redirectUserAfterSuccessfulPayment = () => {
+      
+    console.log("redirecting");
+    toast.success("Payment successful! Redirecting...", {
+      position: "top-right",
+      duration: 3000,
+      dismissible: true,
+    });
+  };
+
+  const handlePayment = async () => {
+    setIsProcessing(true);
+    try {
+      // create order
+      const response = await axios.post("/api/order/route", {
+        amount: totalAmount * 100,
+      });
+      const data = response.data;
+
+      if (!data.orderID) {
+        toast.error("Failed to create order. Please try again.");
+        return; // exit when order creation failed
+      }
+
+      // init payment
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: totalAmount,
+        currency: "INR",
+        name: "CourseX",
+        description: "Course Payment",
+        order_id: response.data.orderID,
+        handler: async function (response: any) {
+          console.log("Payment successfull", response);
+          // Handle payment success - UI update
+          redirectUserAfterSuccessfulPayment();
+        },
+        prefill: {
+          name: "test name",
+          email: "test email",
+          contact: 45789,
+        },
+        theme: {
+          color: "#3399cc",
+        },
+        modal: {
+          escape: false,
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on(
+        "payment.failed",
+        function (response: {
+          error: {
+            code: string;
+            description: string;
+            source: string;
+            step: string;
+            reason: string;
+          };
+        }) {
+          console.error("Payment failed haha", response);
+          toast.error("Payment failed. Please try again.");
+        }
+      );
+      rzp.open();
+      console.log("payment obj from api", response);
+      if (response.data.statusCode === "401") {
+        toast.error("Payment Failed, please try again later");
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
 
   return (
     <AppBar>
@@ -169,6 +253,8 @@ function UserAppBar() {
         onClose={handleCartModal}
         title="Cart items"
         type="cart"
+        handlePayment={handlePayment}
+        paymentProcessing={isProcessing}
       />
     </AppBar>
   );
