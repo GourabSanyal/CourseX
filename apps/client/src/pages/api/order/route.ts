@@ -39,28 +39,33 @@ export default async function POST(
   res: NextApiResponse<ResponseData>
 ) {
   try {
-    // await ensureDbConnected();
-    // const session = await getServerSession(req, res, authOptions);
-    // const token = await getToken({ req, secret });
-    // console.log("api error -> ", req.body);
-    // console.log("in api", req.body)
-    const { amount, currency } = (await req.body) as {
-      amount: string;
-      currency: string;
-    };
-
-    var options = {
-      amount: amount,
-      currency: currency,
-      receipt: "rcp1",
-    };
-
-    const order = await razorpay.orders.create(options);
-    console.log(order);
-
-    return res.status(200).json({
-        orderID : order.id,
-    })
+    const session = await getServerSession(req, res, authOptions);
+    const token = await getToken({ req, secret });
+    console.log("api error -> ", req.body);
+    try {
+        const { amount, currency } = (await req.body) as {
+          amount: string;
+          currency: string;
+        };
+    
+        var options = {
+          amount: amount,
+          currency: currency,
+          receipt: "rcp1",
+        };
+    
+        const order = await razorpay.orders.create(options);
+        console.log(order);
+    
+        return res.status(200).json({
+            orderID : order.id,
+        })
+    } catch (error) {
+        res.json({
+            message : "failed to complete payment",
+            statusCode : 400
+        })
+    }
   } catch (error) {
     res.json({
       message: "Error from order/route",
