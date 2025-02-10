@@ -55,6 +55,24 @@ const home = () => {
 
   const fetchCourses = async () => {
     setLoadingYourCourses(true);
+    try {
+      const response = await axios.get("/api/common/all-courses");
+      setAllCourses(response.data.data);
+      console.log("all courses ->", typeof response.data.data, response.data);
+      if (response.data.inCart) {
+        console.log(
+          "cart from api",
+          typeof response.data.inCart,
+          response.data.inCart
+        );
+        setCart(response.data.inCart);
+      }
+    } catch (error: any) {
+      console.error("Error fetching courses:", error);
+      setError(error.message);
+    } finally {
+      setLoadingAllCourses(false);
+    }
     const response = await axios.get("/api/user/purchased-courses");
     setCourses(response.data.data);
     if (!response.data.length) {
@@ -78,31 +96,12 @@ const home = () => {
 
   const fetchAllCourses = async () => {
     setLoadingAllCourses(true);
-
     // chcek if all courses are present in local state
     if (Object.keys(allCourses).length > 0) {
       setLoadingAllCourses(false);
       return;
     }
-
-    try {
-      const response = await axios.get("/api/common/all-courses");
-      setAllCourses(response.data.data);
-      console.log("all courses ->", typeof response.data.data, response.data);
-      if (response.data.inCart) {
-        console.log(
-          "cart from api",
-          typeof response.data.inCart,
-          response.data.inCart
-        );
-        setCart(response.data.inCart);
-      }
-    } catch (error: any) {
-      console.error("Error fetching courses:", error);
-      setError(error.message);
-    } finally {
-      setLoadingAllCourses(false);
-    }
+    setLoadingAllCourses(true);
   };
 
   useEffect(() => {
