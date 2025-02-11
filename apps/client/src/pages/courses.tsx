@@ -13,16 +13,9 @@ import { toast } from "sonner";
 import { cartState, saveCartToLocalStorage } from "store";
 import { useRecoilState } from "recoil";
 import { useCart } from "../hooks/useCart";
-
-type Course = {
-  _id: string;
-  title: string;
-  description: string;
-  price: number;
-  imageLink: string;
-  published: boolean;
-  // createdBy: string;
-};
+import type { Course } from "shared-types";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { KeyboardArrowUp, KeyboardArrowDown } from "@mui/icons-material";
 
 type CourseProps = {
   course: Course;
@@ -78,44 +71,46 @@ export function Course({
   purchasedCourses,
 }: CourseProps) {
   const router = useRouter();
-  const [isInCart, setIsInCart] = useState<boolean>(false);
+  // const [isInCart, setIsInCart] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [cart, setCart] = useRecoilState<{ [key: string]: any }>(cartState); // Adjust 'any' to the appropriate type if known
+  const [cart, setCart] = useRecoilState(cartState);
   const { startDebouncedSync } = useCart();
+  const [expanded, setExpanded] = useState(false);
 
-  useEffect(() => {
-    const courseInCart = Object.values(cart).includes(course._id);
-    setIsInCart(courseInCart);
-  }, [cart, course._id]);
+  const handleToggle = () => {
+    setExpanded((prev) => !prev);
+  };
+  const isInCart = Object.values(cart).some((item) => item._id === course._id);
 
   const handleAddToCart = async () => {
     setLoading(true);
-    // updating cart using recoil
+
+    let isItemRemoved = false;
+
     setCart((prevCart) => {
-      const updatedCart = { ...prevCart };
-      const courseInCart = Object.values(updatedCart).includes(course._id);
-      if (courseInCart) {
-        const keyToRemove = Object.keys(updatedCart).find(
-          (key) => updatedCart[key] === course._id
-        );
-        if (keyToRemove) {
-          delete updatedCart[keyToRemove];
-        }
-        setIsInCart(false);
-        startDebouncedSync();
-        toast.success("Item removed from cart");
+      const cartArray = Object.values(prevCart);
+      const itemIndex = cartArray.findIndex((item) => item._id === course._id);
+      const updatedCart: Record<string, Course> = {};
+
+      if (itemIndex !== -1) {
+        cartArray.splice(itemIndex, 1);
+        isItemRemoved = true;
       } else {
-        const nextIndex = String(
-          Math.max(0, ...Object.keys(updatedCart).map(Number)) + 1
-        );
-        updatedCart[nextIndex] = course._id;
-        setIsInCart(true);
-        startDebouncedSync();
-        toast.success("Item added to cart");
+        cartArray.push(course);
       }
-      saveCartToLocalStorage(updatedCart);
+      cartArray.forEach((item, index) => {
+        updatedCart[String(index)] = item;
+      });
+
+      startDebouncedSync();
+      console.log("updated cart on state", updatedCart);
+
       return updatedCart;
     });
+    // setIsInCart(!isItemRemoved);
+    toast.success(
+      isItemRemoved ? "Item removed from cart" : "Item added to cart"
+    );
 
     setLoading(false);
   };
@@ -128,39 +123,32 @@ export function Course({
   }
 
   const renderButtons = () => {
+    const commonButtonStyle = {
+      borderRadius: 20,
+      padding: "6px 16px",
+      fontSize: "0.875rem",
+      textTransform: "none",
+    };
+  
     if (userRole === "admin") {
       // Admin panel
       if (isCretedByAdmin) {
         return (
           <>
-            <Button
-              variant="contained"
-              size="small"
+            <IconButton
               color="error"
               onClick={onDelete}
-              style={{ marginRight: 8 }}
+              sx={{ marginRight: 2 }}
             >
-              Delete
-            </Button>
+              <DeleteIcon />
+            </IconButton>
             <Button
-              variant="contained"
+              variant="outlined"
               size="small"
-              onClick={() => {
-                router.push("/admin/" + course._id);
-                // onEdit && onEdit();
-              }}
+              sx={commonButtonStyle}
+              onClick={() => router.push("/admin/" + course._id)}
             >
-              View admin
-            </Button>
-            <Button
-              variant="contained"
-              size="small"
-              onClick={() => {
-                // router.push("/admin/" + courseId);
-                onEdit && onEdit();
-              }}
-            >
-              Edit Admin
+              Edit
             </Button>
           </>
         );
@@ -168,13 +156,14 @@ export function Course({
         return (
           <>
             <Button
-              variant="contained"
+              variant="outlined"
               size="small"
+              sx={commonButtonStyle}
               onClick={() => {
                 // onView()
               }}
             >
-              View admin
+              View
             </Button>
           </>
         );
@@ -185,8 +174,9 @@ export function Course({
         return (
           <>
             <Button
-              variant="contained"
+              variant="outlined"
               size="small"
+              sx={commonButtonStyle}
               onClick={() => {
                 // router.push("/user/view/" + courseId);
               }}
@@ -199,18 +189,20 @@ export function Course({
         return (
           <>
             <Button
-              variant="contained"
+              variant="outlined"
               size="small"
+              sx={commonButtonStyle}
               onClick={() => {
                 // router.push("/user/view/" + courseId);
               }}
             >
-              View user
+              View
             </Button>
             <IconButton
               onClick={handleAddToCart}
               color={isInCart ? "error" : "default"}
               disabled={loading}
+              sx={{ marginLeft: 2 }}
             >
               {loading ? <CircularProgress size={24} /> : <ShoppingCartIcon />}
             </IconButton>
@@ -222,21 +214,90 @@ export function Course({
 
   return (
     <Card
-      style={{
-        margin: 10,
+      sx={{
+        margin: 2,
         width: 300,
-        minHeight: 200,
-        padding: 20,
+        height: 400, 
+        padding: 3,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        borderRadius: 2,
+        boxShadow: 3,
+        transition: "all 0.3s ease",
+        "&:hover": {
+          boxShadow: 6,
+          transform: "scale(1.03)",
+        },
       }}
     >
-      <Typography textAlign={"center"} variant="h5">
+      <Typography variant="h6" textAlign="center" sx={{ fontWeight: "bold" }}>
         {course.title}
       </Typography>
-      <Typography textAlign={"center"} variant="subtitle1">
+      <Typography
+        sx={{
+          textAlign: "left",
+          display: "-webkit-box",
+          WebkitBoxOrient: "vertical",
+          WebkitLineClamp: expanded ? "none" : 2,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          marginBottom: 2, 
+          fontSize: "0.875rem",
+          color: "text.secondary",
+        }}
+        variant="body2"
+      >
         {course.description}
       </Typography>
-      <img src={course.imageLink} style={{ width: 300 }}></img>
-      <div style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
+
+
+      <Button
+        variant="text"
+        onClick={handleToggle}
+        sx={{
+          padding: 0,
+          textTransform: "none",
+          alignSelf: "flex-start",
+          fontSize: "0.875rem",
+          marginBottom: 2, 
+        }}
+      >
+        {expanded ? (
+          <KeyboardArrowUp sx={{ fontSize: "1.25rem" }} />
+        ) : (
+          <KeyboardArrowDown sx={{ fontSize: "1.25rem" }} />
+        )}
+      </Button>
+
+      <div
+        style={{
+          flex: 1,
+          overflow: "hidden",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <img
+          src={course.imageLink}
+          alt={course.title}
+          style={{
+            width: "100%", 
+            height: "100%", 
+            objectFit: "cover", 
+            marginBottom: '20px'
+          }}
+        />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          marginTop: "20px'", 
+        }}
+      >
         {renderButtons()}
       </div>
     </Card>

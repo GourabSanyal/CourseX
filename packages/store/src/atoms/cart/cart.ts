@@ -1,14 +1,7 @@
 import { atom } from "recoil";
+import type { Course } from "shared-types";
 
-const getInitialCartState = (): { [key: number]: string } => {
-  if (typeof window !== "undefined") {
-    const savedCart = localStorage.getItem("cartState");
-    return savedCart ? JSON.parse(savedCart) : {};
-  }
-  return {};
-};
-
-export const cartState = atom< {[key: number]:string}>({
-  key: "cartState",
-  default: getInitialCartState()
+export const cartState = atom<Record<string, Course>>({
+  key: "cartStateAtom",
+  default: {},
 });

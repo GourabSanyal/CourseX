@@ -46,7 +46,6 @@ export default async function handler(
     } else {
       let courses: Course[] = await Course.find({});
       const email = token?.email;
-      // console.log("role -> ",token?.role);
 
       let loggedUser;
 
@@ -57,17 +56,16 @@ export default async function handler(
           data: courses,
         });
       } else {
-        loggedUser = await User.findOne({ email });
-        let inCart = loggedUser.cart;
+        loggedUser = await User.findOne({ email }).populate("cart");
         res.json({
           message: "All courses for user",
           data: courses,
-          inCart: inCart,
+          inCart: loggedUser.cart,
         });
       }
     }
   } catch (error) {
     console.log("error from api -> ", error);
-    res.status(500).json({ message: "message", statusCode: 500 });
+    res.status(500).json({ message: "Error in Server, try again", statusCode: 500 });
   }
 }

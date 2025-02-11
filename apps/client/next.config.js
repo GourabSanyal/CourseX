@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    domains: ['i1.sndcdn.com']
+  },
   reactStrictMode: true,
   transpilePackages: ["ui", "db", "store", "shared-types"],
   env: {

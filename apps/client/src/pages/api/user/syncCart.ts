@@ -3,7 +3,7 @@ import { ensureDbConnected } from "@/lib/dbConnect";
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
-import { User } from "db";
+import { User, Course } from "db";
 import mongoose from "mongoose";
 
 type Course = {
@@ -56,13 +56,21 @@ export default async function handler(
           success: true,
         });
       } else {
+        const incomingcartIds = incomingCart.map((item: any) => item._id);
+        const courses = await Course.find({
+          _id: { $in: incomingcartIds },
+        });
+        if (courses.length !== incomingcartIds.length) {
+          return res.status(400).json({
+            message: "One or more courses not found",
+            success: false,
+          });
+        }
+
         const incomingCartSet = new Set(
           incomingCart.map((id: any) => id.toString())
         );
-        user.cart = Array.from(incomingCartSet).map(
-          (id: any) => new mongoose.Types.ObjectId(id)
-        );
-
+        user.cart = courses.map((course) => course._id);
         await user.save();
 
         res.json({
@@ -72,10 +80,10 @@ export default async function handler(
       }
     }
   } catch (error) {
-    console.log("error in add to cart API", error);
+    console.log("error in sync to cart API", error);
 
     res.status(500).json({
-      message: "Error from api user/purchased-courses",
+      message: "Error from api sync cart",
       success: false,
     });
   }

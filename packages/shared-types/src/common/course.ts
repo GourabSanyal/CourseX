@@ -5,9 +5,4 @@ export type Course = {
   price: number;
   imageLink: string;
   published: boolean;
-};
-
-export type ErrorObj = {
-  message: string;
-  statusCode: number;
-};
+}; 

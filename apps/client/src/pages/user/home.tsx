@@ -3,7 +3,7 @@ import { Tabs } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { cartState, userState, saveCartToLocalStorage } from "store";
+import { cartState, userState, courseState } from "store";
 import { Course } from "../courses";
 import { useSession } from "next-auth/react";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
@@ -26,15 +26,15 @@ const home = () => {
   const userUsername = useRecoilValue(userState).username;
   const [activeTab, setActiveTab] = useState(0);
   const [courses, setCourses] = useState<Course[]>();
-  const [allCourses, setAllCourses] = useState<Course[]>();
+  const [allCourses, setAllCourses] = useRecoilState(courseState);
+
   const [error, setError] = useState<string>("");
   const [loadingYourCourses, setLoadingYourCourses] = useState<boolean>(false);
   const [loadingAllCourses, setLoadingAllCourses] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
   const [cart, setCart] = useRecoilState(cartState);
-  const { forceSync } = useCart()
-
+  const { forceSync } = useCart();
 
   useEffect(() => {
     if (session?.user.role) {
@@ -55,6 +55,24 @@ const home = () => {
 
   const fetchCourses = async () => {
     setLoadingYourCourses(true);
+    try {
+      const response = await axios.get("/api/common/all-courses");
+      setAllCourses(response.data.data);
+      console.log("all courses ->", typeof response.data.data, response.data);
+      if (response.data.inCart) {
+        console.log(
+          "cart from api",
+          typeof response.data.inCart,
+          response.data.inCart
+        );
+        setCart(response.data.inCart);
+      }
+    } catch (error: any) {
+      console.error("Error fetching courses:", error);
+      setError(error.message);
+    } finally {
+      setLoadingAllCourses(false);
+    }
     const response = await axios.get("/api/user/purchased-courses");
     setCourses(response.data.data);
     if (!response.data.length) {
@@ -63,48 +81,27 @@ const home = () => {
     setLoadingYourCourses(false);
   };
 
-  useEffect(() => {
+  useEffect(() => {
     const handleRouteChange = () => {
-      forceSync()
-  }
+      forceSync();
+    };
 
-  window.addEventListener('popstate', handleRouteChange)
-  return (()=> {
-    window.addEventListener('popstate', handleRouteChange)
+    window.addEventListener("popstate", handleRouteChange);
+    return () => {
+      window.addEventListener("popstate", handleRouteChange);
+    };
+  }, [cart]);
 
-  })
-  }, [cart])
+  useEffect(() => {}, [allCourses]);
 
   const fetchAllCourses = async () => {
     setLoadingAllCourses(true);
-    try {
-      const response = await axios.get("/api/common/all-courses");
-      setAllCourses(response.data.data);
-      const savedCart = localStorage.getItem("cartState"); 
-      if (!savedCart) {
-        if (response.data.inCart) {
-          const serverCart = response.data.inCart.reduce(
-            (acc: any, courseId: string, index: number) => {
-              acc[index] = courseId;
-              return acc;
-            },
-            {}
-          );
-          // save server cart to both Recoil and local storage
-          setCart(serverCart);
-          saveCartToLocalStorage(serverCart);
-        }
-      } else {
-        // if local storage exists,use that to populate recoil state
-        const localCart = JSON.parse(savedCart);
-        setCart(localCart);
-      }
-    } catch (error :  any) {
-      console.error("Error fetching courses:", error);
-      setError(error.message);
-    } finally {
+    // chcek if all courses are present in local state
+    if (Object.keys(allCourses).length > 0) {
       setLoadingAllCourses(false);
+      return;
     }
+    setLoadingAllCourses(true);
   };
 
   useEffect(() => {
@@ -114,10 +111,6 @@ const home = () => {
       setCart(parsedCart);
     }
   }, []);
-  
-  useEffect(() => {
-    // console.log("Updated cart state --> ", cart);
-  }, [cart]);
 
   useEffect(() => {
     if (activeTab === 0) {
