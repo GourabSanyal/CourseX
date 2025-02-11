@@ -1,5 +1,9 @@
 {
   "private": true,
+  "engines": {
+    "node": ">=22.0.0",
+    "yarn": ">=4.5.3"
+  },
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
