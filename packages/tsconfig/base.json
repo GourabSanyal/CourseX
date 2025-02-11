@@ -15,7 +15,13 @@
     "preserveWatchOutput": true,
     "skipLibCheck": true,
     "strict": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["apps/client/src/*"],
+      "packages/*": ["packages/*"]
+    }
   },
+  "include": ["apps", "packages"],
   "exclude": ["node_modules"]
 }
