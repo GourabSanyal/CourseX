@@ -26,7 +26,6 @@ export default async function POST(
   try {
     const session = await getServerSession(req, res, authOptions);
     const token = await getToken({ req, secret });
-    console.log("api error -> ", req.body);
     try {
       if (!session && !token) {
         res.json({
