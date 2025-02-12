@@ -21,6 +21,7 @@ import { Box, Badge } from "@mui/material";
 import { toast } from "sonner";
 import axios from "axios";
 import userCartTotal from "@/utils/cart/userCartTotal";
+import { useCart } from "@/hooks/useCart";
 
 function UserAppBar() {
   const router = useRouter();
@@ -32,6 +33,7 @@ function UserAppBar() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // Adjust the breakpoint as needed
   const totalAmount = userCartTotal();
+  const { forceSync } = useCart();
 
   const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -47,6 +49,7 @@ function UserAppBar() {
   };
 
   const handleCartModal = () => {
+    forceSync()
     if (isCartModalOpen) {
       setisCartModalOpen(false);
     } else {

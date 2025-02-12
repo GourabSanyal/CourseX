@@ -21,6 +21,7 @@ import { ArrowOutward } from "@mui/icons-material";
 import { Course } from "shared-types";
 import Script from "next/script";
 import userCartTotal from "@/utils/cart/userCartTotal";
+import { useCart } from "@/hooks/useCart";
 
 type ModalActions = {
   label: string;
@@ -79,6 +80,7 @@ const AppModal: React.FC<AppModalProps> = ({
       useRecoilState<Record<string, Course>>(cartState);
     const cart = useRecoilValue(cartState);
     const totalAmount = userCartTotal();
+    const { forceSync } = useCart();
 
     useEffect(() => {
       setIsLoading(false);
@@ -92,6 +94,7 @@ const AppModal: React.FC<AppModalProps> = ({
         delete updatedCart[itemId];
         return updatedCart;
       });
+      forceSync()
     };
 
     if (isLoading) {
