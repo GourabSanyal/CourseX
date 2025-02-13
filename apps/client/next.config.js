@@ -1,7 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['i1.sndcdn.com']
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**', 
+        port: '',
+        pathname: '/**', 
+      },
+    ],
   },
   reactStrictMode: true,
   transpilePackages: ["ui", "db", "store", "shared-types"],
