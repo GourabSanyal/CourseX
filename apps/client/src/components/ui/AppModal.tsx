@@ -166,9 +166,6 @@ const AppModal: React.FC<AppModalProps> = ({
                             <DeleteIcon />
                           </IconButton>
                         </Box>
-                        <Typography variant="body2" color="text.secondary">
-                          {item.description}
-                        </Typography>
                         <Typography variant="subtitle1" sx={{ mt: 1 }}>
                           ₹ {item.price}
                         </Typography>
