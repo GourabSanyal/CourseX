@@ -78,6 +78,7 @@ const AppModal: React.FC<AppModalProps> = ({
     const [isLoading, setIsLoading] = useState(true);
     const [cartItems, setCartItems] =
       useRecoilState<Record<string, Course>>(cartState);
+      const [isImageLoading, setIsImageLoading] = useState(true); 
     const cart = useRecoilValue(cartState);
     const totalAmount = userCartTotal();
     const { forceSync } = useCart();
@@ -142,12 +143,31 @@ const AppModal: React.FC<AppModalProps> = ({
                           mr: 2,
                         }}
                       >
+                        {isLoading && (
+                          <Box
+                            sx={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              backgroundColor: 'rgba(255, 255, 255, 0.8)', 
+                            }}
+                          >
+                            <CircularProgress /> 
+                          </Box>
+                        )}
                         <Image
                           src={item.imageLink}
                           alt={item.title}
                           fill
                           style={{ objectFit: "cover" }}
                           sizes="(max-width: 120px) 100vw, 120px"
+                          onLoadingComplete={() => setIsImageLoading(false)} 
+                          onError={() => setIsImageLoading(false)}
                         />
                       </Box>
                       <Box sx={{ flex: 1 }}>
