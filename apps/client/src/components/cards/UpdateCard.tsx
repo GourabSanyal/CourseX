@@ -15,7 +15,6 @@ export default function UpdateCard({ course, setCourse }: UpdateCardProps) {
   const [price, setPrice] = useState(course.price);
 
   const handleUpdate = useCallback(() => {
-    console.log("handle update called");
     axios
       .put(`/api/admin/updateCourse`, {
         _id: course._id,

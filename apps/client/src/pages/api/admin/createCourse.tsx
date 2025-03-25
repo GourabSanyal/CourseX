@@ -37,8 +37,6 @@ export default async function handler(
       { $push: { createdCourses: course._id } }
     );
 
-    console.log("updated course", Admin.findOne({ adminEmail }));
-
     res
       .status(201)
       .json({ message: "Course created successfully", data: course });
