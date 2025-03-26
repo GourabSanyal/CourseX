@@ -7,11 +7,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { secret } from "@/lib/config/secrets";
 import { getToken } from "next-auth/jwt";
-
-type ErrorObj = {
-  message: string;
-  statusCode: number;
-};
+import { ErrorObj } from "shared-types";
 
 export default async function handler(
   req: NextApiRequest,
