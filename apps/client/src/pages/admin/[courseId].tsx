@@ -1,25 +1,23 @@
-import { useRouter as useRouter } from "next/router";
-import { useRouter as useRouterNavigation } from "next/navigation";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import GrayTopper from "@/components/ui/GrayTopper";
-import { Grid } from "@mui/material";
-import UpdateCard from "@/components/cards/UpdateCard";
-import CourseCard from "@/components/cards/CourseCard";
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]";
-import { Course } from "shared-types";
+  import { useRouter } from "next/router";
+  import { useEffect, useState } from "react";
+  import axios from "axios";
+  import { Grid, Box, Container } from "@mui/material";
+  import UpdateCard from "@/components/cards/UpdateCard";
+  import CourseCard from "@/components/cards/CourseCard";
+  import { GetServerSideProps, GetServerSidePropsContext } from "next";
+  import { getServerSession } from "next-auth";
+  import { authOptions } from "../api/auth/[...nextauth]";
+  import { Course } from "shared-types";
 
-function singleCoursePage() {
-  const [course, setCourse] = useState<Course | null>(null);
+  function singleCoursePage() {
+    const [course, setCourse] = useState<Course | null>(null);
 
-  const routerQuery = useRouter();
-  const { courseId } = routerQuery.query;
+    const routerQuery = useRouter();
+    const { courseId } = routerQuery.query;
 
-  const getSingleCourse = async () => {
-    if (courseId) {
-      const res = await axios.get(`/api/admin/${courseId}`);
+    const getSingleCourse = async () => {
+      if (courseId) {
+        const res = await axios.get(`/api/admin/${courseId}`);
       const data = res.data;
       setCourse(data);
     }
@@ -44,17 +42,22 @@ function singleCoursePage() {
     );
   } else {
     return (
-      <div>
-        <GrayTopper title={course.title} />
-        <Grid container>
-          <Grid item lg={8} md={12} sm={12}>
-            <CourseCard course={course} />
+      <Box sx={{ p: 3 }}>
+        <Container maxWidth="xl">
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={12} lg={8}>
+              <Box sx={{ height: '100%' }}>
+                <CourseCard course={course} />
+              </Box>
+            </Grid>
+            <Grid item mt={8}>
+              <Box sx={{ height: '100%' }}>
+                <UpdateCard course={course} setCourse={setCourse} />
+              </Box>
+            </Grid>
           </Grid>
-          <Grid item lg={4} md={12} sm={12}>
-            <UpdateCard course={course} setCourse={setCourse} />
-          </Grid>
-        </Grid>
-      </div>
+        </Container>
+      </Box>
     );
   }
 }
