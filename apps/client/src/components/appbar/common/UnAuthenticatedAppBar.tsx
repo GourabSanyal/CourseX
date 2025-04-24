@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useCallback } from "react";
 import {
   Button,
   IconButton,
@@ -10,23 +10,31 @@ import {
   Box,
 } from "@mui/material";
 import { CustomModal } from "ui";
-import { signOut, signIn } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import MenuIcon from "@mui/icons-material/Menu";
 import LoginIcon from "@mui/icons-material/Login";
 import { AdminModal } from "ui";
-import axios from "axios";
+import { useLoginModal } from "@/hooks/useLoginModal";
 
 const UnAuthenticatedAppBar = () => {
-  const [loginModalOpen, setLoginModalOpen] = useState<boolean>(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [onError, setOnError] = useState<string | null>(null);
   const router = useRouter();
-  const isSignInRef = useRef(true);
   const theme = useTheme();
+  const { 
+    isOpen, 
+    isAdminModalOpen,
+    error, 
+    openLoginModal, 
+    closeLoginModal, 
+    closeAdminModal,
+    handleLogin, 
+    setError,
+    handleAdminSubmission,
+    isSignInRef
+  } = useLoginModal();
 
   // responsiveness
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -39,106 +47,8 @@ const UnAuthenticatedAppBar = () => {
   }, []);
 
   const handleCloseModal = () => {
-    setModalOpen(false);
-    setLoginModalOpen(false);
-  };
-
-  const adminLogout = () => {
-    signOut();
-  };
-
-  const openAdminLoginModal = () => {
-    setModalOpen(true);
-  };
-
-  const handleResetError = () => {
-    setOnError(null);
-  };
-
-  const adminSignUp = async (
-    username: string | null | undefined,
-    email: string,
-    password: string
-  ) => {
-    try {
-      const results = await signIn("admin-signup", {
-        username,
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (results?.error === "CredentialsSignin") {
-        const checkUserExists = await fetch("/api/user/check-user", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        });
-        const data = await checkUserExists.json();
-
-        if (data) {
-          setOnError("Admin already exist, please login to continue");
-        }
-      }
-    } catch (error: any) {
-      setOnError(error);
-    }
-  };
-
-  const openAppLoginModal = () => {
-    setLoginModalOpen(true);
-  };
-
-  const handleLogin = async (role: "admin" | "user") => {
-    if (role === "admin") {
-      openAdminLoginModal();
-    } else {
-      await signIn("google", { callbackUrl: "/user/home" });
-    }
-  };
-
-  const adminSignIn = async (email: string, password: string) => {
-    try {
-      const results = await signIn("admin-signin", {
-        email,
-        password,
-        callbackUrl: "/admin/dashboard",
-      });
-      if (results?.error === "CredentialsSignin") {
-        const checkUserExists = await fetch("/api/user/check-user", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        });
-        const data = await checkUserExists.json();
-
-        if (data) {
-          setOnError(data.message);
-        }
-      }
-    } catch (error: any) {
-      setOnError(error);
-    }
-  };
-
-  const handleAdminSubmission = async (
-    username: string | null | undefined,
-    email: string,
-    password: string
-  ): Promise<void> => {
-    try {
-      if (isSignInRef.current) {
-        adminSignIn(email, password);
-      } else {
-        adminSignUp(username, email, password);
-      }
-    } catch (err: any) {
-      setOnError(err.message);
-    }
+    closeAdminModal();
+    closeLoginModal();
   };
 
   return (
@@ -190,7 +100,7 @@ const UnAuthenticatedAppBar = () => {
           >
             <MenuItem
               onClick={() => {
-                openAppLoginModal();
+                openLoginModal();
                 handleClose();
               }}
               sx={{
@@ -218,7 +128,7 @@ const UnAuthenticatedAppBar = () => {
           <Button
             variant="contained"
             startIcon={<LoginIcon />}
-            onClick={openAppLoginModal}
+            onClick={openLoginModal}
             sx={{
               textTransform: 'none',
               borderRadius: '50px',
@@ -237,7 +147,7 @@ const UnAuthenticatedAppBar = () => {
         </Box>
       )}
       <CustomModal
-        open={loginModalOpen}
+        open={isOpen}
         onClose={handleCloseModal}
         heading="Login and start learning"
         subHeading="Start your journey"
@@ -245,14 +155,15 @@ const UnAuthenticatedAppBar = () => {
         primaryButtonSubmit={() => handleLogin("admin")}
         secondaryButtonText="Login As User"
         secondaryButtonSubmit={() => handleLogin("user")}
+        onError={error}
       />
       <AdminModal
-        open={modalOpen}
+        open={isAdminModalOpen}
         onClose={handleCloseModal}
         onSubmit={handleAdminSubmission}
         isSignInRef={isSignInRef}
-        onError={onError}
-        handleResetError={handleResetError}
+        onError={error}
+        handleResetError={() => setError(null)}
       />
     </>
   );
