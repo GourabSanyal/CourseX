@@ -38,34 +38,47 @@ export default async function handler(
     await ensureDbConnected();
     const session = await getServerSession(req, res, authOptions);
     const token = await getToken({ req, secret });
+
+    // Check if the request is from the marquee
+    const isMarqueeRequest = req.headers['x-request-source'] === 'marquee';
+
+    if (isMarqueeRequest) {
+      const courses = await Course.find({ });
+      return res.json({
+        message: "All published courses for marquee",
+        data: courses,
+      });
+    }
+
+    // For authenticated requests, proceed with normal flow
     if (!session && !token) {
-      res.json({
+      return res.status(403).json({
         message: "Session expired, please relogin to continue",
         statusCode: 403,
       });
+    }
+
+    let courses: Course[] = await Course.find({});
+    const email = token?.email;
+
+    let loggedUser;
+
+    if (token?.role === "admin") {
+      loggedUser = await Admin.findOne({ email });
+      return res.json({
+        message: "add courses for admin",
+        data: courses,
+      });
     } else {
-      let courses: Course[] = await Course.find({});
-      const email = token?.email;
-
-      let loggedUser;
-
-      if (token?.role === "admin") {
-        loggedUser = await Admin.findOne({ email });
-        res.json({
-          message: "add courses for admin",
-          data: courses,
-        });
-      } else {
-        loggedUser = await User.findOne({ email }).populate("cart");
-        res.json({
-          message: "All courses for user",
-          data: courses,
-          inCart: loggedUser.cart,
-        });
-      }
+      loggedUser = await User.findOne({ email }).populate("cart");
+      return res.json({
+        message: "All courses for user",
+        data: courses,
+        inCart: loggedUser.cart,
+      });
     }
   } catch (error) {
     console.log("error from api -> ", error);
-    res.status(500).json({ message: "Error in Server, try again", statusCode: 500 });
+    return res.status(500).json({ message: "Error in Server, try again", statusCode: 500 });
   }
 }
