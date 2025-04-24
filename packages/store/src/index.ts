@@ -20,3 +20,5 @@ export * from "./selectors/admin/adminUserName"
 export * from "./atoms/cart/cart"
 export * from "./atoms/cart/helper"
 export * from  "./atoms/course/courseState"
+
+export { loginModalState } from "./atoms/modal/loginModalState";
