@@ -63,74 +63,81 @@ export const CourseMarquee = () => {
     </Box>
   );
 
+  // Create a duplicated array of courses for seamless infinite scroll
+  const duplicatedCourses = [...courses, ...courses, ...courses, ...courses, ...courses, ...courses, ...courses];
+
   return (
     <Box
       sx={{
         width: '100%',
         overflow: 'hidden',
-        py: 4,
-        mt: 8,
+        py: 1,
+        mt: 1,
+        position: 'relative',
       }}
     >
       {isLoading ? (
         renderSkeleton()
       ) : (
-        <motion.div
-          initial={{ x: '100%' }}
-          animate={{ x: '-100%' }}
-          transition={{
-            x: {
-              repeat: Infinity,
-              repeatType: 'loop',
-              duration: 20,
-              ease: 'linear',
-            },
-          }}
-          style={{
-            display: 'flex',
-            gap: '2rem',
-            padding: '1rem',
-          }}
-        >
-          {[...courses, ...courses].map((course, index) => (
-            <motion.div
-              key={`${course._id}-${index}`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleCourseClick(course._id)}
-              style={{
-                cursor: 'pointer',
-                padding: '1rem',
-                backgroundColor: 'white',
-                borderRadius: '8px',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                minWidth: '250px',
-              }}
-            >
-              <Box
-                component="img"
-                src={course.imageLink}
-                alt={course.title}
-                sx={{
-                  width: '100%',
-                  height: '150px',
-                  objectFit: 'cover',
-                  borderRadius: '4px',
-                  mb: 2,
+        <>
+          <motion.div
+            initial={{ x: 0 }}
+            animate={{ x: '-50%' }}
+            transition={{
+              x: {
+                repeat: Infinity,
+                repeatType: 'loop',
+                duration: 10,
+                ease: 'linear',
+              },
+            }}
+            style={{
+              display: 'flex',
+              gap: '2rem',
+              padding: '1rem',
+              width: '200%',
+            }}
+          >
+            {duplicatedCourses.map((course, index) => (
+              <motion.div
+                key={`${course._id}-${index}`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleCourseClick(course._id)}
+                style={{
+                  cursor: 'pointer',
+                  padding: '1rem',
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  minWidth: '250px',
                 }}
-              />
-              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
-                {course.title}
-              </Typography>
-              {/* <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                {course.description.substring(0, 100)}...
-              </Typography> */}
-              <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 'bold' }}>
-                ₹{course.price}
-              </Typography>
-            </motion.div>
-          ))}
-        </motion.div>
+              >
+                <Box
+                  component="img"
+                  src={course.imageLink}
+                  alt={course.title}
+                  sx={{
+                    width: '100%',
+                    height: '150px',
+                    objectFit: 'cover',
+                    borderRadius: '4px',
+                    mb: 2,
+                  }}
+                />
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  {course.title}
+                </Typography>
+                {/* <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                  {course.description.substring(0, 100)}...
+                </Typography> */}
+                <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 'bold' }}>
+                  ₹{course.price}
+                </Typography>
+              </motion.div>
+            ))}
+          </motion.div>
+        </>
       )}
     </Box>
   );
