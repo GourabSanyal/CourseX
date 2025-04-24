@@ -14,27 +14,30 @@ import UnAuthenticatedAppBar from "./UnAuthenticatedAppBar";
 import AdminAppBar from "../admin/AdminAppBar";
 import UserAppBar from "../user/UserAppBar";
 import { motion } from "framer-motion";
-import {slideUpVariant} from "ui"
+import { slideUpVariant } from "ui";
 import { HideOnScroll } from "@/components/ui/animations/hideOnScroll";
 
- export const AppBar : React.FC= () => {
+export const AppBar: React.FC = () => {
   const [adminAuthenticated, setAdminAuthenticated] = useState<boolean>(false);
   const [userAuthenticated, setUserAuthenticated] = useState<boolean>(false);
   const router = useRouter();
-  const session = useSession();
+  const { data: session, status } = useSession();
 
-  // admin and user authentication
+  // Handle authentication state
   useEffect(() => {
-    if (session.status === "authenticated") {
-      if (session.data.user.role === "admin") {
+    if (status === "authenticated" && session?.user) {
+      if (session.user.role === "admin") {
         setAdminAuthenticated(true);
-      } 
-      else {
-        setAdminAuthenticated(false)
-        setUserAuthenticated(false)
+        setUserAuthenticated(false);
+      } else if (session.user.role === "user") {
+        setUserAuthenticated(true);
+        setAdminAuthenticated(false);
       }
+    } else {
+      setAdminAuthenticated(false);
+      setUserAuthenticated(false);
     }
-  }, [session.status]);
+  }, [session, status]);
 
   return (
     <HideOnScroll>
@@ -56,16 +59,35 @@ import { HideOnScroll } from "@/components/ui/animations/hideOnScroll";
                 width: "100%",
               }}
             >
-              <motion.div initial="hidden" animate="visible" variants={slideUpVariant} transition={{ duration: 0.5 }}>
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={slideUpVariant}
+                transition={{ duration: 0.5 }}
+              >
                 <Button
                   onClick={() => router.push("/")}
                   sx={{
                     textTransform: "none",
-                    color: "primary.main",
-                    fontWeight: 700,
+                    p: 0,
+                    '&:hover': {
+                      backgroundColor: 'transparent',
+                    },
                   }}
                 >
-                  <Typography variant="h5">CourseX</Typography>
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: { xs: '1.5rem', sm: '1.8rem', md: '2.2rem' },
+                      background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      letterSpacing: '0.5px',
+                    }}
+                  >
+                    CourseX
+                  </Typography>
                 </Button>
               </motion.div>
               <motion.div
@@ -74,7 +96,13 @@ import { HideOnScroll } from "@/components/ui/animations/hideOnScroll";
                 variants={slideUpVariant}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                {adminAuthenticated ? <AdminAppBar /> : userAuthenticated ? <UserAppBar /> : <UnAuthenticatedAppBar />}
+                {adminAuthenticated ? (
+                  <AdminAppBar />
+                ) : userAuthenticated ? (
+                  <UserAppBar />
+                ) : (
+                  <UnAuthenticatedAppBar />
+                )}
               </motion.div>
             </Box>
           </Toolbar>
@@ -82,4 +110,4 @@ import { HideOnScroll } from "@/components/ui/animations/hideOnScroll";
       </MuiAppBar>
     </HideOnScroll>
   );
-}
+};

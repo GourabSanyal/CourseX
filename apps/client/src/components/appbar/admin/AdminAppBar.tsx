@@ -6,17 +6,21 @@ import {
   MenuItem,
   useMediaQuery,
   useTheme,
+  Box,
+  Typography,
 } from "@mui/material";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/router";
-import MenuIcon from "@mui/icons-material/Menu"; // Ensure you have this import
+import MenuIcon from "@mui/icons-material/Menu";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 const AdminAppBar = () => {
-  // Responsiveness mobile logic
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // Adjust the breakpoint as needed
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const router = useRouter();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -34,15 +38,26 @@ const AdminAppBar = () => {
   return (
     <>
       {isMobile ? (
-        <div>
+        <Box>
           <IconButton
-            aria-label="account of current user"
+            aria-label="menu"
             aria-controls="menu-appbar"
             aria-haspopup="true"
             onClick={handleMenu}
-            color="inherit"
+            sx={{
+              color: 'primary.main',
+              '&:hover': {
+                backgroundColor: 'rgba(33, 150, 243, 0.1)',
+              },
+              p: 1,
+            }}
           >
-            <MenuIcon />
+            <MenuIcon 
+              sx={{ 
+                fontSize: '2rem',
+                color: 'primary.main',
+              }} 
+            />
           </IconButton>
           <Menu
             id="menu-appbar"
@@ -58,48 +73,133 @@ const AdminAppBar = () => {
             }}
             open={open}
             onClose={handleClose}
+            PaperProps={{
+              sx: {
+                mt: 1.5,
+                borderRadius: 2,
+                minWidth: 200,
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+              },
+            }}
           >
             <MenuItem
               onClick={() => {
                 handleClose();
                 router.push("/admin/dashboard");
               }}
+              sx={{
+                py: 1.5,
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
+              }}
             >
-              Dashboard
+              <DashboardIcon sx={{ mr: 2, color: 'primary.main' }} />
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 500,
+                  fontSize: '1rem',
+                }}
+              >
+                Dashboard
+              </Typography>
             </MenuItem>
             <MenuItem
               onClick={() => {
                 handleClose();
                 router.push("/admin/addCourse");
               }}
+              sx={{
+                py: 1.5,
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
+              }}
             >
-              Add Course
+              <AddCircleIcon sx={{ mr: 2, color: 'primary.main' }} />
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 500,
+                  fontSize: '1rem',
+                }}
+              >
+                Add Course
+              </Typography>
             </MenuItem>
-            <MenuItem onClick={adminLogout}>Log Out</MenuItem>
+            <MenuItem
+              onClick={adminLogout}
+              sx={{
+                py: 1.5,
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
+              }}
+            >
+              <LogoutIcon sx={{ mr: 2, color: 'primary.main' }} />
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 500,
+                  fontSize: '1rem',
+                }}
+              >
+                Logout
+              </Typography>
+            </MenuItem>
           </Menu>
-        </div>
+        </Box>
       ) : (
-        <div style={{ display: "flex", marginLeft: "auto" }}>
+        <Box sx={{ display: "flex", gap: 2 }}>
           <Button
-            style={{ color: "white", marginRight: 10 }}
-            onClick={() => {
-              router.push("/admin/dashboard");
+            variant="text"
+            startIcon={<DashboardIcon />}
+            onClick={() => router.push("/admin/dashboard")}
+            sx={{
+              textTransform: 'none',
+              color: 'primary.main',
+              '&:hover': {
+                backgroundColor: 'rgba(33, 150, 243, 0.1)',
+              },
             }}
           >
             Dashboard
           </Button>
           <Button
-            style={{ color: "white", marginRight: 10 }}
-            onClick={() => {
-              router.push("/admin/addCourse");
+            variant="text"
+            startIcon={<AddCircleIcon />}
+            onClick={() => router.push("/admin/addCourse")}
+            sx={{
+              textTransform: 'none',
+              color: 'primary.main',
+              '&:hover': {
+                backgroundColor: 'rgba(33, 150, 243, 0.1)',
+              },
             }}
           >
             Add Course
           </Button>
-          <Button variant="contained" onClick={adminLogout}>
+          <Button
+            variant="contained"
+            startIcon={<LogoutIcon />}
+            onClick={adminLogout}
+            sx={{
+              textTransform: 'none',
+              borderRadius: '50px',
+              px: 3,
+              py: 1,
+              fontSize: '1rem',
+              fontWeight: 500,
+              boxShadow: 'none',
+              '&:hover': {
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+              },
+            }}
+          >
             Logout
           </Button>
-        </div>
+        </Box>
       )}
     </>
   );

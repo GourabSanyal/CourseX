@@ -1,27 +1,28 @@
 import React, { useState } from "react";
 import {
-  AppBar,
-  Toolbar,
-  Typography,
+  Button,
   IconButton,
   Menu,
   MenuItem,
-  Button,
   useMediaQuery,
   useTheme,
+  Box,
+  Typography,
+  Badge,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
 import { useRouter } from "next/navigation";
 import { cartState, userState } from "store";
 import { useSetRecoilState, useRecoilValue } from "recoil";
 import { signOut } from "next-auth/react";
 import AppModal from "@/components/ui/AppModal";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import { Box, Badge } from "@mui/material";
 import { toast } from "sonner";
 import axios from "axios";
 import userCartTotal from "@/utils/cart/userCartTotal";
 import { useCart } from "@/hooks/useCart";
+import MenuIcon from "@mui/icons-material/Menu";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 function UserAppBar() {
   const router = useRouter();
@@ -31,7 +32,7 @@ function UserAppBar() {
   const [isCartModalOpen, setisCartModalOpen] = useState<boolean>(false);
   const open = Boolean(anchorEl);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // Adjust the breakpoint as needed
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const totalAmount = userCartTotal();
   const { forceSync } = useCart();
 
@@ -49,32 +50,16 @@ function UserAppBar() {
   };
 
   const handleCartModal = () => {
-    forceSync()
-    if (isCartModalOpen) {
-      setisCartModalOpen(false);
-    } else {
-      setisCartModalOpen(true);
-    }
+    forceSync();
+    setisCartModalOpen(!isCartModalOpen);
   };
 
   const cart = useRecoilValue(cartState);
   const cartItems = Object.values(cart).length;
 
-
-  const redirectUserAfterSuccessfulPayment = () => {
-      
-    console.log("redirecting");
-    toast.success("Payment successful! Redirecting...", {
-      position: "top-right",
-      duration: 3000,
-      dismissible: true,
-    });
-  };
-
   const handlePayment = async () => {
     setIsProcessing(true);
     try {
-      // create order
       const response = await axios.post("/api/order/route", {
         amount: totalAmount * 100,
       });
@@ -82,10 +67,9 @@ function UserAppBar() {
 
       if (!data.orderID) {
         toast.error("Failed to create order. Please try again.");
-        return; // exit when order creation failed
+        return;
       }
 
-      // init payment
       const options = {
         key: process.env.RAZORPAY_KEY_ID,
         amount: totalAmount,
@@ -94,9 +78,11 @@ function UserAppBar() {
         description: "Course Payment",
         order_id: response.data.orderID,
         handler: async function (response: any) {
-          console.log("Payment successfull", response);
-          // Handle payment success - UI update
-          redirectUserAfterSuccessfulPayment();
+          toast.success("Payment successful! Redirecting...", {
+            position: "top-right",
+            duration: 3000,
+            dismissible: true,
+          });
         },
         prefill: {
           name: "test name",
@@ -112,145 +98,197 @@ function UserAppBar() {
       };
 
       const rzp = new (window as any).Razorpay(options);
-      rzp.on(
-        "payment.failed",
-        function (response: {
-          error: {
-            code: string;
-            description: string;
-            source: string;
-            step: string;
-            reason: string;
-          };
-        }) {
-          console.error("Payment failed haha", response);
-          toast.error("Payment failed. Please try again.");
-        }
-      );
+      rzp.on("payment.failed", function (response: any) {
+        toast.error("Payment failed. Please try again.");
+      });
       rzp.open();
-      console.log("payment obj from api", response);
-      if (response.data.statusCode === "401") {
-        toast.error("Payment Failed, please try again later");
-      }
     } catch (error) {
       console.error("Payment error:", error);
+      toast.error("Payment failed. Please try again.");
     } finally {
       setIsProcessing(false);
     }
   };
 
-
   return (
-    <AppBar>
-      <Toolbar>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexGrow: 1,
-          }}
-        >
-          <div onClick={() => router.push("/")}>
-            <Typography variant={"h5"}>CourseX</Typography>
-          </div>
-
-          {isMobile ? (
-            <div>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={open}
-                onClose={handleClose}
-              >
-                <MenuItem
-                  onClick={() => {
-                    handleClose();
-                    router.push("/user/home");
-                  }}
-                >
-                  Dashboard
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    setisCartModalOpen(true);
-                  }}
-                >
-                  Cart ₹ {cartItems}
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    handleClose();
-                    signOut({ callbackUrl: "/" });
-                  }}
-                >
-                  Logout
-                </MenuItem>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
-              </Menu>
-            </div>
-          ) : (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                paddingTop: 4,
+    <>
+      {isMobile ? (
+        <Box>
+          <IconButton
+            aria-label="menu"
+            aria-controls="menu-appbar"
+            aria-haspopup="true"
+            onClick={handleMenu}
+            sx={{
+              color: 'primary.main',
+              '&:hover': {
+                backgroundColor: 'rgba(33, 150, 243, 0.1)',
+              },
+              p: 1,
+            }}
+          >
+            <MenuIcon 
+              sx={{ 
+                fontSize: '2rem',
+                color: 'primary.main',
+              }} 
+            />
+          </IconButton>
+          <Menu
+            id="menu-appbar"
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            open={open}
+            onClose={handleClose}
+            PaperProps={{
+              sx: {
+                mt: 1.5,
+                borderRadius: 2,
+                minWidth: 200,
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+              },
+            }}
+          >
+            <MenuItem
+              onClick={() => {
+                handleClose();
+                router.push("/user/home");
+              }}
+              sx={{
+                py: 1.5,
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
               }}
             >
-              <Button
-                style={{ color: "white" }}
-                onClick={() => {
-                  router.push("/user/home");
+              <DashboardIcon sx={{ mr: 2, color: 'primary.main' }} />
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 500,
+                  fontSize: '1rem',
                 }}
               >
                 Dashboard
-              </Button>
-              <Button
-                style={{ color: "white" }}
-                onClick={() => {
-                  setisCartModalOpen(true);
+              </Typography>
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleCartModal();
+                handleClose();
+              }}
+              sx={{
+                py: 1.5,
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
+              }}
+            >
+              <Badge
+                badgeContent={cartItems}
+                color="primary"
+                sx={{ mr: 2 }}
+              >
+                <ShoppingCartIcon sx={{ color: 'primary.main' }} />
+              </Badge>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 500,
+                  fontSize: '1rem',
                 }}
               >
-                <Box sx={{ position: "relative" }}>
-                  <Badge
-                    badgeContent={cartItems}
-                    color="primary"
-                    invisible={cartItems === 0} // Hide badge if there are no items
-                    sx={{
-                      position: "absolute",
-                      top: -16,
-                      right: -14,
-                    }}
-                  >
-                    <ShoppingCartIcon sx={{ fontSize: 30 }} />
-                  </Badge>
-                </Box>
-              </Button>
-              <Button variant="contained" onClick={handleLogout}>
+                Cart
+              </Typography>
+            </MenuItem>
+            <MenuItem
+              onClick={handleLogout}
+              sx={{
+                py: 1.5,
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
+              }}
+            >
+              <LogoutIcon sx={{ mr: 2, color: 'primary.main' }} />
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 500,
+                  fontSize: '1rem',
+                }}
+              >
                 Logout
-              </Button>
-            </div>
-          )}
-        </div>
-      </Toolbar>
+              </Typography>
+            </MenuItem>
+          </Menu>
+        </Box>
+      ) : (
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <Button
+            variant="text"
+            startIcon={<DashboardIcon />}
+            onClick={() => router.push("/user/home")}
+            sx={{
+              textTransform: 'none',
+              color: 'primary.main',
+              '&:hover': {
+                backgroundColor: 'rgba(33, 150, 243, 0.1)',
+              },
+            }}
+          >
+            Dashboard
+          </Button>
+          <Button
+            variant="text"
+            startIcon={
+              <Badge
+                badgeContent={cartItems}
+                color="primary"
+              >
+                <ShoppingCartIcon />
+              </Badge>
+            }
+            onClick={handleCartModal}
+            sx={{
+              textTransform: 'none',
+              color: 'primary.main',
+              '&:hover': {
+                backgroundColor: 'rgba(33, 150, 243, 0.1)',
+              },
+            }}
+          >
+            Cart
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<LogoutIcon />}
+            onClick={handleLogout}
+            sx={{
+              textTransform: 'none',
+              borderRadius: '50px',
+              px: 3,
+              py: 1,
+              fontSize: '1rem',
+              fontWeight: 500,
+              boxShadow: 'none',
+              '&:hover': {
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+              },
+            }}
+          >
+            Logout
+          </Button>
+        </Box>
+      )}
       <AppModal
         open={isCartModalOpen}
         onClose={handleCartModal}
@@ -259,7 +297,7 @@ function UserAppBar() {
         handlePayment={handlePayment}
         paymentProcessing={isProcessing}
       />
-    </AppBar>
+    </>
   );
 }
 

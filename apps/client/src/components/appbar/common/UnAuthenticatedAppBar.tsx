@@ -6,11 +6,14 @@ import {
   MenuItem,
   useMediaQuery,
   useTheme,
+  Typography,
+  Box,
 } from "@mui/material";
 import { CustomModal } from "ui";
 import { signOut, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import MenuIcon from "@mui/icons-material/Menu";
+import LoginIcon from "@mui/icons-material/Login";
 import { AdminModal } from "ui";
 import axios from "axios";
 
@@ -20,30 +23,34 @@ const UnAuthenticatedAppBar = () => {
   const [onError, setOnError] = useState<string | null>(null);
   const router = useRouter();
   const isSignInRef = useRef(true);
+  const theme = useTheme();
 
   // responsiveness
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const handleMenu = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   }, []);
+
   const handleClose = useCallback(() => {
     setAnchorEl(null);
   }, []);
 
   const handleCloseModal = () => {
-    setModalOpen(false); 
-    setLoginModalOpen(false); 
+    setModalOpen(false);
+    setLoginModalOpen(false);
   };
 
   const adminLogout = () => {
     signOut();
   };
+
   const openAdminLoginModal = () => {
     setModalOpen(true);
   };
+
   const handleResetError = () => {
     setOnError(null);
   };
@@ -97,7 +104,7 @@ const UnAuthenticatedAppBar = () => {
       const results = await signIn("admin-signin", {
         email,
         password,
-        callbackUrl : "/admin/dashboard",
+        callbackUrl: "/admin/dashboard",
       });
       if (results?.error === "CredentialsSignin") {
         const checkUserExists = await fetch("/api/user/check-user", {
@@ -114,7 +121,7 @@ const UnAuthenticatedAppBar = () => {
         }
       }
     } catch (error: any) {
-      setOnError(error)
+      setOnError(error);
     }
   };
 
@@ -137,55 +144,97 @@ const UnAuthenticatedAppBar = () => {
   return (
     <>
       {isMobile ? (
-        <div>
+        <Box>
           <IconButton
-            aria-label="account of current user"
+            aria-label="menu"
             aria-controls="menu-appbar"
             aria-haspopup="true"
             onClick={handleMenu}
-            color="inherit"
+            sx={{
+              color: 'primary.main',
+              '&:hover': {
+                backgroundColor: 'rgba(33, 150, 243, 0.1)',
+              },
+              p: 1,
+            }}
           >
-            <MenuIcon />
+            <MenuIcon 
+              sx={{ 
+                fontSize: '2rem',
+                color: 'primary.main',
+              }} 
+            />
           </IconButton>
-          {anchorEl && (
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
+          <Menu
+            id="menu-appbar"
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            open={open}
+            onClose={handleClose}
+            PaperProps={{
+              sx: {
+                mt: 1.5,
+                borderRadius: 2,
+                minWidth: 200,
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+              },
+            }}
+          >
+            <MenuItem
+              onClick={() => {
+                openAppLoginModal();
+                handleClose();
               }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
+              sx={{
+                py: 1.5,
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
               }}
-              open={open}
-              onClose={handleClose}
             >
-              <MenuItem
-                onClick={() => {
-                  openAppLoginModal();
+              <LoginIcon sx={{ mr: 2, color: 'primary.main' }} />
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 500,
+                  fontSize: '1rem',
                 }}
               >
                 Login
-              </MenuItem>
-            </Menu>
-          )}
-        </div>
+              </Typography>
+            </MenuItem>
+          </Menu>
+        </Box>
       ) : (
-        <div style={{ display: "flex" }}>
-          <div style={{ marginRight: 10 }}>
-            <Button
-              style={{ color: "white" }}
-              onClick={() => {
-                openAppLoginModal();
-              }}
-            >
-              Login
-            </Button>
-          </div>
-        </div>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Button
+            variant="contained"
+            startIcon={<LoginIcon />}
+            onClick={openAppLoginModal}
+            sx={{
+              textTransform: 'none',
+              borderRadius: '50px',
+              px: 3,
+              py: 1,
+              fontSize: '1rem',
+              fontWeight: 500,
+              boxShadow: 'none',
+              '&:hover': {
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+              },
+            }}
+          >
+            Login
+          </Button>
+        </Box>
       )}
       <CustomModal
         open={loginModalOpen}
