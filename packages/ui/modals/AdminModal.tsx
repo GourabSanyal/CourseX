@@ -25,8 +25,10 @@ import {
   InputAdornment,
   useTheme,
   useMediaQuery,
+  Box,
+  CircularProgress,
 } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Visibility, VisibilityOff, Close as CloseIcon } from "@mui/icons-material";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 interface AdminModalProps {
@@ -55,15 +57,30 @@ export function AdminModal({
   onError,
   handleResetError,
 }: AdminModalProps): JSX.Element {
-  const { register, handleSubmit, formState, reset } = useForm<FormData>();
-  const { errors } = formState;
+  const { register, handleSubmit, formState, reset } = useForm<FormData>({
+    mode: 'onTouched',
+    reValidateMode: 'onChange',
+  });
+  const { errors, touchedFields } = formState;
   const [showPassword, setShowPassword] = useState(false);
   const [rerenderFlag, setRerenderFlag] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleToggleForm = useCallback(() => {
-    reset();
+    reset({
+      username: '',
+      email: '',
+      password: '',
+    }, {
+      keepErrors: false,
+      keepDirty: false,
+      keepIsSubmitted: false,
+      keepTouched: false,
+      keepIsValid: false,
+      keepSubmitCount: false,
+    });
     isSignInRef.current = !isSignInRef.current;
     setRerenderFlag(!rerenderFlag);
     if (handleResetError) {
@@ -77,6 +94,7 @@ export function AdminModal({
 
   const handleFormSubmit: SubmitHandler<FormData> = async (data) => {
     try {
+      setIsLoading(true);
       if (isSignInRef.current) {
         await onSubmit(null, data.email, data.password);
       } else {
@@ -86,6 +104,8 @@ export function AdminModal({
       if (error) {
         console.log("error from modal ->", error);
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -96,26 +116,67 @@ export function AdminModal({
       fullWidth={isMobile}
       maxWidth={isMobile ? "xs" : "sm"}
       PaperProps={{
-        style: {
-          padding: isMobile ? "10px" : "20px",
-        },
+        sx: {
+          borderRadius: 2,
+          padding: { xs: 1, sm: 2 },
+        }
       }}
     >
-      <DialogTitle>
-        <Button
-          onClick={onClose}
-          style={{ position: "absolute", top: 10, right: 10 }}
-        >
-          X
-        </Button>
+      <DialogTitle sx={{ p: 2, pb: 1 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+          <Box>
+            <Typography 
+              variant="h5" 
+              component="h2"
+              sx={{ 
+                fontWeight: 600,
+                color: theme.palette.text.primary,
+                mb: 0.5
+              }}
+            >
+              {isSignInRef.current ? "Admin Sign In" : "Admin Sign Up"}
+            </Typography>
+            <Typography 
+              variant="subtitle1" 
+              component="h3"
+              sx={{ 
+                color: theme.palette.text.secondary,
+                fontWeight: 400
+              }}
+            >
+              {isSignInRef.current 
+                ? "Sign in to access admin features" 
+                : "Create a new admin account"}
+            </Typography>
+          </Box>
+          <IconButton
+            onClick={onClose}
+            sx={{
+              color: theme.palette.text.secondary,
+              '&:hover': {
+                backgroundColor: theme.palette.action.hover,
+                color: theme.palette.text.primary,
+              },
+              transition: 'all 0.2s ease-in-out',
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
       </DialogTitle>
-      <DialogContent>
-        <form onSubmit={handleSubmit(handleFormSubmit)}>
+      <DialogContent sx={{ p: 2, pt: 1 }}>
+        <Box
+          component="form"
+          onSubmit={handleSubmit(handleFormSubmit)}
+          display="flex"
+          flexDirection="column"
+          gap={2}
+          sx={{ mt: 2 }}
+        >
           {!isSignInRef.current && (
             <TextField
               label="Username"
               fullWidth
-              margin="normal"
               {...register("username", {
                 required: "Username is required",
                 pattern: {
@@ -123,14 +184,18 @@ export function AdminModal({
                   message: "Invalid username",
                 },
               })}
-              error={!!errors.username}
-              helperText={errors.username?.message}
+              error={!!errors.username && touchedFields.username}
+              helperText={touchedFields.username ? errors.username?.message : ''}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 1,
+                },
+              }}
             />
           )}
           <TextField
             label="Email"
             fullWidth
-            margin="normal"
             {...register("email", {
               required: "Email is required",
               pattern: {
@@ -138,15 +203,18 @@ export function AdminModal({
                 message: "Invalid email address",
               },
             })}
-            error={!!errors.email}
-            helperText={errors.email?.message}
+            error={!!errors.email && touchedFields.email}
+            helperText={touchedFields.email ? errors.email?.message : ''}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 1,
+              },
+            }}
           />
           <TextField
             label="Password"
             type={showPassword ? "text" : "password"}
             fullWidth
-            margin="normal"
-            required
             {...register("password", {
               required: "Password is required",
               minLength: {
@@ -158,42 +226,100 @@ export function AdminModal({
                 message: "Password must contain at least one number",
               },
             })}
-            error={!!errors.password}
-            helperText={errors.password?.message}
+            error={!!errors.password && touchedFields.password}
+            helperText={touchedFields.password ? errors.password?.message : ''}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
                     onClick={handleTogglePasswordVisibility}
                     edge="end"
+                    sx={{
+                      color: theme.palette.text.secondary,
+                      '&:hover': {
+                        backgroundColor: theme.palette.action.hover,
+                      },
+                    }}
                   >
                     {showPassword ? <Visibility /> : <VisibilityOff />}
                   </IconButton>
                 </InputAdornment>
               ),
             }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 1,
+              },
+            }}
           />
-          <Button type="submit" variant="contained" color="primary" fullWidth>
-            {isSignInRef.current ? "Sign In" : "Sign Up"}
-          </Button>
-        </form>
-        {onError ? (
-          <Typography
-            variant="body2"
-            align="center"
-            style={{ marginTop: 10, color: "red" }}
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            disabled={isLoading}
+            sx={{
+              py: 1.5,
+              fontWeight: 600,
+              fontSize: '1rem',
+              textTransform: 'none',
+              borderRadius: 1,
+              '&:hover': {
+                transform: 'translateY(-1px)',
+                boxShadow: theme.shadows[4],
+              },
+              transition: 'all 0.2s ease-in-out',
+            }}
           >
-            {onError}
+            {isLoading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              isSignInRef.current ? "Sign In" : "Sign Up"
+            )}
+          </Button>
+
+          {onError && (
+            <Typography
+              variant="body2"
+              align="center"
+              sx={{
+                color: theme.palette.error.main,
+                mt: 1,
+                fontWeight: 500,
+              }}
+            >
+              {onError}
+            </Typography>
+          )}
+
+          <Typography 
+            variant="body2" 
+            align="center" 
+            sx={{ 
+              color: theme.palette.text.secondary,
+              mt: 1,
+            }}
+          >
+            {isSignInRef.current
+              ? "Don't have an admin account? "
+              : "Already have an admin account? "}
+            <Link 
+              component="button" 
+              variant="body2" 
+              onClick={handleToggleForm}
+              sx={{
+                color: theme.palette.primary.main,
+                fontWeight: 600,
+                textDecoration: 'none',
+                '&:hover': {
+                  textDecoration: 'underline',
+                },
+              }}
+            >
+              {isSignInRef.current ? "Register as an Admin here" : "Sign In here"}
+            </Link>
           </Typography>
-        ) : null}
-        <Typography variant="body2" align="center" style={{ marginTop: 10 }}>
-          {isSignInRef.current
-            ? "Don't have an admin account? "
-            : "Already have an admin account? "}
-          <Link component="button" variant="body2" onClick={handleToggleForm}>
-            {isSignInRef.current ? "Register as an Admin here" : "Sign In here"}
-          </Link>
-        </Typography>
+        </Box>
       </DialogContent>
     </Dialog>
   );
