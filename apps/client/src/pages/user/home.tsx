@@ -135,8 +135,18 @@ const home = () => {
           alignItems="center"
           direction="column"
         >
-          <Typography variant="h4" align="center" gutterBottom>
-            Welcome {userUsername?.split(" ")[0]}
+          <Typography 
+            variant="h4" 
+            align="center" 
+            gutterBottom
+            sx={{
+              fontWeight: 600,
+              color: 'primary.main',
+              letterSpacing: '0.5px',
+              marginBottom: '24px'
+            }}
+          >
+            Welcome back, {userUsername?.split(" ")[0]}! 👋
           </Typography>
           <div style={{ justifyContent: "center", alignItems: "center" }}>
             <Tabs
