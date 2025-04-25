@@ -4,18 +4,13 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from "sonner";
+import { Course } from 'shared-types';
+import { useSession } from 'next-auth/react';
 
-interface Course {
-  _id: string;
-  title: string;
-  description: string;
-  price: number;
-  imageLink: string;
-  published: boolean;
-}
 
 export const CourseMarquee = () => {
   const router = useRouter();
+  const { data: session } = useSession();
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -39,25 +34,33 @@ export const CourseMarquee = () => {
   }, []);
 
   const handleCourseClick = (courseId: string) => {
-    toast.info('Please login to view course details');
+    if (session) {
+      toast.info('Access all the courses from the dashboard');
+    } else {
+      toast.info('Please login to view course details');
+    }
   };
 
   const renderSkeleton = () => (
-    <Box sx={{ display: 'flex', gap: '2rem', padding: '1rem' }}>
+    <Box sx={{ display: 'flex', gap: '2.5rem', padding: '1.5rem' }}>
       {[...Array(5)].map((_, index) => (
         <Box
           key={index}
           sx={{
-            padding: '1rem',
+            padding: '1.5rem',
             backgroundColor: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            minWidth: '250px',
+            borderRadius: '16px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+            minWidth: '300px',
+            transition: 'transform 0.2s ease-in-out',
+            '&:hover': {
+              transform: 'translateY(-4px)',
+            },
           }}
         >
-          <Skeleton variant="rectangular" width="100%" height={150} sx={{ mb: 2 }} />
-          <Skeleton variant="text" width="80%" height={30} sx={{ mb: 1 }} />
-          <Skeleton variant="text" width="60%" height={20} />
+          <Skeleton variant="rectangular" width="100%" height={180} sx={{ mb: 2, borderRadius: '12px' }} />
+          <Skeleton variant="text" width="80%" height={32} sx={{ mb: 1.5, borderRadius: '8px' }} />
+          <Skeleton variant="text" width="60%" height={24} sx={{ borderRadius: '8px' }} />
         </Box>
       ))}
     </Box>
@@ -71,8 +74,8 @@ export const CourseMarquee = () => {
       sx={{
         width: '100%',
         overflow: 'hidden',
-        py: 1,
-        mt: 1,
+        py: 2,
+        mt: 2,
         position: 'relative',
       }}
     >
@@ -87,30 +90,31 @@ export const CourseMarquee = () => {
               x: {
                 repeat: Infinity,
                 repeatType: 'loop',
-                duration: 10,
+                duration: 20,
                 ease: 'linear',
               },
             }}
             style={{
               display: 'flex',
-              gap: '2rem',
-              padding: '1rem',
+              gap: '2.5rem',
+              padding: '1.5rem',
               width: '200%',
             }}
           >
             {duplicatedCourses.map((course, index) => (
               <motion.div
                 key={`${course._id}-${index}`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02, y: -4 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => handleCourseClick(course._id)}
                 style={{
                   cursor: 'pointer',
-                  padding: '1rem',
+                  padding: '1.5rem',
                   backgroundColor: 'white',
-                  borderRadius: '8px',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                  minWidth: '250px',
+                  borderRadius: '16px',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                  minWidth: '300px',
+                  transition: 'all 0.3s ease-in-out',
                 }}
               >
                 <Box
@@ -119,19 +123,41 @@ export const CourseMarquee = () => {
                   alt={course.title}
                   sx={{
                     width: '100%',
-                    height: '150px',
+                    height: '180px',
                     objectFit: 'cover',
-                    borderRadius: '4px',
-                    mb: 2,
+                    borderRadius: '12px',
+                    mb: 2.5,
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                   }}
                 />
-                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontWeight: 600,
+                    mb: 1.5,
+                    fontSize: '1.1rem',
+                    lineHeight: 1.4,
+                    color: 'text.primary',
+                    minHeight: '3.5em',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                  }}
+                >
                   {course.title}
                 </Typography>
-                {/* <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                  {course.description.substring(0, 100)}...
-                </Typography> */}
-                <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 'bold' }}>
+                <Typography 
+                  variant="subtitle1" 
+                  color="primary" 
+                  sx={{ 
+                    fontWeight: 700,
+                    fontSize: '1.2rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                  }}
+                >
                   ₹{course.price}
                 </Typography>
               </motion.div>
