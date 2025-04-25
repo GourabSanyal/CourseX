@@ -3,10 +3,12 @@ import { motion } from 'framer-motion';
 import { CourseMarquee } from '../components/course-marquee/CourseMarquee';
 import { Footer } from '../components/footer/Footer';
 import { useLoginModal } from '@/hooks/useLoginModal';
+import { useSession } from 'next-auth/react';
 
 export default function Home() {
   const { openLoginModal } = useLoginModal();
 
+  const session = useSession();
   return (
     <Box
       sx={{
@@ -76,30 +78,32 @@ export default function Home() {
               Master in-demand skills with expert-led courses
             </Typography>
           </motion.div>
-
+              
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <Button
-              variant="contained"
-              size="large"
-              onClick={openLoginModal}
-              sx={{
-                px: 4,
-                py: 1.5,
-                fontSize: '1.1rem',
-                borderRadius: '50px',
-                textTransform: 'none',
-                boxShadow: '0 4px 14px 0 rgba(0,118,255,0.39)',
-                '&:hover': {
-                  boxShadow: '0 6px 20px rgba(0,118,255,0.23)',
-                },
-              }}
-            >
-              Start Learning Today
-            </Button>
+            {!session && (
+              <Button
+                variant="contained"
+                size="large"
+                onClick={openLoginModal}
+                sx={{
+                  px: 4,
+                  py: 1.5,
+                  fontSize: '1.1rem',
+                  borderRadius: '50px',
+                  textTransform: 'none',
+                  boxShadow: '0 4px 14px 0 rgba(0,118,255,0.39)',
+                  '&:hover': {
+                    boxShadow: '0 6px 20px rgba(0,118,255,0.23)',
+                  },
+                }}
+              >
+                Start Learning Today
+              </Button>
+            )}
           </motion.div>
         </Box>
 
