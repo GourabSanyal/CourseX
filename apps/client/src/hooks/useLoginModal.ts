@@ -43,10 +43,11 @@ export const useLoginModal = () => {
         const result = await signIn("admin-signin", {
           email,
           password,
+          redirect: false,
           callbackUrl: "/admin/dashboard",
         });
 
-        if (result?.error) {
+        if (result?.error  === "CredentialsSignin") {
           const checkUserExists = await fetch("/api/user/check-user", {
             method: "POST",
             headers: {
@@ -55,7 +56,10 @@ export const useLoginModal = () => {
             body: JSON.stringify({ email }),
           });
           const data = await checkUserExists.json();
-          setError(data.message);
+          console.log('error from check-user', data);
+          if (data.errorType === "user_exist"){
+            setError(data.message);
+          }
         }
       } else {
         const result = await signIn("admin-signup", {
