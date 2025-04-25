@@ -43,7 +43,7 @@ export const useLoginModal = () => {
         const result = await signIn("admin-signin", {
           email,
           password,
-          redirect: false,
+          // redirect: false,
           callbackUrl: "/admin/dashboard",
         });
 
@@ -66,7 +66,8 @@ export const useLoginModal = () => {
           username,
           email,
           password,
-          redirect: false,
+          // redirect: false,
+          callbackUrl: "/admin/dashboard",
         });
 
         if (result?.error) {

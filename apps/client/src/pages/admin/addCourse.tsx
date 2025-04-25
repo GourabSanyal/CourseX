@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { NewCourseCard } from "ui";
 import {CustomModal} from "ui/modals/CustomModal";
 import { authOptions } from "../api/auth/[...nextauth]";
+import { toast } from "sonner";
 
 const addCourse = () => {
   const [onError, setOnError] = useState("");
@@ -29,10 +30,10 @@ const addCourse = () => {
           headers: { Authorization: "Bearer " + localStorage.getItem("token") },
         }
       );
-      console.log("data from parent ->", response);
+      console.log("data in /addCourse ->", response);
 
       if (response.status === 201) {
-        console.warn("New Course added successfully");
+        toast.success("New Course added successfully");
       }
     } catch (error) {
       console.log("error from parent -> ", error);
