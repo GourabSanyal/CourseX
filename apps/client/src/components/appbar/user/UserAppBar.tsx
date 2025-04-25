@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Button,
   IconButton,
@@ -35,6 +35,8 @@ function UserAppBar() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const totalAmount = userCartTotal();
   const { forceSync } = useCart();
+  const cart = useRecoilValue(cartState);
+  const cartItems = Object.values(cart).length;
 
   const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -49,13 +51,10 @@ function UserAppBar() {
     setUser({ isLoading: false, userEmail: null, username: null });
   };
 
-  const handleCartModal = () => {
-    forceSync();
-    setisCartModalOpen(!isCartModalOpen);
-  };
-
-  const cart = useRecoilValue(cartState);
-  const cartItems = Object.values(cart).length;
+  const handleCartModal = useCallback(async () => {
+    await forceSync();
+    setisCartModalOpen(prev => !prev);
+  }, [forceSync]);
 
   const handlePayment = async () => {
     setIsProcessing(true);

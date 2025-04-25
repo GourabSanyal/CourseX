@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ShoppingCart from "@mui/icons-material/ShoppingCart";
 import { useRecoilState, useRecoilValue } from "recoil";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
@@ -75,75 +76,100 @@ const AppModal: React.FC<AppModalProps> = ({
   const { titleColor, borderColor } = getTypes(type);
 
   const ModalContent = () => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [cartItems, setCartItems] =
-      useRecoilState<Record<string, Course>>(cartState);
-      const [isImageLoading, setIsImageLoading] = useState(true); 
-    const cart = useRecoilValue(cartState);
+    const [cartItems, setCartItems] = useRecoilState<Record<string, Course>>(cartState);
+    const [isImageLoading, setIsImageLoading] = useState<Record<string, boolean>>({});
     const totalAmount = userCartTotal();
     const { forceSync } = useCart();
-
-    useEffect(() => {
-      setIsLoading(false);
-    }, [cart]);
 
     const isCartEmpty = Object.keys(cartItems).length === 0;
 
     const removeFromCart = async (itemId: string) => {
-      setCartItems((prevCart) => {
-        const updatedCart: Record<string, Course> = { ...prevCart };
-        delete updatedCart[itemId];
-        return updatedCart;
-      });
-      forceSync()
+      try {
+        setCartItems((prevCart) => {
+          const updatedCart: Record<string, Course> = { ...prevCart };
+          delete updatedCart[itemId];
+          return updatedCart;
+        });
+        await forceSync();
+      } catch (error) {
+        console.error("Error removing item from cart:", error);
+      }
     };
-
-    if (isLoading) {
-      return (
-        <List sx={{ width: "100%" }}>
-          {[1, 2, 3].map((i) => (
-            <ListItem key={i} sx={{ mb: 20 }}>
-              <Skeleton
-                variant="rectangular"
-                width={100}
-                height={400}
-                sx={{ mr: 2 }}
-              />
-              <Box sx={{ width: "100%" }}>
-                <Skeleton width="60%" height={24} />
-                <Skeleton width="80%" height={20} sx={{ mt: 1 }} />
-              </Box>
-            </ListItem>
-          ))}
-        </List>
-      );
-    }
 
     return (
       <>
         {type === "cart" && (
           <Box
-            sx={{ display: "flex", flexDirection: "column", height: "400px" }}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              height: "500px",
+              transition: "all 0.3s ease-in-out",
+            }}
           >
             <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-            <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>
+            <Box 
+              sx={{ 
+                flex: 1, 
+                overflowY: "auto", 
+                p: 2,
+                '&::-webkit-scrollbar': {
+                  width: '8px',
+                },
+                '&::-webkit-scrollbar-track': {
+                  background: '#f1f1f1',
+                  borderRadius: '4px',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background: '#888',
+                  borderRadius: '4px',
+                  '&:hover': {
+                    background: '#555',
+                  },
+                },
+              }}
+            >
               <List sx={{ width: "100%" }}>
                 {Object.keys(cartItems).length === 0 ? (
-                  <Typography sx={{ textAlign: "center" }}>
-                    Your cart is empty
-                  </Typography>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    height: '300px',
+                    color: 'text.secondary'
+                  }}>
+                    <ShoppingCart sx={{ fontSize: 48, mb: 2, opacity: 0.5 }} />
+                    <Typography variant="h6">Your cart is empty</Typography>
+                    <Typography variant="body2" sx={{ mt: 1 }}>Add some courses to get started</Typography>
+                  </Box>
                 ) : (
                   Object.entries(cartItems).map(([key, item]) => (
-                    <ListItem key={key}>
+                    <ListItem 
+                      key={key}
+                      sx={{
+                        mb: 2,
+                        p: 2,
+                        borderRadius: 2,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        transition: 'all 0.2s ease-in-out',
+                        '&:hover': {
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        }
+                      }}
+                    >
                       <Box
                         sx={{
                           position: "relative",
                           width: 120,
                           height: 80,
                           mr: 2,
+                          borderRadius: 1,
+                          overflow: 'hidden',
                         }}
                       >
-                        {isLoading && (
+                        {isImageLoading[key] && (
                           <Box
                             sx={{
                               position: 'absolute',
@@ -154,10 +180,10 @@ const AppModal: React.FC<AppModalProps> = ({
                               display: 'flex',
                               justifyContent: 'center',
                               alignItems: 'center',
-                              backgroundColor: 'rgba(255, 255, 255, 0.8)', 
+                              backgroundColor: 'background.default',
                             }}
                           >
-                            <CircularProgress /> 
+                            <CircularProgress size={24} />
                           </Box>
                         )}
                         <Image
@@ -166,8 +192,8 @@ const AppModal: React.FC<AppModalProps> = ({
                           fill
                           style={{ objectFit: "cover" }}
                           sizes="(max-width: 120px) 100vw, 120px"
-                          onLoadingComplete={() => setIsImageLoading(false)} 
-                          onError={() => setIsImageLoading(false)}
+                          onLoadingComplete={() => setIsImageLoading(prev => ({ ...prev, [key]: false }))}
+                          onError={() => setIsImageLoading(prev => ({ ...prev, [key]: false }))}
                         />
                       </Box>
                       <Box sx={{ flex: 1 }}>
@@ -175,18 +201,38 @@ const AppModal: React.FC<AppModalProps> = ({
                           sx={{
                             display: "flex",
                             justifyContent: "space-between",
+                            alignItems: "flex-start",
                           }}
                         >
-                          <Typography variant="h6">{item.title}</Typography>
+                          <Typography 
+                            variant="h6" 
+                            sx={{ 
+                              fontWeight: 500,
+                              mb: 1,
+                            }}
+                          >
+                            {item.title}
+                          </Typography>
                           <IconButton
                             size="small"
                             color="error"
                             onClick={() => removeFromCart(key)}
+                            sx={{
+                              '&:hover': {
+                                transform: 'scale(1.1)',
+                              }
+                            }}
                           >
                             <DeleteIcon />
                           </IconButton>
                         </Box>
-                        <Typography variant="subtitle1" sx={{ mt: 1 }}>
+                        <Typography 
+                          variant="subtitle1" 
+                          sx={{ 
+                            color: 'primary.main',
+                            fontWeight: 600,
+                          }}
+                        >
                           ₹ {item.price}
                         </Typography>
                       </Box>
@@ -195,32 +241,52 @@ const AppModal: React.FC<AppModalProps> = ({
                 )}
               </List>
             </Box>
-            {/* footer */}
             <Box
               sx={{
-                p: 2,
-                borderTop: "1px solid #eee",
+                p: 3,
+                borderTop: "1px solid",
+                borderColor: "divider",
                 bgcolor: "background.paper",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
+                transition: "all 0.3s ease-in-out",
               }}
             >
-              <Typography variant="h6">Total: ₹ {totalAmount}</Typography>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">Total Amount</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 600 }}>₹ {totalAmount}</Typography>
+              </Box>
               <Button
                 disabled={isCartEmpty || paymentProcessing}
                 variant="contained"
                 color="primary"
                 endIcon={
                   paymentProcessing ? (
-                    <CircularProgress size={20} />
+                    <CircularProgress size={20} color="inherit" />
                   ) : (
                     <ArrowOutward />
                   )
                 }
                 onClick={handlePayment}
+                sx={{
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontSize: '1rem',
+                  fontWeight: 500,
+                  boxShadow: 'none',
+                  '&:hover': {
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                  },
+                  '&.Mui-disabled': {
+                    backgroundColor: 'action.disabledBackground',
+                    color: 'action.disabled',
+                  }
+                }}
               >
-                {paymentProcessing ? "Processing..." : "Checkout"}
+                {paymentProcessing ? "Processing..." : "Proceed to Checkout"}
               </Button>
             </Box>
           </Box>
